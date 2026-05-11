@@ -78,7 +78,14 @@ services:
 
   # ── Infrastructure ───────────────────────────────────────────
   postgres:
-    image: postgres:16-alpine
+    build:
+      context: ./scripts
+      dockerfile_inline: |
+        FROM postgres:16-alpine
+        COPY init-db.sql      /docker-entrypoint-initdb.d/01-init-db.sql
+        COPY user-schema.sql  /docker-entrypoint-initdb.d/02-user-schema.sql
+        COPY dex-schema.sql   /docker-entrypoint-initdb.d/03-dex-schema.sql
+        COPY box-schema.sql   /docker-entrypoint-initdb.d/04-box-schema.sql
     ports:
       - "5432:5432"
     environment:
@@ -87,9 +94,8 @@ services:
       POSTGRES_DB: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./scripts:/docker-entrypoint-initdb.d/init-db.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pob"]
+      test: ["CMD-SHELL", "pg_isready -U pob -d postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
