@@ -1,0 +1,111 @@
+services:
+  # ── Go Services ─────────────────────────────────────────────
+  dex:
+    build:
+      context: .
+      dockerfile: dex/Dockerfile
+    ports:
+      - "8081:8081"   # REST (PokeAPI proxy)
+      - "9091:9091"   # gRPC
+    environment:
+      - DB_DSN=postgres://pob:pob@postgres:5432/dex_db?sslmode=disable
+      - REDIS_ADDR=redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  user:
+    build:
+      context: .
+      dockerfile: user/Dockerfile
+    ports:
+      - "8082:8082"   # REST
+    environment:
+      - DB_DSN=postgres://pob:pob@postgres:5432/user_db?sslmode=disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  box:
+    build:
+      context: .
+      dockerfile: box/Dockerfile
+    ports:
+      - "8083:8083"   # REST
+      - "9093:9093"   # gRPC
+    environment:
+      - DB_DSN=postgres://pob:pob@postgres:5432/box_db?sslmode=disable
+      - DEX_GRPC_ADDR=dex:9091
+    depends_on:
+      postgres:
+        condition: service_healthy
+      dex:
+        condition: service_started
+
+  battle:
+    build:
+      context: .
+      dockerfile: battle/Dockerfile
+    ports:
+      - "8084:8084"   # REST + WebSocket
+    environment:
+      - REDIS_ADDR=redis:6379
+      - DEX_GRPC_ADDR=dex:9091
+      - BOX_GRPC_ADDR=box:9093
+    depends_on:
+      redis:
+        condition: service_healthy
+      dex:
+        condition: service_started
+      box:
+        condition: service_started
+
+  # ── Batch (PokeAPI sync) ─────────────────────────────────────
+  sync:
+    build:
+      context: .
+      dockerfile: sync/Dockerfile
+    environment:
+      - DB_DSN=postgres://pob:pob@postgres:5432/dex_db?sslmode=disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    profiles:
+      - tools   # docker compose --profile tools up sync
+
+  # ── Infrastructure ───────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: pob
+      POSTGRES_PASSWORD: pob
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pob"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:
