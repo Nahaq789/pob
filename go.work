@@ -1,0 +1,10 @@
+go 1.24.4
+
+use (
+	./battle
+	./box
+	./dex
+	./pkg
+	./sync
+	./user
+)
