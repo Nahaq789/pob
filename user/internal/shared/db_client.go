@@ -39,3 +39,11 @@ func InitDbClient(ctx context.Context, l *slog.Logger, connStr string) (*DBClien
 		client: pool,
 	}, nil
 }
+
+func (d *DBClient) Close() {
+	d.client.Close()
+}
+
+func (d *DBClient) GetClient() *pgxpool.Pool {
+	return d.client
+}
