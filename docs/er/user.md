@@ -1,3 +1,4 @@
+```mermaid
 erDiagram
     users {
         UUID id PK "ユーザーID"
@@ -17,3 +18,5 @@ erDiagram
     }
 
     users ||--|| refresh_tokens : "has"
+
+```

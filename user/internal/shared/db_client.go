@@ -1,0 +1,41 @@
+package shared
+
+import (
+	"context"
+	"log/slog"
+	"time"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+)
+
+type DBClient struct {
+	logger *slog.Logger
+	client *pgxpool.Pool
+}
+
+func InitDbClient(ctx context.Context, l *slog.Logger, connStr string) (*DBClient, error) {
+	config, err := pgxpool.ParseConfig(connStr)
+	if err != nil {
+		return nil, err
+	}
+
+	config.MaxConns = 10
+	config.MinConns = 2
+	config.MaxConnLifetime = 30 * time.Minute
+	config.MaxConnIdleTime = 5 * time.Minute
+	config.HealthCheckPeriod = 1 * time.Minute
+
+	pool, err := pgxpool.NewWithConfig(ctx, config)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := pool.Ping(ctx); err != nil {
+		return nil, err
+	}
+
+	return &DBClient{
+		logger: l,
+		client: pool,
+	}, nil
+}
