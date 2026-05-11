@@ -1,7 +1,13 @@
 package main
 
-import "fmt"
+import "github.com/gin-gonic/gin"
 
 func main() {
-	fmt.Println("user service started")
+  router := gin.Default()
+  router.GET("/ping", func(c *gin.Context) {
+    c.JSON(200, gin.H{
+      "message": "pong",
+    })
+  })
+  router.Run() // デフォルトで0.0.0.0:8080でリッスンします
 }
