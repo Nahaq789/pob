@@ -18,14 +18,13 @@ func NewUserRepository(db *shared.DBClient) *UserRepository {
 
 func (u *UserRepository) Register(ctx context.Context, user model.User) error {
 	l := shared.FromContext(ctx)
-	query := `insert`
+	query := `insert into users (id, username, password_hash, created_at, updated_at) values ($1, $2, $3, $4, $5)`
 	c := u.db.GetClient()
 
-	_, err := c.Exec(ctx, query)
+	_, err := c.Exec(ctx, query, user.UserId, user.UserName, user.PasswordHash, user.CreatedAt, user.UpdatedAt)
 	if err != nil {
 		l.ErrorContext(ctx, "failed to register user", "error", err)
 		return err
 	}
 	return nil
 }
-
