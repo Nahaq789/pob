@@ -21,7 +21,7 @@ func NewUserService(r *repository.UserRepository) *UserService {
 func (u *UserService) Registration(ctx context.Context, r user.UserRegistration) error {
 	slog.InfoContext(ctx, "registration start", slog.String("username", r.UserName))
 
-	hashedPassword, err := repository.HashPassword(r.Password)
+	hashedPassword, err := repository.Hash(r.Password)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to hash password", slog.String("username", r.UserName), slog.Any("error", err))
 		return err

@@ -8,20 +8,19 @@ import (
 
 type RefreshToken struct {
 	RefreshTokenId uuid.UUID
-	UserId uuid.UUID
-	TokenHash string
-	ExpiredAt time.Time
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	UserId         uuid.UUID
+	TokenHash      string
+	ExpiredAt      time.Time
+	CreatedAt      time.Time
 }
 
-func NewRefreshToken(userId uuid.UUID, tokenHash string, expiredAt time.Time) *RefreshToken {
+func NewRefreshToken(userId uuid.UUID, tokenHash string) *RefreshToken {
+	now := time.Now()
 	return &RefreshToken{
 		RefreshTokenId: uuid.New(),
-		UserId: userId,
-		TokenHash: tokenHash,
-		ExpiredAt: expiredAt,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		UserId:         userId,
+		TokenHash:      tokenHash,
+		ExpiredAt:      now.Add(7 * 24 * time.Hour),
+		CreatedAt:      now,
 	}
 }
