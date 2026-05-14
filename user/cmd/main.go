@@ -38,7 +38,7 @@ func main() {
 	privateKey, _ := jwt.ParseRSAPrivateKeyFromPEM(keyData)
 	authRepository := repository.NewAuthRepository(dbClient, privateKey)
 	authService := service.NewAuthService(authRepository)
-	authHandler := handler.NewAuthHandler(authService)
+	authHandler := handler.NewAuthHandler(authService, logger)
 
 	router := gin.Default()
 	CreateUserRouter(router, userHandler)

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"log/slog"
 	"net/http"
 	"pob/user/internal/model/apperror"
 	"pob/user/internal/service"
@@ -12,11 +13,13 @@ import (
 
 type AuthHandler struct {
 	authService *service.AuthService
+	logger      *slog.Logger
 }
 
-func NewAuthHandler(s *service.AuthService) *AuthHandler {
+func NewAuthHandler(s *service.AuthService, l *slog.Logger) *AuthHandler {
 	return &AuthHandler{
 		authService: s,
+		logger:      l,
 	}
 }
 

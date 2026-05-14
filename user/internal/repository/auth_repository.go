@@ -4,7 +4,7 @@ import (
 	"context"
 	"crypto/rsa"
 	"errors"
-	"fmt"
+	"log/slog"
 	"pob/user/internal/model"
 	"pob/user/internal/model/apperror"
 	"pob/user/internal/shared"
@@ -29,27 +29,38 @@ func NewAuthRepository(db *shared.DBClient, p *rsa.PrivateKey) *AuthRepository {
 
 func (a *AuthRepository) Login(ctx context.Context, auth model.Auth) (model.Jwt, error) {
 	l := shared.FromContext(ctx)
+
 	user, err := a.findByUserName(ctx, auth.UserName)
 	if err != nil {
-		l.ErrorContext(ctx, "failed to login user", "error", err)
+		if errors.Is(err, apperror.ErrUserNotFound) {
+			// ユーザーが存在しない場合は認証失敗として扱う（ユーザー存在有無を隠蔽）
+			l.WarnContext(ctx, "user not found on login", slog.String("username", auth.UserName))
+			return model.Jwt{}, apperror.ErrInvalidCredentials
+		}
+		l.ErrorContext(ctx, "failed to find user", slog.String("username", auth.UserName), slog.Any("error", err))
 		return model.Jwt{}, err
 	}
 
-	// パスワード検証
-	hashed := user.PasswordHash
-	plane := auth.PasswordPlane
-
-	if !Compare(hashed, plane) {
-		l.ErrorContext(ctx, "invalid credentials", "username", auth.UserName)
+	if !Compare(user.PasswordHash, auth.PasswordPlane) {
+		l.WarnContext(ctx, "invalid password",
+			slog.String("username", auth.UserName),
+			slog.String("user_id", user.UserId.String()),
+		)
 		return model.Jwt{}, apperror.ErrInvalidCredentials
 	}
 
 	token, err := a.genJwt(user.UserId.String())
 	if err != nil {
-		l.ErrorContext(ctx, "failed to generate jwt token", "error", err)
+		l.ErrorContext(ctx, "failed to generate jwt",
+			slog.String("username", auth.UserName),
+			slog.String("user_id", user.UserId.String()),
+			slog.Any("error", err),
+		)
 		return model.Jwt{}, err
 	}
-	return token, err
+
+	l.InfoContext(ctx, "jwt generated", slog.String("user_id", user.UserId.String()))
+	return token, nil
 }
 
 func (a *AuthRepository) findByUserName(ctx context.Context, u string) (model.User, error) {
@@ -60,16 +71,17 @@ func (a *AuthRepository) findByUserName(ctx context.Context, u string) (model.Us
 	var createdAt, updatedAt time.Time
 	query := `select id, username, password_hash, created_at, updated_at from users where username = $1`
 
-	c := a.db.GetClient()
-
-	err := c.QueryRow(ctx, query, u).Scan(&id, &username, &passwordHash, &createdAt, &updatedAt)
+	err := a.db.GetClient().QueryRow(ctx, query, u).Scan(&id, &username, &passwordHash, &createdAt, &updatedAt)
 	if err != nil {
-		l.ErrorContext(ctx, "failed to select user", "error", err)
 		if errors.Is(err, pgx.ErrNoRows) {
-			return model.User{}, fmt.Errorf("user not found: %w", err)
+			// DBエラーではないのでログはDebugレベル。呼び出し元で判定できるよう専用エラーを返す
+			l.DebugContext(ctx, "user not found", slog.String("username", u))
+			return model.User{}, apperror.ErrUserNotFound
 		}
+		l.ErrorContext(ctx, "db error on findByUserName", slog.String("username", u), slog.Any("error", err))
 		return model.User{}, err
 	}
+
 	return model.User{
 		UserId:       id,
 		UserName:     username,

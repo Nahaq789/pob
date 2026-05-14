@@ -63,5 +63,6 @@ func InitLogger() *slog.Logger {
 	})
 	contexthandler := NewContexthandler(handler)
 	logger := slog.New(contexthandler)
+	slog.SetDefault(logger)
 	return logger
 }
