@@ -31,7 +31,6 @@ func (a *AuthRepository) Login(ctx context.Context, auth model.Auth) (model.Jwt,
 	user, err := a.findByUserName(ctx, auth.UserName)
 	if err != nil {
 		if errors.Is(err, apperror.ErrUserNotFound) {
-			// ユーザーが存在しない場合は認証失敗として扱う（ユーザー存在有無を隠蔽）
 			slog.WarnContext(ctx, "user not found on login", slog.String("username", auth.UserName))
 			return model.Jwt{}, apperror.ErrInvalidCredentials
 		}
