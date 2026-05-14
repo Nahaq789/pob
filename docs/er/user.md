@@ -14,7 +14,6 @@ erDiagram
         VARCHAR token_hash "トークンハッシュ"
         TIMESTAMPTZ expires_at "有効期限"
         TIMESTAMPTZ created_at "作成日時"
-        TIMESTAMPTZ revoked_at "無効化日時"
     }
 
     users ||--|| refresh_tokens : "has"
