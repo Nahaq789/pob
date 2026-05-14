@@ -12,3 +12,10 @@ func CreateUserRouter(r gin.IRouter, handler *handler.Userhandler) {
 		user.POST("/register", handler.Registration)
 	}
 }
+
+func CreateAuthRouter(r gin.IRouter, handler *handler.AuthHandler) {
+	{
+		auth := r.Group("/auth")
+		auth.POST("/login", handler.Login)
+	}
+}

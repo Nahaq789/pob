@@ -2,16 +2,20 @@ package main
 
 import (
 	"context"
+	"os"
 	"pob/user/internal/handler"
 	"pob/user/internal/repository"
 	"pob/user/internal/service"
 	"pob/user/internal/shared"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	ctx := context.Background()
+	godotenv.Load()
 	logger := shared.InitLogger()
 	dbClient, err := shared.InitDbClient(ctx, logger, "host=localhost user=pob password=pob dbname=user_db port=5432 sslmode=disable")
 	if err != nil {
@@ -19,12 +23,26 @@ func main() {
 		return
 	}
 
+	// user
 	userRepository := repository.NewUserRepository(dbClient)
 	userService := service.NewUserService(userRepository)
 	userHandler := handler.NewUserHandler(userService)
 
+	// auth
+	keyPath := os.Getenv("PRIVATE_KEY_PATH")
+	keyData, ioErr := os.ReadFile(keyPath)
+	if ioErr != nil {
+		logger.ErrorContext(ctx, "failed to read private key path", "error", ioErr)
+		return
+	}
+	privateKey, _ := jwt.ParseRSAPrivateKeyFromPEM(keyData)
+	authRepository := repository.NewAuthRepository(dbClient, privateKey)
+	authService := service.NewAuthService(authRepository)
+	authHandler := handler.NewAuthHandler(authService)
+
 	router := gin.Default()
 	CreateUserRouter(router, userHandler)
+	CreateAuthRouter(router, authHandler)
 
 	router.Run(":8080")
 }
