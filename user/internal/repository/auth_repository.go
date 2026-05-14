@@ -28,21 +28,19 @@ func NewAuthRepository(db *shared.DBClient, p *rsa.PrivateKey) *AuthRepository {
 }
 
 func (a *AuthRepository) Login(ctx context.Context, auth model.Auth) (model.Jwt, error) {
-	l := shared.FromContext(ctx)
-
 	user, err := a.findByUserName(ctx, auth.UserName)
 	if err != nil {
 		if errors.Is(err, apperror.ErrUserNotFound) {
 			// ユーザーが存在しない場合は認証失敗として扱う（ユーザー存在有無を隠蔽）
-			l.WarnContext(ctx, "user not found on login", slog.String("username", auth.UserName))
+			slog.WarnContext(ctx, "user not found on login", slog.String("username", auth.UserName))
 			return model.Jwt{}, apperror.ErrInvalidCredentials
 		}
-		l.ErrorContext(ctx, "failed to find user", slog.String("username", auth.UserName), slog.Any("error", err))
+		slog.ErrorContext(ctx, "failed to find user", slog.String("username", auth.UserName), slog.Any("error", err))
 		return model.Jwt{}, err
 	}
 
 	if !Compare(user.PasswordHash, auth.PasswordPlane) {
-		l.WarnContext(ctx, "invalid password",
+		slog.WarnContext(ctx, "invalid password",
 			slog.String("username", auth.UserName),
 			slog.String("user_id", user.UserId.String()),
 		)
@@ -51,7 +49,7 @@ func (a *AuthRepository) Login(ctx context.Context, auth model.Auth) (model.Jwt,
 
 	token, err := a.genJwt(user.UserId.String())
 	if err != nil {
-		l.ErrorContext(ctx, "failed to generate jwt",
+		slog.ErrorContext(ctx, "failed to generate jwt",
 			slog.String("username", auth.UserName),
 			slog.String("user_id", user.UserId.String()),
 			slog.Any("error", err),
@@ -59,13 +57,11 @@ func (a *AuthRepository) Login(ctx context.Context, auth model.Auth) (model.Jwt,
 		return model.Jwt{}, err
 	}
 
-	l.InfoContext(ctx, "jwt generated", slog.String("user_id", user.UserId.String()))
+	slog.InfoContext(ctx, "jwt generated", slog.String("user_id", user.UserId.String()))
 	return token, nil
 }
 
 func (a *AuthRepository) findByUserName(ctx context.Context, u string) (model.User, error) {
-	l := shared.FromContext(ctx)
-
 	var id uuid.UUID
 	var username, passwordHash string
 	var createdAt, updatedAt time.Time
@@ -74,11 +70,10 @@ func (a *AuthRepository) findByUserName(ctx context.Context, u string) (model.Us
 	err := a.db.GetClient().QueryRow(ctx, query, u).Scan(&id, &username, &passwordHash, &createdAt, &updatedAt)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			// DBエラーではないのでログはDebugレベル。呼び出し元で判定できるよう専用エラーを返す
-			l.DebugContext(ctx, "user not found", slog.String("username", u))
+			slog.DebugContext(ctx, "user not found", slog.String("username", u))
 			return model.User{}, apperror.ErrUserNotFound
 		}
-		l.ErrorContext(ctx, "db error on findByUserName", slog.String("username", u), slog.Any("error", err))
+		slog.ErrorContext(ctx, "db error on findByUserName", slog.String("username", u), slog.Any("error", err))
 		return model.User{}, err
 	}
 

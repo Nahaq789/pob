@@ -45,24 +45,11 @@ func (h *ContextHandler) WithGroup(name string) slog.Handler {
 
 type contextKey struct{}
 
-func WithContext(ctx context.Context, l *slog.Logger) context.Context {
-	return context.WithValue(ctx, contextKey{}, l)
-}
-
-func FromContext(ctx context.Context) *slog.Logger {
-	l, ok := ctx.Value(contextKey{}).(*slog.Logger)
-	if !ok {
-		l = InitLogger()
-	}
-	return l
-}
-
-func InitLogger() *slog.Logger {
+func InitLogger() {
 	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelInfo,
 	})
 	contexthandler := NewContexthandler(handler)
 	logger := slog.New(contexthandler)
 	slog.SetDefault(logger)
-	return logger
 }

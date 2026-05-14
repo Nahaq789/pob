@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log/slog"
 	"os"
 	"pob/user/internal/handler"
 	"pob/user/internal/repository"
@@ -16,10 +17,10 @@ import (
 func main() {
 	ctx := context.Background()
 	godotenv.Load()
-	logger := shared.InitLogger()
-	dbClient, err := shared.InitDbClient(ctx, logger, "host=localhost user=pob password=pob dbname=user_db port=5432 sslmode=disable")
+	shared.InitLogger()
+	dbClient, err := shared.InitDbClient(ctx, "host=localhost user=pob password=pob dbname=user_db port=5432 sslmode=disable")
 	if err != nil {
-		logger.ErrorContext(ctx, "failed to init db client", "error", err)
+		slog.ErrorContext(ctx, "failed to init db client", "error", err)
 		return
 	}
 
@@ -32,13 +33,13 @@ func main() {
 	keyPath := os.Getenv("PRIVATE_KEY_PATH")
 	keyData, ioErr := os.ReadFile(keyPath)
 	if ioErr != nil {
-		logger.ErrorContext(ctx, "failed to read private key path", "error", ioErr)
+		slog.ErrorContext(ctx, "failed to read private key path", "error", ioErr)
 		return
 	}
 	privateKey, _ := jwt.ParseRSAPrivateKeyFromPEM(keyData)
 	authRepository := repository.NewAuthRepository(dbClient, privateKey)
 	authService := service.NewAuthService(authRepository)
-	authHandler := handler.NewAuthHandler(authService, logger)
+	authHandler := handler.NewAuthHandler(authService)
 
 	router := gin.Default()
 	CreateUserRouter(router, userHandler)

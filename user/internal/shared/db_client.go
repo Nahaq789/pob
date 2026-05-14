@@ -2,18 +2,16 @@ package shared
 
 import (
 	"context"
-	"log/slog"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type DBClient struct {
-	logger *slog.Logger
 	client *pgxpool.Pool
 }
 
-func InitDbClient(ctx context.Context, l *slog.Logger, connStr string) (*DBClient, error) {
+func InitDbClient(ctx context.Context, connStr string) (*DBClient, error) {
 	config, err := pgxpool.ParseConfig(connStr)
 	if err != nil {
 		return nil, err
@@ -35,7 +33,6 @@ func InitDbClient(ctx context.Context, l *slog.Logger, connStr string) (*DBClien
 	}
 
 	return &DBClient{
-		logger: l,
 		client: pool,
 	}, nil
 }
