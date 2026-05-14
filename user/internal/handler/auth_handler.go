@@ -47,8 +47,9 @@ func (a *AuthHandler) Login(ctx *gin.Context) {
 		return
 	}
 
+	ctx.SetCookie("refresh_token", token.RefreshToken, 60*60*24*7, "/", "localhost", false, true)
 	ctx.JSON(http.StatusOK, gin.H{
 		"status": http.StatusOK,
-		"token":  token,
+		"token":  token.AccessToken,
 	})
 }
