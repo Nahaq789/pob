@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package dex;
+
+option go_package = "pob/dex/gen";
+
+service DexService {
+  rpc GetPokemon(GetPokemonRequest) returns (PokemonResponse);
+  rpc GetLearnableMoves(GetLearnableMovesRequest) returns (LearnableMovesResponse);
+  rpc GetMove(GetMoveRequest) returns (MoveResponse);
+  rpc GetAbility(GetAbilityRequest) returns (AbilityResponse);
+}
+
+// ── GetPokemon ──────────────────────────────────────────────
+message GetPokemonRequest {
+  int32 pokemon_id = 1;
+}
+
+message PokemonResponse {
+  int32  pokemon_id      = 1;  // PokeAPI のポケモンID
+  string name            = 2;  // ポケモン名
+  int32  type1_id        = 3;  // タイプ1のID
+  int32  type2_id        = 4;  // タイプ2のID（単タイプの場合は 0）
+  int32  base_hp         = 5;  // 種族値 HP
+  int32  base_attack     = 6;  // 種族値 こうげき
+  int32  base_defense    = 7;  // 種族値 ぼうぎょ
+  int32  base_sp_attack  = 8;  // 種族値 とくこう
+  int32  base_sp_defense = 9;  // 種族値 とくぼう
+  int32  base_speed      = 10; // 種族値 すばやさ
+  repeated AbilityInfo abilities = 11; // 特性リスト（通常特性・夢特性を含む）
+}
+
+message AbilityInfo {
+  int32  ability_id   = 1; // PokeAPI の特性ID
+  string ability_name = 2; // 特性名
+  bool   is_hidden    = 3; // true: 夢特性
+}
+
+// ── GetLearnableMoves ───────────────────────────────────────
+message GetLearnableMovesRequest {
+  int32 pokemon_id = 1;
+}
+
+message LearnableMovesResponse {
+  repeated MoveResponse moves = 1;
+}
+
+// ── GetMove ────────────────────────────────────────────────
+message GetMoveRequest {
+  int32 move_id = 1;
+}
+
+message MoveResponse {
+  int32  move_id      = 1; // PokeAPI の技ID
+  string name         = 2; // 技名
+  int32  type_id      = 3; // タイプID
+  string damage_class = 4; // 技の分類（physical / special / status）
+  int32  power        = 5; // 威力（固定・変動ダメージ技の場合は 0）
+  int32  accuracy     = 6; // 命中率（必中技の場合は 0）
+  int32  pp           = 7; // PP
+}
+
+// ── GetAbility ─────────────────────────────────────────────
+message GetAbilityRequest {
+  int32 ability_id = 1;
+}
+
+message AbilityResponse {
+  int32  ability_id   = 1; // PokeAPI の特性ID
+  string ability_name = 2; // 特性名
+}
