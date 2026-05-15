@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log/slog"
 	"pob/user/internal/model"
+	"pob/user/internal/model/apperror"
 	"pob/user/internal/shared"
 	"time"
 
@@ -59,4 +60,22 @@ func (r *RefreshTokenRepository) FindByUserId(ctx context.Context, u string) (*m
 
 	result := model.FromRefreshToken(id, userId, tokenHash, expiresAt, createdAt)
 	return result, nil
+}
+
+func (r *RefreshTokenRepository) DeleteByUserId(ctx context.Context, u string) error {
+	query := `DELETE FROM refresh_tokens WHERE user_id = $1`
+	c := r.db.GetClient()
+
+	result, err := c.Exec(ctx, query, u)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed to delete refresh token", slog.String("user_id", u), slog.String("error", err.Error()))
+		return err
+	}
+
+	if result.RowsAffected() == 0 {
+		return apperror.ErrAlreadyLoggedOut
+	}
+
+	slog.InfoContext(ctx, "refresh token deleted", slog.String("user_id", u))
+	return nil
 }

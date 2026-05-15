@@ -1,3 +1,0 @@
-CREATE DATABASE user_db;
-CREATE DATABASE dex_db;
-CREATE DATABASE box_db;

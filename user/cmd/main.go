@@ -16,10 +16,13 @@ import (
 )
 
 func main() {
+	// init
 	ctx := context.Background()
 	godotenv.Load()
 	logger.InitLogger()
-	dbClient, err := shared.InitDbClient(ctx, "host=localhost user=pob password=pob dbname=user_db port=5432 sslmode=disable")
+
+	dsn := os.Getenv("DB_DSN")
+	dbClient, err := shared.InitDbClient(ctx, dsn)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to init db client", "error", err)
 		return
@@ -56,5 +59,5 @@ func main() {
 	CreateUserRouter(router, userHandler)
 	CreateAuthRouter(router, authHandler)
 
-	router.Run(":8080")
+	router.Run(":8082")
 }

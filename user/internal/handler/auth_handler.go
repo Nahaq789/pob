@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"net/http"
+	"pob/pkg/jwt"
 	"pob/user/internal/model/apperror"
 	"pob/user/internal/service"
 	"pob/user/internal/service/dto/auth"
@@ -85,5 +86,37 @@ func (a *AuthHandler) Refresh(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"status": http.StatusOK,
 		"token":  token.AccessToken,
+	})
+}
+
+func (a *AuthHandler) Logout(ctx *gin.Context) {
+	at := jwt.ExtractBearerToken(ctx.Request.Header.Get("Authorization"))
+	rCtx := ctx.Request.Context()
+	err := a.authService.Logout(rCtx, at)
+	if err != nil {
+		if errors.Is(err, apperror.ErrInvalidCredentials) {
+			ctx.JSON(http.StatusUnauthorized, gin.H{
+				"status": http.StatusUnauthorized,
+				"error":  err.Error(),
+			})
+			return
+		}
+		if errors.Is(err, apperror.ErrAlreadyLoggedOut) {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"status": http.StatusBadRequest,
+				"error":  err.Error(),
+			})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status": http.StatusInternalServerError,
+			"error":  err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
+		"message": "Logout success",
 	})
 }

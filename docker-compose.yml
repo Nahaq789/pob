@@ -5,13 +5,13 @@ services:
       context: .
       dockerfile: dex/Dockerfile
     ports:
-      - "8081:8081"   # REST (PokeAPI proxy)
-      - "9091:9091"   # gRPC
+      - "8081:8081"
+      - "9091:9091"
     environment:
-      - DB_DSN=postgres://pob:pob@postgres:5432/dex_db?sslmode=disable
+      - DB_DSN=postgres://pob:pob@dex-postgres:5432/dex_db?sslmode=disable
       - REDIS_ADDR=redis:6379
     depends_on:
-      postgres:
+      dex-postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -21,11 +21,15 @@ services:
       context: .
       dockerfile: user/Dockerfile
     ports:
-      - "8082:8082"   # REST
+      - "8082:8082"
     environment:
-      - DB_DSN=postgres://pob:pob@postgres:5432/user_db?sslmode=disable
+      - DB_DSN=postgres://pob:pob@user-postgres:5432/user_db?sslmode=disable
+      - PRIVATE_KEY_PATH=/pem/private.pem
+      - PUBLIC_KEY_PATH=/pem/public.pem
+    volumes:
+      - ./user/pem/:/pem/
     depends_on:
-      postgres:
+      user-postgres:
         condition: service_healthy
 
   box:
@@ -33,13 +37,13 @@ services:
       context: .
       dockerfile: box/Dockerfile
     ports:
-      - "8083:8083"   # REST
-      - "9093:9093"   # gRPC
+      - "8083:8083"
+      - "9093:9093"
     environment:
-      - DB_DSN=postgres://pob:pob@postgres:5432/box_db?sslmode=disable
+      - DB_DSN=postgres://pob:pob@box-postgres:5432/box_db?sslmode=disable
       - DEX_GRPC_ADDR=dex:9091
     depends_on:
-      postgres:
+      box-postgres:
         condition: service_healthy
       dex:
         condition: service_started
@@ -49,7 +53,7 @@ services:
       context: .
       dockerfile: battle/Dockerfile
     ports:
-      - "8084:8084"   # REST + WebSocket
+      - "8084:8084"
     environment:
       - REDIS_ADDR=redis:6379
       - DEX_GRPC_ADDR=dex:9091
@@ -62,40 +66,68 @@ services:
       box:
         condition: service_started
 
-  # ── Batch (PokeAPI sync) ─────────────────────────────────────
+  # ── Batch ────────────────────────────────────────────────────
   sync:
     build:
       context: .
       dockerfile: sync/Dockerfile
     environment:
-      - DB_DSN=postgres://pob:pob@postgres:5432/dex_db?sslmode=disable
+      - DB_DSN=postgres://pob:pob@dex-postgres:5432/dex_db?sslmode=disable
     depends_on:
-      postgres:
+      dex-postgres:
         condition: service_healthy
     restart: "no"
     profiles:
-      - tools   # docker compose --profile tools up sync
+      - tools
 
   # ── Infrastructure ───────────────────────────────────────────
-  postgres:
-    build:
-      context: ./scripts
-      dockerfile_inline: |
-        FROM postgres:16-alpine
-        COPY init-db.sql      /docker-entrypoint-initdb.d/01-init-db.sql
-        COPY user-schema.sql  /docker-entrypoint-initdb.d/02-user-schema.sql
-        COPY dex-schema.sql   /docker-entrypoint-initdb.d/03-dex-schema.sql
-        COPY box-schema.sql   /docker-entrypoint-initdb.d/04-box-schema.sql
+  user-postgres:
+    image: postgres:16-alpine
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: pob
       POSTGRES_PASSWORD: pob
-      POSTGRES_DB: postgres
+      POSTGRES_DB: user_db
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/user-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - user_postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pob -d postgres"]
+      test: ["CMD-SHELL", "pg_isready -U pob -d user_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  dex-postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: pob
+      POSTGRES_PASSWORD: pob
+      POSTGRES_DB: dex_db
+    volumes:
+      - ./scripts/dex-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - dex_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pob -d dex_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  box-postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: pob
+      POSTGRES_PASSWORD: pob
+      POSTGRES_DB: box_db
+    volumes:
+      - ./scripts/box-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - box_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pob -d box_db"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -113,5 +145,7 @@ services:
       retries: 5
 
 volumes:
-  postgres_data:
+  user_postgres_data:
+  dex_postgres_data:
+  box_postgres_data:
   redis_data:

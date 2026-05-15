@@ -101,3 +101,21 @@ func (a *AuthService) Refresh(ctx context.Context, rt string) (auth.TokenRespons
 		RefreshToken: newToken.RefreshToken,
 	}, nil
 }
+
+func (a *AuthService) Logout(ctx context.Context, at string) error {
+	slog.InfoContext(ctx, "logout start")
+
+	claims, err := jwt.VerifyToken(at, a.publicKey)
+	if err != nil {
+		slog.WarnContext(ctx, "failed to verify access token", slog.String("error", err.Error()))
+		return apperror.ErrInvalidCredentials
+	}
+
+	userId := claims.UserID
+	if err := a.rr.DeleteByUserId(ctx, userId); err != nil {
+		return err
+	}
+
+	slog.InfoContext(ctx, "logout success", slog.String("user_id", userId))
+	return nil
+}

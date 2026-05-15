@@ -8,7 +8,7 @@ COPY box/go.mod    ./box/go.mod
 COPY battle/go.mod ./battle/go.mod
 COPY sync/go.mod   ./sync/go.mod
 WORKDIR /app/user
-RUN go build -o /user ./cmd/main.go
+RUN go build -o /user ./cmd/
 
 FROM alpine:3.21
 COPY --from=builder /user /user

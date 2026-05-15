@@ -3,6 +3,7 @@ package jwt
 import (
 	"crypto/rsa"
 	"fmt"
+	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -25,4 +26,8 @@ func VerifyToken(tokenString string, publicKey *rsa.PublicKey) (*Claims, error) 
 		return nil, fmt.Errorf("invalid token")
 	}
 	return claims, nil
+}
+
+func ExtractBearerToken(authHeader string) string {
+	return strings.TrimPrefix(authHeader, "Bearer ")
 }
