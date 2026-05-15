@@ -31,16 +31,25 @@ func main() {
 	userHandler := handler.NewUserHandler(userService)
 
 	// auth
-	keyPath := os.Getenv("PRIVATE_KEY_PATH")
-	keyData, ioErr := os.ReadFile(keyPath)
+	privateKeyPath := os.Getenv("PRIVATE_KEY_PATH")
+	privateKeyData, ioErr := os.ReadFile(privateKeyPath)
 	if ioErr != nil {
 		slog.ErrorContext(ctx, "failed to read private key path", "error", ioErr)
 		return
 	}
-	privateKey, _ := jwt.ParseRSAPrivateKeyFromPEM(keyData)
+	privateKey, _ := jwt.ParseRSAPrivateKeyFromPEM(privateKeyData)
+
+	publicKeyPath := os.Getenv("PUBLIC_KEY_PATH")
+	publicKeyData, ioErr := os.ReadFile(publicKeyPath)
+	if ioErr != nil {
+		slog.ErrorContext(ctx, "failed to read public key path", "error", ioErr)
+		return
+	}
+	publicKey, _ := jwt.ParseRSAPublicKeyFromPEM(publicKeyData)
+
 	authRepository := repository.NewAuthRepository(dbClient, privateKey)
 	refreshTokenRepository := repository.NewRefreshTokenRepository(dbClient)
-	authService := service.NewAuthService(authRepository, refreshTokenRepository)
+	authService := service.NewAuthService(authRepository, refreshTokenRepository, publicKey)
 	authHandler := handler.NewAuthHandler(authService)
 
 	router := gin.Default()

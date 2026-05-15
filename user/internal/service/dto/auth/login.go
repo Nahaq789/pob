@@ -1,6 +1,6 @@
 package auth
 
-type Login struct {
+type LoginRequest struct {
 	UserName string
 	Password string
 }

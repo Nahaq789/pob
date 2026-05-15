@@ -24,3 +24,13 @@ func NewRefreshToken(userId uuid.UUID, tokenHash string) *RefreshToken {
 		CreatedAt:      now,
 	}
 }
+
+func FromRefreshToken(id, userId uuid.UUID, tokenHash string, expiredAt, createdAt time.Time) *RefreshToken {
+	return &RefreshToken{
+		RefreshTokenId: id,
+		UserId:         userId,
+		TokenHash:      tokenHash,
+		ExpiredAt:      expiredAt,
+		CreatedAt:      createdAt,
+	}
+}

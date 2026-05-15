@@ -47,7 +47,7 @@ func (a *AuthRepository) Login(ctx context.Context, auth model.Auth) (model.Jwt,
 		return model.Jwt{}, apperror.ErrInvalidCredentials
 	}
 
-	token, err := a.genJwt(user.UserId)
+	token, err := a.GenJwt(user.UserId)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to generate jwt",
 			slog.String("username", auth.UserName),
@@ -86,7 +86,7 @@ func (a *AuthRepository) findByUserName(ctx context.Context, u string) (model.Us
 	}, nil
 }
 
-func (a *AuthRepository) genJwt(userId uuid.UUID) (model.Jwt, error) {
+func (a *AuthRepository) GenJwt(userId uuid.UUID) (model.Jwt, error) {
 	accessClaims := pkgjwt.Claims{
 		UserID: userId.String(),
 		RegisteredClaims: jwt.RegisteredClaims{

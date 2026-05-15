@@ -20,5 +20,6 @@ func CreateAuthRouter(r gin.IRouter, handler *handler.AuthHandler) {
 		auth := r.Group("/auth")
 		auth.Use(middleware.TraceMiddleware())
 		auth.POST("/login", handler.Login)
+		auth.POST("/refresh", handler.Refresh)
 	}
 }
