@@ -13,6 +13,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	pkgjwt "pob/pkg/jwt"
 )
 
 type AuthRepository struct {
@@ -86,7 +87,7 @@ func (a *AuthRepository) findByUserName(ctx context.Context, u string) (model.Us
 }
 
 func (a *AuthRepository) genJwt(userId uuid.UUID) (model.Jwt, error) {
-	accessClaims := model.Claims{
+	accessClaims := pkgjwt.Claims{
 		UserID: userId.String(),
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * time.Minute)),
@@ -99,7 +100,7 @@ func (a *AuthRepository) genJwt(userId uuid.UUID) (model.Jwt, error) {
 		return model.Jwt{}, err
 	}
 
-	refreshClaims := model.Claims{
+	refreshClaims := pkgjwt.Claims{
 		UserID: userId.String(),
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
