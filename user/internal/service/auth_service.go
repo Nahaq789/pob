@@ -51,3 +51,7 @@ func (a *AuthService) Login(ctx context.Context, d auth.Login) (auth.TokenRespon
 		RefreshToken: token.RefreshToken,
 	}, nil
 }
+
+func (a *AuthService) Refresh(ctx context.Context) error {
+	return nil
+}

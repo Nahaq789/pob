@@ -1,10 +1,10 @@
-package shared
+package logger
 
 import (
 	"context"
 	"log/slog"
 	"os"
-	"pob/user/internal/shared/tracing"
+	"pob/pkg/tracing"
 )
 
 type ContextHandler struct {

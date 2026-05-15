@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"context"
-	"pob/user/internal/shared/tracing"
+	"pob/pkg/tracing"
 
 	"github.com/gin-gonic/gin"
 )

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"os"
+	"pob/pkg/logger"
 	"pob/user/internal/handler"
 	"pob/user/internal/repository"
 	"pob/user/internal/service"
@@ -17,7 +18,7 @@ import (
 func main() {
 	ctx := context.Background()
 	godotenv.Load()
-	shared.InitLogger()
+	logger.InitLogger()
 	dbClient, err := shared.InitDbClient(ctx, "host=localhost user=pob password=pob dbname=user_db port=5432 sslmode=disable")
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to init db client", "error", err)
