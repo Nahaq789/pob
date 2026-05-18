@@ -1,3 +1,4 @@
+```mermaid
 erDiagram
     types {
         INT id PK "タイプID"
@@ -58,3 +59,5 @@ erDiagram
     abilities ||--o{ pokemon_abilities : "has"
     pokemon ||--o{ pokemon_moves : "has"
     moves ||--o{ pokemon_moves : "has"
+
+```
