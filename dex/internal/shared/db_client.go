@@ -46,3 +46,7 @@ func InitDbClient(ctx context.Context, connStr string) (*DBClient, error) {
 
 	return &DBClient{client: db}, nil
 }
+
+func (d *DBClient) GetClient() *gorm.DB {
+	return d.client
+}
