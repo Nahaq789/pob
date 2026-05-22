@@ -102,22 +102,42 @@ func (p *PokemonRepository) FindAbilitiesByPokemonId(ctx context.Context, pokemo
 	return abilities, nil
 }
 
-func (p *PokemonRepository) FindMovesByPokemonId(ctx context.Context, pokemonId int) ([]entity.PokemonMove, error) {
+func (p *PokemonRepository) FindMovesByPokemonId(ctx context.Context, pokemonId int) ([]model.Move, error) {
 	key := p.movesCacheKey(pokemonId)
 
 	if cached, err := p.redis.GetClient().Get(ctx, key).Bytes(); err == nil {
-		var moves []entity.PokemonMove
+		var moves []model.Move
 		if err := json.Unmarshal(cached, &moves); err == nil {
 			return moves, nil
 		}
 	}
 
-	var moves []entity.PokemonMove
+	var pokemonMoves []entity.PokemonMove
 	if err := p.db.GetClient().WithContext(ctx).
 		Preload("Move").
 		Where("pokemon_id = ?", pokemonId).
-		Find(&moves).Error; err != nil {
+		Find(&pokemonMoves).Error; err != nil {
 		return nil, err
+	}
+
+	moves := make([]model.Move, len(pokemonMoves))
+	for i, m := range pokemonMoves {
+		var power, accuracy int
+		if m.Move.Power != nil {
+			power = *m.Move.Power
+		}
+		if m.Move.Accuracy != nil {
+			accuracy = *m.Move.Accuracy
+		}
+		moves[i] = model.Move{
+			MoveId:      m.Move.Id,
+			Name:        m.Move.Name,
+			TypeId:      m.Move.TypeId,
+			DamageClass: m.Move.DamageClass,
+			Power:       power,
+			Accuracy:    accuracy,
+			Pp:          m.Move.Pp,
+		}
 	}
 
 	if b, err := json.Marshal(moves); err == nil {
