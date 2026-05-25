@@ -2,12 +2,10 @@ package sync
 
 import (
 	"context"
-	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
-	"os"
 	"strconv"
 )
 
@@ -81,7 +79,7 @@ func (t *TypeRepository) toTypes(responses []*typeListResponse) []Type {
 	return types
 }
 
-func (t *TypeRepository) WriteCsv(ctx context.Context) error {
+func (t *TypeRepository) Write(ctx context.Context) error {
 	responses, err := t.fetchAll(ctx)
 	if err != nil {
 		return err
@@ -100,18 +98,10 @@ func (t *TypeRepository) WriteCsv(ctx context.Context) error {
 		})
 	}
 
-	f, err := os.Create(typeCsvPath)
-	if err != nil {
+	if err := WriteCsv(typeCsvPath, records); err != nil {
 		return err
 	}
-	defer f.Close()
 
-	w := csv.NewWriter(f)
-	w.WriteAll(records)
-
-	if err := w.Error(); err != nil {
-		return err
-	}
 	slog.InfoContext(ctx, "wrote csv", slog.String("path", typeCsvPath))
 	return nil
 }
