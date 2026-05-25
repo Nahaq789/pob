@@ -18,17 +18,82 @@ func NewDexHandler(pokemon *service.PokemonService, move *service.MoveService, a
 }
 
 func (d *DexHandler) GetPokemon(ctx context.Context, r *gen.GetPokemonRequest) (*gen.PokemonResponse, error) {
-	return nil, nil
+	p, err := d.pokemon.GetPokemon(ctx, int(r.PokemonId))
+	if err != nil {
+		return nil, err
+	}
+
+	abilities := make([]*gen.AbilityInfo, len(p.Abilities))
+	for i, a := range p.Abilities {
+		abilities[i] = &gen.AbilityInfo{
+			AbilityId:   int32(a.AbilityId),
+			AbilityName: a.AbilityName,
+			IsHidden:    a.IsHidden,
+		}
+	}
+
+	return &gen.PokemonResponse{
+		PokemonId:     int32(p.PokemonId),
+		Name:          p.Name,
+		Type1Id:       int32(p.Type1Id),
+		Type2Id:       int32(p.Type2Id),
+		BaseHp:        int32(p.BaseHp),
+		BaseAttack:    int32(p.BaseAttack),
+		BaseDefense:   int32(p.BaseDefense),
+		BaseSpAttack:  int32(p.BaseSpAttack),
+		BaseSpDefense: int32(p.BaseSpDefense),
+		BaseSpeed:     int32(p.BaseSpeed),
+		Abilities:     abilities,
+	}, nil
 }
 
 func (d *DexHandler) GetLearnableMoves(ctx context.Context, r *gen.GetLearnableMovesRequest) (*gen.LearnableMovesResponse, error) {
-	return nil, nil
+	moves, err := d.pokemon.GetLearnableMoves(ctx, int(r.PokemonId))
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]*gen.MoveResponse, len(moves))
+	for i, m := range moves {
+		res[i] = &gen.MoveResponse{
+			MoveId:      int32(m.MoveId),
+			Name:        m.Name,
+			TypeId:      int32(m.TypeId),
+			DamageClass: m.DamageClass,
+			Power:       int32(m.Power),
+			Accuracy:    int32(m.Accuracy),
+			Pp:          int32(m.Pp),
+		}
+	}
+
+	return &gen.LearnableMovesResponse{Moves: res}, nil
 }
 
 func (d *DexHandler) GetMove(ctx context.Context, r *gen.GetMoveRequest) (*gen.MoveResponse, error) {
-	return nil, nil
+	m, err := d.move.GetMove(ctx, int(r.MoveId))
+	if err != nil {
+		return nil, err
+	}
+
+	return &gen.MoveResponse{
+		MoveId:      int32(m.MoveId),
+		Name:        m.Name,
+		TypeId:      int32(m.TypeId),
+		DamageClass: m.DamageClass,
+		Power:       int32(m.Power),
+		Accuracy:    int32(m.Accuracy),
+		Pp:          int32(m.Pp),
+	}, nil
 }
 
 func (d *DexHandler) GetAbility(ctx context.Context, r *gen.GetAbilityRequest) (*gen.AbilityResponse, error) {
-	return nil, nil
+	a, err := d.ability.GetAbility(ctx, int(r.AbilityId))
+	if err != nil {
+		return nil, err
+	}
+
+	return &gen.AbilityResponse{
+		AbilityId:   int32(a.AbilityId),
+		AbilityName: a.Name,
+	}, nil
 }
