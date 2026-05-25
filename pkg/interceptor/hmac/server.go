@@ -1,4 +1,4 @@
-package interceptor
+package hmac
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func ServerInterceptor(secret string) grpc.UnaryServerInterceptor {
+func HmacServerInterceptor(secret string) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
 		// リクエスト内容からMAC計算
 		message, err := proto.Marshal(req.(proto.Message))

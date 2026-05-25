@@ -1,4 +1,4 @@
-package interceptor
+package hmac
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func ClientInterceptor(secret string) grpc.UnaryClientInterceptor {
+func HmacClientInterceptor(secret string) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		message, err := proto.Marshal(req.(proto.Message))
 		if err != nil {

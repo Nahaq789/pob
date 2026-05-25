@@ -11,7 +11,7 @@ import (
 	"pob/dex/internal/repository"
 	"pob/dex/internal/service"
 	"pob/dex/internal/shared"
-	"pob/pkg/interceptor"
+	"pob/pkg/interceptor/hmac"
 	"pob/pkg/logger"
 	pkgredis "pob/pkg/redis"
 
@@ -56,7 +56,7 @@ func main() {
 	}
 
 	secret := os.Getenv("HMAC_SECRET")
-	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(interceptor.ServerInterceptor(secret)))
+	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(hmac.HmacServerInterceptor(secret)))
 	gen.RegisterDexServiceServer(grpcServer, dexHandler)
 
 	slog.InfoContext(ctx, "dex gRPC server listening on :9091")
