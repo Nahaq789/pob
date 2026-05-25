@@ -22,3 +22,17 @@ func WriteCsv(path string, records [][]string) error {
 	w.WriteAll(records)
 	return w.Error()
 }
+
+func ReadCsv[T any](path string, fn func([][]string) ([]T, error)) ([]T, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	records, err := csv.NewReader(f).ReadAll()
+	if err != nil {
+		return nil, err
+	}
+	return fn(records)
+}

@@ -80,7 +80,42 @@ func (t *TypeRepository) toTypes(responses []*typeListResponse) []Type {
 	return types
 }
 
-func (t *TypeRepository) Write(ctx context.Context) error {
+func (t *TypeRepository) read() ([]Type, error) {
+	return ReadCsv(string(typeCsvPath), func(s [][]string) ([]Type, error) {
+		var types []Type
+		for _, r := range s[1:] { // skip header
+			id, err := strconv.Atoi(r[0])
+			if err != nil {
+				return nil, err
+			}
+			types = append(types, Type{Id: id, Name: r[1]})
+		}
+		return types, nil
+	})
+}
+
+func (t *TypeRepository) insert(ctx context.Context) error {
+	types, err := t.read()
+	if err != nil {
+		return err
+	}
+	slog.InfoContext(ctx, "read csv", slog.String("path", typeCsvPath), slog.Int("count", len(types)))
+
+	db := t.db.GetClient()
+	for _, ty := range types {
+		_, err := db.Exec(ctx,
+			`INSERT INTO types (id, name) VALUES ($1, $2)`,
+			ty.Id, ty.Name,
+		)
+		if err != nil {
+			return err
+		}
+	}
+	slog.InfoContext(ctx, "inserted types", slog.Int("count", len(types)))
+	return nil
+}
+
+func (t *TypeRepository) write(ctx context.Context) error {
 	responses, err := t.fetchAll(ctx)
 	if err != nil {
 		return err
@@ -104,5 +139,19 @@ func (t *TypeRepository) Write(ctx context.Context) error {
 	}
 
 	slog.InfoContext(ctx, "wrote csv", slog.String("path", typeCsvPath))
+	return nil
+}
+
+func (t *TypeRepository) ExecuteSync(ctx context.Context) error {
+	if err := t.insert(ctx); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t *TypeRepository) ExecuteCsv(ctx context.Context) error {
+	if err := t.write(ctx); err != nil {
+		return err
+	}
 	return nil
 }

@@ -27,7 +27,10 @@ func main() {
 	defer db.Close()
 
 	typeRepo := pobsync.NewTypeRepository(client, db)
-	if err := typeRepo.Write(ctx); err != nil {
+	if err := typeRepo.ExecuteCsv(ctx); err != nil {
+		log.Fatal(err)
+	}
+	if err := typeRepo.ExecuteSync(ctx); err != nil {
 		log.Fatal(err)
 	}
 }
