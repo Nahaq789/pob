@@ -28,11 +28,12 @@ type typeListResponse struct {
 }
 
 type TypeRepository struct {
-	c *ApiClient
+	c  *ApiClient
+	db *DbClient
 }
 
-func NewTypeRepository(client *ApiClient) *TypeRepository {
-	return &TypeRepository{c: client}
+func NewTypeRepository(client *ApiClient, db *DbClient) *TypeRepository {
+	return &TypeRepository{c: client, db: db}
 }
 
 func (t *TypeRepository) fetch(ctx context.Context, id int) (*typeListResponse, error) {

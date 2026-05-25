@@ -72,6 +72,7 @@ services:
       dockerfile: sync/Dockerfile
     environment:
       - DB_DSN=postgres://pob:pob@dex-postgres:5432/dex_db?sslmode=disable
+      - POKEAPI_BASE_URL=https://pokeapi.co/api/v2
     depends_on:
       dex-postgres:
         condition: service_healthy
