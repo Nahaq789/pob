@@ -1,3 +1,4 @@
+```mermaid
 erDiagram
     boxes {
         UUID id PK "ボックスID"
@@ -52,3 +53,4 @@ erDiagram
     boxes ||--o{ box_pokemon : "has"
     parties ||--o{ party_pokemon : "has"
     box_pokemon ||--o{ party_pokemon : "has"
+```
