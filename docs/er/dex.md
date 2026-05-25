@@ -40,13 +40,6 @@ erDiagram
         VARCHAR_10 damage_class "分類"
     }
 
-    natures {
-        INT id PK "性格ID"
-        VARCHAR_20 name "性格名"
-        SMALLINT increased_stat_id "上昇ステータスID"
-        SMALLINT decreased_stat_id "下降ステータスID"
-    }
-
     pokemon_moves {
         INT pokemon_id FK "ポケモンID"
         INT move_id FK "技ID"
