@@ -86,12 +86,9 @@ func (t *TypeRepository) WriteCsv(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	slog.InfoContext(ctx, "fetched types", slog.Int("count", len(responses)))
 
 	types := t.toTypes(responses)
-	// CSV書き込み
-	slog.InfoContext(ctx, "fetched types", slog.Any("response", types))
-	_ = types
-
 	records := [][]string{
 		{"id", "name"},
 	}
@@ -115,5 +112,6 @@ func (t *TypeRepository) WriteCsv(ctx context.Context) error {
 	if err := w.Error(); err != nil {
 		return err
 	}
+	slog.InfoContext(ctx, "wrote csv", slog.String("path", typeCsvPath))
 	return nil
 }
