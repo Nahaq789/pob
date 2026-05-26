@@ -34,7 +34,10 @@ func newCsvCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
 
-			if target != "types" && gen == 0 {
+			if target == "" && gen == 0 {
+				return fmt.Errorf("--gen は必須です")
+			}
+			if target != "types" && target != "" && gen == 0 {
 				return fmt.Errorf("--target %s には --gen の指定が必要です", target)
 			}
 
