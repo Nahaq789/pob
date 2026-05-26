@@ -49,6 +49,8 @@ func newCsvCmd() *cobra.Command {
 			switch target {
 			case "types", "":
 				return pobsync.NewTypeRepository(client, nil).ExecuteCsv(ctx)
+			case "moves":
+				return pobsync.NewMoveRepository(client, nil).ExecuteCsv(ctx, gen)
 			default:
 				return fmt.Errorf("未実装のターゲット: %s", target)
 			}
@@ -86,6 +88,8 @@ func newSyncCmd() *cobra.Command {
 			switch target {
 			case "types":
 				return pobsync.NewTypeRepository(nil, db).ExecuteSync(ctx)
+			case "moves":
+				return pobsync.NewMoveRepository(nil, db).ExecuteSync(ctx, gen)
 			default:
 				return fmt.Errorf("未実装のターゲット: %s", target)
 			}
