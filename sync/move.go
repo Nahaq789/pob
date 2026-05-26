@@ -23,6 +23,10 @@ type Move struct {
 	DamageClass string
 }
 
+func (m Move) GetId() int {
+	return m.Id
+}
+
 type moveResponse struct {
 	Id    int `json:"id"`
 	Names []struct {
@@ -170,15 +174,33 @@ func (m *MoveRepository) insert(ctx context.Context, gen int) error {
 	slog.InfoContext(ctx, "read csv", slog.String("path", m.buildSavePath(gen)), slog.Int("count", len(moves)))
 
 	db := m.db.GetClient()
-	for _, mv := range moves {
-		_, err := db.Exec(ctx,
-			`INSERT INTO moves (id, name, type_id, damage_class, power, accuracy, pp) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-			mv.Id, mv.Name, mv.TypeId, mv.DamageClass, mv.Power, mv.Accuracy, mv.Pp,
-		)
-		if err != nil {
-			return err
-		}
+
+	ids := make([]int, len(moves))
+	names := make([]string, len(moves))
+	typeIds := make([]int, len(moves))
+	damageClasses := make([]string, len(moves))
+	powers := make([]*int, len(moves))
+	accuracies := make([]*int, len(moves))
+	pps := make([]int, len(moves))
+
+	for i, mv := range moves {
+		ids[i] = mv.Id
+		names[i] = mv.Name
+		typeIds[i] = mv.TypeId
+		damageClasses[i] = mv.DamageClass
+		powers[i] = mv.Power
+		accuracies[i] = mv.Accuracy
+		pps[i] = mv.Pp
 	}
+
+	_, err = db.Exec(ctx, `
+		INSERT INTO moves (id, name, type_id, damage_class, power, accuracy, pp)
+		SELECT * FROM UNNEST($1::int[], $2::text[], $3::int[], $4::text[], $5::int[], $6::int[], $7::int[])
+	`, ids, names, typeIds, damageClasses, powers, accuracies, pps)
+	if err != nil {
+		return err
+	}
+
 	slog.InfoContext(ctx, "inserted moves", slog.Int("count", len(moves)))
 	return nil
 }
@@ -192,6 +214,7 @@ func (m *MoveRepository) write(ctx context.Context, gen int) error {
 	slog.InfoContext(ctx, "fetched moves", slog.Int("count", len(responses)))
 
 	moves := m.toMoves(responses)
+	moves = SortById(moves)
 	records := [][]string{
 		{"id", "name", "type_id", "damage_class", "power", "accuracy", "pp"},
 	}

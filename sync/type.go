@@ -16,6 +16,10 @@ type Type struct {
 	Name string `json:"name"`
 }
 
+func (t Type) GetId() int {
+	return t.Id
+}
+
 type typeListResponse struct {
 	Id    int `json:"id"`
 	Names []struct {
@@ -123,6 +127,7 @@ func (t *TypeRepository) write(ctx context.Context) error {
 	slog.InfoContext(ctx, "fetched types", slog.Int("count", len(responses)))
 
 	types := t.toTypes(responses)
+	types = SortById(types)
 	records := [][]string{
 		{"id", "name"},
 	}
