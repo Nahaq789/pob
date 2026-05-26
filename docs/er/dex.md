@@ -34,10 +34,10 @@ erDiagram
         INT id PK "技ID"
         VARCHAR_50 name "技名"
         INT type_id FK "タイプID"
+        VARCHAR_10 damage_class "分類"
         INT power "威力"
         INT accuracy "命中率"
         INT pp "PP"
-        VARCHAR_10 damage_class "分類"
     }
 
     pokemon_moves {
