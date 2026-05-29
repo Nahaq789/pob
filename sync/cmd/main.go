@@ -51,6 +51,8 @@ func newCsvCmd() *cobra.Command {
 				return pobsync.NewTypeRepository(client, nil).ExecuteCsv(ctx)
 			case "moves":
 				return pobsync.NewMoveRepository(client, nil).ExecuteCsv(ctx, gen)
+			case "abilities":
+				return pobsync.NewAbilityRepository(client, nil).ExecuteCsv(ctx, gen)
 			case "pokemon":
 				return pobsync.NewPokemonRepository(client, nil).ExecuteCsv(ctx, gen)
 			case "pokemon_abilities":
@@ -96,6 +98,8 @@ func newSyncCmd() *cobra.Command {
 				return pobsync.NewTypeRepository(nil, db).ExecuteSync(ctx)
 			case "moves":
 				return pobsync.NewMoveRepository(nil, db).ExecuteSync(ctx, gen)
+			case "abilities":
+				return pobsync.NewAbilityRepository(nil, db).ExecuteSync(ctx, gen)
 			case "pokemon":
 				return pobsync.NewPokemonRepository(nil, db).ExecuteSync(ctx, gen)
 			case "pokemon_abilities":

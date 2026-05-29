@@ -6,8 +6,9 @@ CREATE TABLE types (
 );
 
 CREATE TABLE abilities (
-    id   INT          PRIMARY KEY,  -- PokeAPI ID
-    name VARCHAR(100) NOT NULL
+    id          INT          PRIMARY KEY,  -- PokeAPI ID
+    name        VARCHAR(100) NOT NULL,
+    description TEXT
 );
 
 CREATE TABLE pokemon (
