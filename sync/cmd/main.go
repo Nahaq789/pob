@@ -51,6 +51,12 @@ func newCsvCmd() *cobra.Command {
 				return pobsync.NewTypeRepository(client, nil).ExecuteCsv(ctx)
 			case "moves":
 				return pobsync.NewMoveRepository(client, nil).ExecuteCsv(ctx, gen)
+			case "pokemon":
+				return pobsync.NewPokemonRepository(client, nil).ExecuteCsv(ctx, gen)
+			case "pokemon_abilities":
+				return pobsync.NewPokemonAbilityRepository(client, nil).ExecuteCsv(ctx, gen)
+			case "pokemon_moves":
+				return pobsync.NewPokemonMoveRepository(client, nil).ExecuteCsv(ctx, gen)
 			default:
 				return fmt.Errorf("未実装のターゲット: %s", target)
 			}
@@ -90,6 +96,12 @@ func newSyncCmd() *cobra.Command {
 				return pobsync.NewTypeRepository(nil, db).ExecuteSync(ctx)
 			case "moves":
 				return pobsync.NewMoveRepository(nil, db).ExecuteSync(ctx, gen)
+			case "pokemon":
+				return pobsync.NewPokemonRepository(nil, db).ExecuteSync(ctx, gen)
+			case "pokemon_abilities":
+				return pobsync.NewPokemonAbilityRepository(nil, db).ExecuteSync(ctx, gen)
+			case "pokemon_moves":
+				return pobsync.NewPokemonMoveRepository(nil, db).ExecuteSync(ctx, gen)
 			default:
 				return fmt.Errorf("未実装のターゲット: %s", target)
 			}
