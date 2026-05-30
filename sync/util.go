@@ -23,3 +23,14 @@ func SortById[T HasId](items []T) []T {
 	})
 	return items
 }
+
+func Replacer(s string) string {
+	replacer := strings.NewReplacer(
+		"\n", "",
+		"\r", "",
+		"\t", "",
+		"　", "",
+		" ", "",
+	)
+	return replacer.Replace(s)
+}

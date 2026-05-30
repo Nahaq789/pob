@@ -161,7 +161,7 @@ func (a *AbilityRepository) write(ctx context.Context, gen int) error {
 		records = append(records, []string{
 			strconv.Itoa(ab.Id),
 			ab.Name,
-			ab.Description,
+			Replacer(ab.Description),
 		})
 	}
 

@@ -6,10 +6,11 @@ import (
 	"log"
 	"os"
 
-	"github.com/joho/godotenv"
-	"github.com/spf13/cobra"
 	"pob/pkg/logger"
 	pobsync "pob/sync"
+
+	"github.com/joho/godotenv"
+	"github.com/spf13/cobra"
 )
 
 func main() {
@@ -65,7 +66,7 @@ func newCsvCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&target, "target", "", "対象テーブル (types/moves/pokemon/pokemon_abilities/pokemon_moves)")
+	cmd.Flags().StringVar(&target, "target", "", "対象テーブル (types/moves/abilities/pokemon/pokemon_abilities/pokemon_moves)")
 	cmd.Flags().IntVar(&gen, "gen", 0, "世代番号 (types以外は必須)")
 	return cmd
 }
@@ -81,7 +82,7 @@ func newSyncCmd() *cobra.Command {
 			ctx := context.Background()
 
 			if target == "" {
-				return fmt.Errorf("--target は必須です (types/moves/pokemon/pokemon_abilities/pokemon_moves)")
+				return fmt.Errorf("--target は必須です (types/moves/abilities/pokemon/pokemon_abilities/pokemon_moves)")
 			}
 			if target != "types" && gen == 0 {
 				return fmt.Errorf("--target %s には --gen の指定が必要です", target)
