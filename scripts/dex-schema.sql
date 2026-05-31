@@ -39,7 +39,7 @@ CREATE TABLE moves (
     damage_class VARCHAR(20)  NOT NULL,     -- physical / special / status
     power        INT,                       -- NULL: 変動・固定ダメージ技など
     accuracy     INT,                       -- NULL: 必中技
-    pp           INT          NOT NULL
+    pp           INT          NOT NULL,
     description  TEXT
 );
 
