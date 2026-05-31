@@ -48,3 +48,10 @@ CREATE TABLE pokemon_moves (
     move_id    INT NOT NULL REFERENCES moves(id),
     PRIMARY KEY (pokemon_id, move_id)
 );
+
+CREATE TABLE items (
+    id          INT          PRIMARY KEY,
+    name        VARCHAR(100) NOT NULL,
+    category    VARCHAR(50)  NOT NULL,
+    flavor_text TEXT
+);

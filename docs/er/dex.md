@@ -45,6 +45,13 @@ erDiagram
         INT move_id FK "技ID"
     }
 
+    items {
+        INT id PK "アイテムID"
+        VARCHAR_100 name "アイテム名"
+        VARCHAR_50 category "カテゴリ"
+        TEXT flavor_text "説明文"
+    }
+
     types ||--o{ pokemon : "type1"
     types ||--o{ pokemon : "type2"
     types ||--o{ moves : "has"
