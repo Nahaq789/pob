@@ -9,6 +9,7 @@ service DexService {
   rpc GetLearnableMoves(GetLearnableMovesRequest) returns (LearnableMovesResponse);
   rpc GetMove(GetMoveRequest) returns (MoveResponse);
   rpc GetAbility(GetAbilityRequest) returns (AbilityResponse);
+  rpc GetItem(GetItemRequest) returns (ItemResponse);
 }
 
 // ── GetPokemon ──────────────────────────────────────────────
@@ -68,4 +69,16 @@ message GetAbilityRequest {
 message AbilityResponse {
   int32  ability_id   = 1; // PokeAPI の特性ID
   string ability_name = 2; // 特性名
+}
+
+// ── GetItem ────────────────────────────────────────────────
+message GetItemRequest {
+  int32 item_id = 1;
+}
+
+message ItemResponse {
+  int32  item_id     = 1;
+  string name        = 2;
+  string category    = 3;
+  string flavor_text = 4;
 }

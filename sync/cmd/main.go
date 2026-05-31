@@ -35,10 +35,11 @@ func newCsvCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
 
+			noGenTargets := map[string]bool{"types": true, "items": true}
 			if target == "" && gen == 0 {
 				return fmt.Errorf("--gen は必須です")
 			}
-			if target != "types" && target != "" && gen == 0 {
+			if !noGenTargets[target] && target != "" && gen == 0 {
 				return fmt.Errorf("--target %s には --gen の指定が必要です", target)
 			}
 
@@ -50,6 +51,8 @@ func newCsvCmd() *cobra.Command {
 			switch target {
 			case "types", "":
 				return pobsync.NewTypeRepository(client, nil).ExecuteCsv(ctx)
+			case "items":
+				return pobsync.NewItemRepository(client, nil).ExecuteCsv(ctx)
 			case "moves":
 				return pobsync.NewMoveRepository(client, nil).ExecuteCsv(ctx, gen)
 			case "abilities":
@@ -66,8 +69,8 @@ func newCsvCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&target, "target", "", "対象テーブル (types/moves/abilities/pokemon/pokemon_abilities/pokemon_moves)")
-	cmd.Flags().IntVar(&gen, "gen", 0, "世代番号 (types以外は必須)")
+	cmd.Flags().StringVar(&target, "target", "", "対象テーブル (types/items/moves/abilities/pokemon/pokemon_abilities/pokemon_moves)")
+	cmd.Flags().IntVar(&gen, "gen", 0, "世代番号 (types/items以外は必須)")
 	return cmd
 }
 
@@ -82,9 +85,10 @@ func newSyncCmd() *cobra.Command {
 			ctx := context.Background()
 
 			if target == "" {
-				return fmt.Errorf("--target は必須です (types/moves/abilities/pokemon/pokemon_abilities/pokemon_moves)")
+				return fmt.Errorf("--target は必須です (types/items/moves/abilities/pokemon/pokemon_abilities/pokemon_moves)")
 			}
-			if target != "types" && gen == 0 {
+			noGenTargets := map[string]bool{"types": true, "items": true}
+			if !noGenTargets[target] && gen == 0 {
 				return fmt.Errorf("--target %s には --gen の指定が必要です", target)
 			}
 
@@ -97,6 +101,8 @@ func newSyncCmd() *cobra.Command {
 			switch target {
 			case "types":
 				return pobsync.NewTypeRepository(nil, db).ExecuteSync(ctx)
+			case "items":
+				return pobsync.NewItemRepository(nil, db).ExecuteSync(ctx)
 			case "moves":
 				return pobsync.NewMoveRepository(nil, db).ExecuteSync(ctx, gen)
 			case "abilities":
@@ -113,7 +119,7 @@ func newSyncCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&target, "target", "", "対象テーブル (types/moves/pokemon/pokemon_abilities/pokemon_moves)")
-	cmd.Flags().IntVar(&gen, "gen", 0, "世代番号 (types以外は必須)")
+	cmd.Flags().StringVar(&target, "target", "", "対象テーブル (types/items/moves/abilities/pokemon/pokemon_abilities/pokemon_moves)")
+	cmd.Flags().IntVar(&gen, "gen", 0, "世代番号 (types/items以外は必須)")
 	return cmd
 }
