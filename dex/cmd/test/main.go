@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	gen "pob/dex/gen/proto"
+	gen "pob/dex/gen"
 	"pob/pkg/interceptor/hmac"
 
 	"google.golang.org/grpc"

@@ -6,7 +6,7 @@ import (
 	"net"
 	"os"
 
-	gen "pob/dex/gen/proto"
+	gen "pob/dex/gen"
 	"pob/dex/internal/handler"
 	"pob/dex/internal/repository"
 	"pob/dex/internal/service"
