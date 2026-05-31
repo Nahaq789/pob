@@ -11,10 +11,11 @@ type DexHandler struct {
 	pokemon *service.PokemonService
 	move    *service.MoveService
 	ability *service.AbilityService
+	item    *service.ItemService
 }
 
-func NewDexHandler(pokemon *service.PokemonService, move *service.MoveService, ability *service.AbilityService) *DexHandler {
-	return &DexHandler{pokemon: pokemon, move: move, ability: ability}
+func NewDexHandler(pokemon *service.PokemonService, move *service.MoveService, ability *service.AbilityService, item *service.ItemService) *DexHandler {
+	return &DexHandler{pokemon: pokemon, move: move, ability: ability, item: item}
 }
 
 func (d *DexHandler) GetPokemon(ctx context.Context, r *gen.GetPokemonRequest) (*gen.PokemonResponse, error) {
@@ -95,5 +96,19 @@ func (d *DexHandler) GetAbility(ctx context.Context, r *gen.GetAbilityRequest) (
 	return &gen.AbilityResponse{
 		AbilityId:   int32(a.AbilityId),
 		AbilityName: a.Name,
+	}, nil
+}
+
+func (d *DexHandler) GetItem(ctx context.Context, r *gen.GetItemRequest) (*gen.ItemResponse, error) {
+	item, err := d.item.GetItem(ctx, int(r.ItemId))
+	if err != nil {
+		return nil, err
+	}
+
+	return &gen.ItemResponse{
+		ItemId:     int32(item.Id),
+		Name:       item.Name,
+		Category:   item.Category,
+		FlavorText: item.FlavorText,
 	}, nil
 }

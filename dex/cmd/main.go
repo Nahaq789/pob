@@ -42,12 +42,14 @@ func main() {
 	pokemonRepo := repository.NewPokemonRepository(dbClient, redisClient)
 	moveRepo := repository.NewMoveRepository(dbClient)
 	abilityRepo := repository.NewAbilityRepository(dbClient)
+	itemRepo := repository.NewItemRepository(dbClient, redisClient)
 
 	pokemonSvc := service.NewPokemonService(pokemonRepo)
 	moveSvc := service.NewMoveService(moveRepo)
 	abilitySvc := service.NewAbilityService(abilityRepo)
+	itemSvc := service.NewItemService(itemRepo)
 
-	dexHandler := handler.NewDexHandler(pokemonSvc, moveSvc, abilitySvc)
+	dexHandler := handler.NewDexHandler(pokemonSvc, moveSvc, abilitySvc, itemSvc)
 
 	lis, err := net.Listen("tcp", ":9091")
 	if err != nil {
