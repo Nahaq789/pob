@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package box;
+
+option go_package = "pob/box/gen";
+
+service BoxService {
+  rpc GetParty(GetPartyRequest) returns (PartyResponse);
+}
+
+message GetPartyRequest {
+  string party_id = 1;
+  string user_id  = 2;
+}
+
+message PartyResponse {
+  repeated PartyPokemon pokemon = 1;
+}
+
+message PartyPokemon {
+  string box_pokemon_id = 1;
+  int32  slot           = 2;
+  int32  pokemon_id     = 3;
+  string nickname       = 4;
+  string nature         = 5;
+  int32  ability_id     = 6;
+  int32  move1_id       = 7;  // 0: なし
+  int32  move2_id       = 8;
+  int32  move3_id       = 9;
+  int32  move4_id       = 10;
+  int32  iv_hp          = 11;
+  int32  iv_attack      = 12;
+  int32  iv_defense     = 13;
+  int32  iv_sp_attack   = 14;
+  int32  iv_sp_defense  = 15;
+  int32  iv_speed       = 16;
+  int32  ev_hp          = 17;
+  int32  ev_attack      = 18;
+  int32  ev_defense     = 19;
+  int32  ev_sp_attack   = 20;
+  int32  ev_sp_defense  = 21;
+  int32  ev_speed       = 22;
+}
