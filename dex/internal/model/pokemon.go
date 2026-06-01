@@ -1,5 +1,10 @@
 package model
 
+type PokemonList struct {
+	PokemonId int
+	Name      string
+}
+
 type Pokemon struct {
 	PokemonId     int
 	Name          string

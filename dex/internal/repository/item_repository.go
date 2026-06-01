@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"pob/dex/internal/model"
@@ -30,9 +31,14 @@ func (r *ItemRepository) cacheKey(id int) string {
 func (r *ItemRepository) FindById(ctx context.Context, id int) (*model.Item, error) {
 	key := r.cacheKey(id)
 
-	if cached, err := r.redis.GetClient().Get(ctx, key).Bytes(); err == nil {
+	cached, err := r.redis.GetClient().Get(ctx, key).Bytes()
+	if err != nil {
+		slog.WarnContext(ctx, "cache miss", slog.String("key", key), slog.Any("error", err))
+	} else {
 		var item model.Item
-		if err := json.Unmarshal(cached, &item); err == nil {
+		if err := json.Unmarshal(cached, &item); err != nil {
+			slog.WarnContext(ctx, "cache unmarshal error", slog.String("key", key), slog.Any("error", err))
+		} else {
 			return &item, nil
 		}
 	}
@@ -50,7 +56,9 @@ func (r *ItemRepository) FindById(ctx context.Context, id int) (*model.Item, err
 	}
 
 	if b, err := json.Marshal(item); err == nil {
-		r.redis.GetClient().Set(ctx, key, b, itemCacheTTL)
+		if err := r.redis.GetClient().Set(ctx, key, b, itemCacheTTL).Err(); err != nil {
+			slog.WarnContext(ctx, "cache set error", slog.String("key", key), slog.Any("error", err))
+		}
 	}
 
 	return item, nil

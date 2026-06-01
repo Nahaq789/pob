@@ -10,6 +10,7 @@ service DexService {
   rpc GetMove(GetMoveRequest) returns (MoveResponse);
   rpc GetAbility(GetAbilityRequest) returns (AbilityResponse);
   rpc GetItem(GetItemRequest) returns (ItemResponse);
+  rpc GetPokemonList(GetPokemonListRequest) returns (PokemonListResponse);
 }
 
 // ── GetPokemon ──────────────────────────────────────────────
@@ -81,4 +82,16 @@ message ItemResponse {
   string name        = 2;
   string category    = 3;
   string flavor_text = 4;
+}
+
+// ── GetPokemonList ─────────────────────────────────────────
+message GetPokemonListRequest {}
+
+message PokemonListItem {
+  int32  pokemon_id = 1;
+  string name       = 2;
+}
+
+message PokemonListResponse {
+  repeated PokemonListItem pokemon = 1;
 }

@@ -10,7 +10,7 @@ bin/
 # ===========================
 # Secret / Keys
 # ===========================
-private.pem
+*.pem
 *.key
 .env
 .env.local

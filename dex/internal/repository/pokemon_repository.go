@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"pob/dex/internal/model"
@@ -34,9 +35,14 @@ func (p *PokemonRepository) movesCacheKey(pokemonId int) string {
 func (p *PokemonRepository) FindById(ctx context.Context, id int) (*model.Pokemon, error) {
 	key := p.cacheKey(id)
 
-	if cached, err := p.redis.GetClient().Get(ctx, key).Bytes(); err == nil {
+	cached, err := p.redis.GetClient().Get(ctx, key).Bytes()
+	if err != nil {
+		slog.WarnContext(ctx, "cache miss", slog.String("key", key), slog.Any("error", err))
+	} else {
 		var pokemon model.Pokemon
-		if err := json.Unmarshal(cached, &pokemon); err == nil {
+		if err := json.Unmarshal(cached, &pokemon); err != nil {
+			slog.WarnContext(ctx, "cache unmarshal error", slog.String("key", key), slog.Any("error", err))
+		} else {
 			return &pokemon, nil
 		}
 	}
@@ -54,7 +60,9 @@ func (p *PokemonRepository) FindById(ctx context.Context, id int) (*model.Pokemo
 	pokemon := toModel(pokemonEntity, abilities)
 
 	if b, err := json.Marshal(pokemon); err == nil {
-		p.redis.GetClient().Set(ctx, key, b, pokemonCacheTTL)
+		if err := p.redis.GetClient().Set(ctx, key, b, pokemonCacheTTL).Err(); err != nil {
+			slog.WarnContext(ctx, "cache set error", slog.String("key", key), slog.Any("error", err))
+		}
 	}
 
 	return pokemon, nil
@@ -105,9 +113,14 @@ func (p *PokemonRepository) FindAbilitiesByPokemonId(ctx context.Context, pokemo
 func (p *PokemonRepository) FindMovesByPokemonId(ctx context.Context, pokemonId int) ([]model.Move, error) {
 	key := p.movesCacheKey(pokemonId)
 
-	if cached, err := p.redis.GetClient().Get(ctx, key).Bytes(); err == nil {
+	cached, err := p.redis.GetClient().Get(ctx, key).Bytes()
+	if err != nil {
+		slog.WarnContext(ctx, "cache miss", slog.String("key", key), slog.Any("error", err))
+	} else {
 		var moves []model.Move
-		if err := json.Unmarshal(cached, &moves); err == nil {
+		if err := json.Unmarshal(cached, &moves); err != nil {
+			slog.WarnContext(ctx, "cache unmarshal error", slog.String("key", key), slog.Any("error", err))
+		} else {
 			return moves, nil
 		}
 	}
@@ -141,8 +154,47 @@ func (p *PokemonRepository) FindMovesByPokemonId(ctx context.Context, pokemonId 
 	}
 
 	if b, err := json.Marshal(moves); err == nil {
-		p.redis.GetClient().Set(ctx, key, b, pokemonCacheTTL)
+		if err := p.redis.GetClient().Set(ctx, key, b, pokemonCacheTTL).Err(); err != nil {
+			slog.WarnContext(ctx, "cache set error", slog.String("key", key), slog.Any("error", err))
+		}
 	}
 
 	return moves, nil
+}
+
+func (p *PokemonRepository) FindAll(ctx context.Context) ([]model.PokemonList, error) {
+	const key = "pokemon_list"
+
+	cached, err := p.redis.GetClient().Get(ctx, key).Bytes()
+	if err != nil {
+		slog.WarnContext(ctx, "cache miss", slog.String("key", key), slog.Any("error", err))
+	} else {
+		var list []model.PokemonList
+		if err := json.Unmarshal(cached, &list); err != nil {
+			slog.WarnContext(ctx, "cache unmarshal error", slog.String("key", key), slog.Any("error", err))
+		} else {
+			return list, nil
+		}
+	}
+
+	var entities []entity.Pokemon
+	if err := p.db.GetClient().WithContext(ctx).Select("id", "name").Find(&entities).Error; err != nil {
+		return nil, err
+	}
+
+	list := make([]model.PokemonList, len(entities))
+	for i, e := range entities {
+		list[i] = model.PokemonList{
+			PokemonId: e.Id,
+			Name:      e.Name,
+		}
+	}
+
+	if b, err := json.Marshal(list); err == nil {
+		if err := p.redis.GetClient().Set(ctx, key, b, pokemonCacheTTL).Err(); err != nil {
+			slog.WarnContext(ctx, "cache set error", slog.String("key", key), slog.Any("error", err))
+		}
+	}
+
+	return list, nil
 }
