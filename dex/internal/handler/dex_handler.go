@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+
 	gen "pob/dex/gen"
 	"pob/dex/internal/service"
 )
@@ -97,6 +98,23 @@ func (d *DexHandler) GetAbility(ctx context.Context, r *gen.GetAbilityRequest) (
 		AbilityId:   int32(a.AbilityId),
 		AbilityName: a.Name,
 	}, nil
+}
+
+func (d *DexHandler) GetPokemonList(ctx context.Context, r *gen.GetPokemonListRequest) (*gen.PokemonListResponse, error) {
+	list, err := d.pokemon.GetPokemonList(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	items := make([]*gen.PokemonList, len(list))
+	for i, p := range list {
+		items[i] = &gen.PokemonList{
+			PokemonId: int32(p.PokemonId),
+			Name:      p.Name,
+		}
+	}
+
+	return &gen.PokemonListResponse{Pokemon: items}, nil
 }
 
 func (d *DexHandler) GetItem(ctx context.Context, r *gen.GetItemRequest) (*gen.ItemResponse, error) {

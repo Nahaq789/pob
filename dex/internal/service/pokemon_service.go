@@ -22,3 +22,7 @@ func (p *PokemonService) GetPokemon(ctx context.Context, id int) (*model.Pokemon
 func (p *PokemonService) GetLearnableMoves(ctx context.Context, pokemonId int) ([]model.Move, error) {
 	return p.pokemonRepo.FindMovesByPokemonId(ctx, pokemonId)
 }
+
+func (p *PokemonService) GetPokemonList(ctx context.Context) ([]model.PokemonList, error) {
+	return p.pokemonRepo.FindAll(ctx)
+}

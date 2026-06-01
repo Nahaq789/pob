@@ -723,68 +723,16 @@ func (*GetPokemonListRequest) Descriptor() ([]byte, []int) {
 	return file_proto_dex_proto_rawDescGZIP(), []int{11}
 }
 
-type PokemonListItem struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	PokemonId     int32                  `protobuf:"varint,1,opt,name=pokemon_id,json=pokemonId,proto3" json:"pokemon_id,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *PokemonListItem) Reset() {
-	*x = PokemonListItem{}
-	mi := &file_proto_dex_proto_msgTypes[12]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *PokemonListItem) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PokemonListItem) ProtoMessage() {}
-
-func (x *PokemonListItem) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_dex_proto_msgTypes[12]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use PokemonListItem.ProtoReflect.Descriptor instead.
-func (*PokemonListItem) Descriptor() ([]byte, []int) {
-	return file_proto_dex_proto_rawDescGZIP(), []int{12}
-}
-
-func (x *PokemonListItem) GetPokemonId() int32 {
-	if x != nil {
-		return x.PokemonId
-	}
-	return 0
-}
-
-func (x *PokemonListItem) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
 type PokemonListResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Pokemon       []*PokemonListItem     `protobuf:"bytes,1,rep,name=pokemon,proto3" json:"pokemon,omitempty"`
+	Pokemon       []*PokemonList         `protobuf:"bytes,1,rep,name=pokemon,proto3" json:"pokemon,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PokemonListResponse) Reset() {
 	*x = PokemonListResponse{}
-	mi := &file_proto_dex_proto_msgTypes[13]
+	mi := &file_proto_dex_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -796,7 +744,7 @@ func (x *PokemonListResponse) String() string {
 func (*PokemonListResponse) ProtoMessage() {}
 
 func (x *PokemonListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_dex_proto_msgTypes[13]
+	mi := &file_proto_dex_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -809,14 +757,66 @@ func (x *PokemonListResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PokemonListResponse.ProtoReflect.Descriptor instead.
 func (*PokemonListResponse) Descriptor() ([]byte, []int) {
-	return file_proto_dex_proto_rawDescGZIP(), []int{13}
+	return file_proto_dex_proto_rawDescGZIP(), []int{12}
 }
 
-func (x *PokemonListResponse) GetPokemon() []*PokemonListItem {
+func (x *PokemonListResponse) GetPokemon() []*PokemonList {
 	if x != nil {
 		return x.Pokemon
 	}
 	return nil
+}
+
+type PokemonList struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PokemonId     int32                  `protobuf:"varint,1,opt,name=pokemon_id,json=pokemonId,proto3" json:"pokemon_id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PokemonList) Reset() {
+	*x = PokemonList{}
+	mi := &file_proto_dex_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PokemonList) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PokemonList) ProtoMessage() {}
+
+func (x *PokemonList) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_dex_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PokemonList.ProtoReflect.Descriptor instead.
+func (*PokemonList) Descriptor() ([]byte, []int) {
+	return file_proto_dex_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *PokemonList) GetPokemonId() int32 {
+	if x != nil {
+		return x.PokemonId
+	}
+	return 0
+}
+
+func (x *PokemonList) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
 }
 
 var File_proto_dex_proto protoreflect.FileDescriptor
@@ -878,13 +878,13 @@ const file_proto_dex_proto_rawDesc = "" +
 	"\bcategory\x18\x03 \x01(\tR\bcategory\x12\x1f\n" +
 	"\vflavor_text\x18\x04 \x01(\tR\n" +
 	"flavorText\"\x17\n" +
-	"\x15GetPokemonListRequest\"D\n" +
-	"\x0fPokemonListItem\x12\x1d\n" +
+	"\x15GetPokemonListRequest\"A\n" +
+	"\x13PokemonListResponse\x12*\n" +
+	"\apokemon\x18\x01 \x03(\v2\x10.dex.PokemonListR\apokemon\"@\n" +
+	"\vPokemonList\x12\x1d\n" +
 	"\n" +
 	"pokemon_id\x18\x01 \x01(\x05R\tpokemonId\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\"E\n" +
-	"\x13PokemonListResponse\x12.\n" +
-	"\apokemon\x18\x01 \x03(\v2\x14.dex.PokemonListItemR\apokemon2\x83\x03\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name2\x83\x03\n" +
 	"\n" +
 	"DexService\x12:\n" +
 	"\n" +
@@ -922,13 +922,13 @@ var file_proto_dex_proto_goTypes = []any{
 	(*GetItemRequest)(nil),           // 9: dex.GetItemRequest
 	(*ItemResponse)(nil),             // 10: dex.ItemResponse
 	(*GetPokemonListRequest)(nil),    // 11: dex.GetPokemonListRequest
-	(*PokemonListItem)(nil),          // 12: dex.PokemonListItem
-	(*PokemonListResponse)(nil),      // 13: dex.PokemonListResponse
+	(*PokemonListResponse)(nil),      // 12: dex.PokemonListResponse
+	(*PokemonList)(nil),              // 13: dex.PokemonList
 }
 var file_proto_dex_proto_depIdxs = []int32{
 	2,  // 0: dex.PokemonResponse.abilities:type_name -> dex.AbilityInfo
 	6,  // 1: dex.LearnableMovesResponse.moves:type_name -> dex.MoveResponse
-	12, // 2: dex.PokemonListResponse.pokemon:type_name -> dex.PokemonListItem
+	13, // 2: dex.PokemonListResponse.pokemon:type_name -> dex.PokemonList
 	0,  // 3: dex.DexService.GetPokemon:input_type -> dex.GetPokemonRequest
 	3,  // 4: dex.DexService.GetLearnableMoves:input_type -> dex.GetLearnableMovesRequest
 	5,  // 5: dex.DexService.GetMove:input_type -> dex.GetMoveRequest
@@ -940,7 +940,7 @@ var file_proto_dex_proto_depIdxs = []int32{
 	6,  // 11: dex.DexService.GetMove:output_type -> dex.MoveResponse
 	8,  // 12: dex.DexService.GetAbility:output_type -> dex.AbilityResponse
 	10, // 13: dex.DexService.GetItem:output_type -> dex.ItemResponse
-	13, // 14: dex.DexService.GetPokemonList:output_type -> dex.PokemonListResponse
+	12, // 14: dex.DexService.GetPokemonList:output_type -> dex.PokemonListResponse
 	9,  // [9:15] is the sub-list for method output_type
 	3,  // [3:9] is the sub-list for method input_type
 	3,  // [3:3] is the sub-list for extension type_name
