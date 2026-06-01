@@ -6,10 +6,10 @@ import (
 	"log/slog"
 	"time"
 
-	gen "pob/box/gen"
 	"pob/box/internal/model"
 	"pob/box/internal/repository"
 	"pob/box/internal/service/dto"
+	gen "pob/box/proto"
 
 	"github.com/google/uuid"
 )

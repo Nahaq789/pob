@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package dex;
 
-option go_package = "pob/dex/gen";
+option go_package = "pob/dex/proto";
 
 service DexService {
   rpc GetPokemon(GetPokemonRequest) returns (PokemonResponse);

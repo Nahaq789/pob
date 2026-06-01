@@ -4,7 +4,7 @@
 // 	protoc        v3.21.12
 // source: proto/dex.proto
 
-package gen
+package proto
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -894,7 +894,7 @@ const file_proto_dex_proto_rawDesc = "" +
 	"\n" +
 	"GetAbility\x12\x16.dex.GetAbilityRequest\x1a\x14.dex.AbilityResponse\x121\n" +
 	"\aGetItem\x12\x13.dex.GetItemRequest\x1a\x11.dex.ItemResponse\x12F\n" +
-	"\x0eGetPokemonList\x12\x1a.dex.GetPokemonListRequest\x1a\x18.dex.PokemonListResponseB\rZ\vpob/dex/genb\x06proto3"
+	"\x0eGetPokemonList\x12\x1a.dex.GetPokemonListRequest\x1a\x18.dex.PokemonListResponseB\x0fZ\rpob/dex/protob\x06proto3"
 
 var (
 	file_proto_dex_proto_rawDescOnce sync.Once

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package box;
 
-option go_package = "pob/box/gen";
+option go_package = "pob/box/proto";
 
 service BoxService {
   rpc GetParty(GetPartyRequest) returns (PartyResponse);

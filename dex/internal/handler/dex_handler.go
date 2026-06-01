@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	gen "pob/dex/gen"
+	gen "pob/dex/proto"
 	"pob/dex/internal/service"
 )
 
