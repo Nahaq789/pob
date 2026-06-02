@@ -1,0 +1,294 @@
+{
+  "info": {
+    "name": "POB",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "user_host", "value": "http://localhost:8082" },
+    { "key": "box_host",  "value": "http://localhost:8083" },
+    { "key": "token",     "value": "" },
+    { "key": "box_id",    "value": "" },
+    { "key": "bp_id",     "value": "" },
+    { "key": "party_id",  "value": "" }
+  ],
+  "item": [
+    {
+      "name": "user",
+      "item": [
+        {
+          "name": "register",
+          "request": {
+            "method": "POST",
+            "url": "{{user_host}}/user/register",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_name\": \"test\",\n  \"password\": \"test123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) pm.collectionVariables.set('token', res.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{user_host}}/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_name\": \"test\",\n  \"password\": \"test123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "refresh",
+          "request": {
+            "method": "POST",
+            "url": "{{user_host}}/auth/refresh"
+          }
+        },
+        {
+          "name": "logout",
+          "request": {
+            "method": "POST",
+            "url": "{{user_host}}/auth/logout",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "dex",
+      "item": [
+        {
+          "name": "get pokemon list",
+          "request": {
+            "method": "GET",
+            "url": "{{box_host}}/dex/pokemon"
+          }
+        },
+        {
+          "name": "get pokemon",
+          "request": {
+            "method": "GET",
+            "url": "{{box_host}}/dex/pokemon/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "box",
+      "item": [
+        {
+          "name": "get boxes",
+          "request": {
+            "method": "GET",
+            "url": "{{box_host}}/boxes",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "create box",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.BoxId) pm.collectionVariables.set('box_id', res.data.BoxId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{box_host}}/boxes",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"テストボックス\"\n}"
+            }
+          }
+        },
+        {
+          "name": "update box name",
+          "request": {
+            "method": "PATCH",
+            "url": "{{box_host}}/boxes/{{box_id}}",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"更新後ボックス\"\n}"
+            }
+          }
+        },
+        {
+          "name": "delete box",
+          "request": {
+            "method": "DELETE",
+            "url": "{{box_host}}/boxes/{{box_id}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "get box pokemon",
+          "request": {
+            "method": "GET",
+            "url": "{{box_host}}/boxes/{{box_id}}/pokemon",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "add box pokemon",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.BoxPokemonId) pm.collectionVariables.set('bp_id', res.data.BoxPokemonId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{box_host}}/boxes/{{box_id}}/pokemon",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"PokemonId\": 1,\n  \"AbilityId\": 65,\n  \"Nature\": \"quirky\",\n  \"Move1Id\": 33\n}"
+            }
+          }
+        },
+        {
+          "name": "update box pokemon",
+          "request": {
+            "method": "PATCH",
+            "url": "{{box_host}}/boxes/{{box_id}}/pokemon/{{bp_id}}",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"AbilityId\": 65,\n  \"Nature\": \"adamant\",\n  \"Move1Id\": 33,\n  \"IvHp\": 31,\n  \"IvAttack\": 31,\n  \"IvDefense\": 31,\n  \"IvSpAttack\": 0,\n  \"IvSpDefense\": 31,\n  \"IvSpeed\": 31,\n  \"EvAttack\": 252,\n  \"EvSpeed\": 252,\n  \"EvHp\": 4\n}"
+            }
+          }
+        },
+        {
+          "name": "delete box pokemon",
+          "request": {
+            "method": "DELETE",
+            "url": "{{box_host}}/boxes/{{box_id}}/pokemon/{{bp_id}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "party",
+      "item": [
+        {
+          "name": "get parties",
+          "request": {
+            "method": "GET",
+            "url": "{{box_host}}/parties",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "create party",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.PartyId) pm.collectionVariables.set('party_id', res.data.PartyId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{box_host}}/parties",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"テストパーティ\"\n}"
+            }
+          }
+        },
+        {
+          "name": "update party name",
+          "request": {
+            "method": "PATCH",
+            "url": "{{box_host}}/parties/{{party_id}}",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"更新後パーティ\"\n}"
+            }
+          }
+        },
+        {
+          "name": "delete party",
+          "request": {
+            "method": "DELETE",
+            "url": "{{box_host}}/parties/{{party_id}}",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "get party pokemon",
+          "request": {
+            "method": "GET",
+            "url": "{{box_host}}/parties/{{party_id}}/pokemon",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "set party pokemon",
+          "request": {
+            "method": "PUT",
+            "url": "{{box_host}}/parties/{{party_id}}/pokemon",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pokemon\": [\n    { \"box_pokemon_id\": \"{{bp_id}}\", \"slot\": 1 }\n  ]\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
