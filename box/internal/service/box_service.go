@@ -48,3 +48,14 @@ func (s *BoxService) Delete(ctx context.Context, id uuid.UUID) error {
 	slog.InfoContext(ctx, "box deleted", slog.String("id", id.String()))
 	return nil
 }
+
+func (s *BoxService) UpdateName(ctx context.Context, id uuid.UUID, name string) error {
+	slog.InfoContext(ctx, "update box name", slog.String("id", id.String()))
+	if err := s.repo.UpdateName(ctx, id, name); err != nil {
+		slog.ErrorContext(ctx, "failed to update box name", slog.String("id", id.String()), slog.Any("error", err))
+		return err
+	}
+	slog.InfoContext(ctx, "box name updated", slog.String("id", id.String()))
+	return nil
+}
+

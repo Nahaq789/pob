@@ -48,3 +48,13 @@ func (s *PartyService) Delete(ctx context.Context, id uuid.UUID) error {
 	slog.InfoContext(ctx, "party deleted", slog.String("id", id.String()))
 	return nil
 }
+
+func (s *PartyService) UpdateName(ctx context.Context, id uuid.UUID, name string) error {
+    slog.InfoContext(ctx, "update party name", slog.String("id", id.String()))
+    if err := s.repo.UpdateName(ctx, id, name); err != nil {
+        slog.ErrorContext(ctx, "failed to update party name", slog.String("id", id.String()), slog.Any("error", err))
+        return err
+    }
+    slog.InfoContext(ctx, "party name updated", slog.String("id", id.String()))
+    return nil
+}

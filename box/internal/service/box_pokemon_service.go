@@ -103,6 +103,10 @@ func (s *BoxPokemonService) GetByBoxId(ctx context.Context, boxId uuid.UUID) ([]
 	return bps, nil
 }
 
+func (s *BoxPokemonService) GetById(ctx context.Context, id uuid.UUID) (*model.BoxPokemon, error) {
+	return s.repo.FindById(ctx, id)
+}
+
 func (s *BoxPokemonService) Update(ctx context.Context, req dto.UpdateBoxPokemonRequest) (*model.BoxPokemon, error) {
 	id, err := uuid.Parse(req.BoxPokemonId)
 	if err != nil {

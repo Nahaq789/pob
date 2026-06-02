@@ -75,3 +75,13 @@ func (r *BoxRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 	return nil
 }
+
+func (r *BoxRepository) UpdateName(ctx context.Context, id uuid.UUID, name string) error {
+    query := `UPDATE boxes SET name = $2, updated_at = NOW() WHERE id = $1`
+    _, err := r.db.GetClient().Exec(ctx, query, id, name)
+    if err != nil {
+        slog.ErrorContext(ctx, "failed to update box name", slog.String("id", id.String()), slog.Any("error", err))
+        return err
+    }
+    return nil
+}

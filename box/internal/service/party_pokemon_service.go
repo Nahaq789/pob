@@ -7,6 +7,7 @@ import (
 
 	"pob/box/internal/model"
 	"pob/box/internal/repository"
+	"pob/box/internal/service/dto"
 
 	"github.com/google/uuid"
 )
@@ -72,5 +73,39 @@ func (s *PartyPokemonService) UpdateSlot(ctx context.Context, id uuid.UUID, slot
 		return err
 	}
 	slog.InfoContext(ctx, "party_pokemon slot updated", slog.String("id", id.String()), slog.Int("slot", slot))
+	return nil
+}
+
+func (s *PartyPokemonService) SetPokemon(ctx context.Context, partyId uuid.UUID, entries []dto.PartyPokemonEntry) error {
+	existing, err := s.repo.FindByPartyId(ctx, partyId)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed to get party_pokemon", slog.String("party_id", partyId.String()), slog.Any("error", err))
+		return err
+	}
+
+	for _, pp := range existing {
+		if err := s.repo.RemovePokemon(ctx, pp.PartyPokemonId); err != nil {
+			slog.ErrorContext(ctx, "failed to remove party_pokemon", slog.String("id", pp.PartyPokemonId.String()), slog.Any("error", err))
+			return err
+		}
+	}
+
+	for _, e := range entries {
+		boxPokemonId, err := uuid.Parse(e.BoxPokemonId)
+		if err != nil {
+			return fmt.Errorf("invalid box_pokemon_id %q: %w", e.BoxPokemonId, err)
+		}
+		if _, err := s.boxRepo.FindById(ctx, boxPokemonId); err != nil {
+			slog.WarnContext(ctx, "box_pokemon not found", slog.String("box_pokemon_id", e.BoxPokemonId), slog.Any("error", err))
+			return fmt.Errorf("box_pokemon %s not found: %w", e.BoxPokemonId, err)
+		}
+		pp := model.NewPartyPokemon(partyId, boxPokemonId, e.Slot)
+		if err := s.repo.AddPokemon(ctx, pp); err != nil {
+			slog.ErrorContext(ctx, "failed to add party_pokemon", slog.String("box_pokemon_id", e.BoxPokemonId), slog.Any("error", err))
+			return err
+		}
+	}
+
+	slog.InfoContext(ctx, "party_pokemon set", slog.String("party_id", partyId.String()), slog.Int("count", len(entries)))
 	return nil
 }
