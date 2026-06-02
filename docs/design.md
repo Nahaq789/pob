@@ -40,7 +40,7 @@ pob/
 ├── battle/               # battle-service（DDD構成）
 ├── proto/                # .protoファイル
 ├── sync/                 # PokeAPIデータ同期バッチ
-├── pkg/                  # 共通パッケージ（logger・JWT）
+├── pkg/                  # 共通パッケージ（logger・JWT・Redis・HMAC interceptor・stats）
 └── docker-compose.yml
 ```
 
@@ -55,7 +55,6 @@ pob/
 │   ├── service/
 │   ├── repository/
 │   └── model/
-├── shared/               # DB・Redisクライアント
 ├── go.mod
 └── go.sum
 ```
@@ -74,7 +73,6 @@ battle/
 │   │   └── move/
 │   └── infrastructure/
 │       └── redis/
-├── shared/
 ├── go.mod
 └── go.sum
 ```
@@ -83,22 +81,32 @@ battle/
 
 ## サービス構成
 
-| サービス | 役割 | DB | Redis |
-|----------|------|----|-------|
-| dex-service | PokeAPIプロキシ・ポケモンデータ管理 | Pokemon DB | ✅ |
-| user-service | 認証・JWT発行 | User DB | ❌ |
-| box-service | ボックス・編成管理 | Box DB | ❌ |
-| battle-service | バトル進行・WebSocket | なし | ✅ |
+| サービス | 役割 | REST | gRPC | DB | Redis |
+|----------|------|------|------|----|-------|
+| dex-service | PokeAPIプロキシ・ポケモンデータ管理 | — | :9091 | dex_db | ✅ |
+| user-service | 認証・JWT発行 | :8082 | — | user_db | ❌ |
+| box-service | ボックス・編成管理 | :8083 | :9093 | box_db | ❌ |
+| battle-service | バトル進行・WebSocket | :8084 | — | なし | ✅ |
+
+## gRPC接続
+
+```
+box    → dex  (client→server)
+battle → dex  (client→server)
+battle → box  (client→server)
+```
 
 ---
 
 ## 認証設計
 
 - JWT鍵ペアは **1組**
-- **秘密鍵**：user-service のみ保持
+- **秘密鍵**：user-service のみ保持（`user/pem/private.pem`、`.gitignore`除外）
 - **公開鍵**：全サービスの環境変数に配置
-- **サービス間（gRPC）**：共有シークレット（HMAC）を Interceptor で検証
+- **サービス間（gRPC）**：共有シークレット（HMAC）を Interceptor で検証（`pkg/interceptor/hmac/`）
 - **JWTペイロード**：`user_id`・`exp`・`iat` のみ
+- **アクセストークン**：有効期限15分・レスポンスボディで返却
+- **リフレッシュトークン**：有効期限7日・HttpOnly Cookieで返却・SHA-256→bcrypt二段階ハッシュ
 
 ---
 
@@ -108,18 +116,18 @@ battle/
 
 | 種別 | 内容 |
 |------|------|
-| 固定データ | ベース実数値（性格補正済み）・タイプ・技リスト |
-| 動的データ | 現在HP・各能力ランク（-6〜+6）・PP・状態異常・道具・特性 |
+| 固定 | ベース実数値（性格補正済み）・タイプ・技リスト |
+| 動的 | 現在HP・各能力ランク（-6〜+6）・PP・状態異常・道具・特性 |
 
 - タイプ相性テーブルは battle-service に**静的データ**として保持
+- 実数値計算は `pkg/stats` で一元管理（battle・boxの両方からimport）
 
 ### ダメージ計算
 
-- 乱数：battle-service で **0.85〜1.00 の16段階**からランダム選択
-- 実数値：dex-service が**性格補正済み**で計算・返却
-- ダメージ計算時：`ベース実数値 × ランク補正テーブル` で算出
 - Next.js → battle-service へのリクエストは**技IDのみ**
-- battle-service は Redis から状態取得して計算完結
+- battle-service が Redis から状態取得して計算を完結させる
+- 乱数: 0.85〜1.00 の 16段階からランダム選択
+- ダメージ計算時：`ベース実数値 × ランク補正テーブル` で算出
 
 ### バリデーション（battle-service）
 
@@ -130,34 +138,25 @@ battle/
 ### PP管理
 
 - アイテムによる回復なし
-- PP消費は battle-service が計算しレスポンスで返す
-  - 通常：`-1`
-  - 相手特性「プレッシャー」時：`-2`
-- PP = 0 の技はフロントで**非活性化**
+- PP消費は battle-service が計算しレスポンスで返す（通常: -1、Pressure特性: -2）
+- PP = 0 の技はフロントで非活性化
 
 ### 技・特性・道具のハンドラー設計
 
-**介入タイミング（5種）**
-
+介入タイミング（5種）:
 1. 技使用前
 2. ダメージ計算前
 3. ダメージ計算中
 4. ダメージ計算後
 5. ターン終了時
 
-**処理方式**
+各タイミングにハンドラー配列を用意し、優先度でソート（タイプ変更系を先に処理）。
 
-- 各タイミングにハンドラー配列を用意
-- 優先度でソート（タイプ変更系を先に処理）
-- ダメージ計算用構造体をパイプライン的に処理
-
-**ハンドラー種別**
-
-| Tier | 種別 | 説明 |
-|------|------|------|
-| A | 汎用ハンドラー | 多くの技・特性に共通する処理 |
-| B | 汎用ハンドラー | やや特殊だが複数で共有できる処理 |
-| C | 個別ハンドラー | 固有の処理を持つ技・特性・道具 |
+| Tier | 種別 |
+|------|------|
+| A | 汎用ハンドラー（多くの技・特性に共通） |
+| B | 汎用ハンドラー（複数共有できる特殊処理） |
+| C | 個別ハンドラー（固有処理） |
 
 レジストリ方式で管理。
 
@@ -165,7 +164,4 @@ battle/
 
 ## 未決定事項
 
-- [ ] APIエンドポイント設計（REST / gRPC）
-- [ ] DBスキーマ設計
-- [ ] `.proto` ファイル設計
 - [ ] 特性の詳細設計
