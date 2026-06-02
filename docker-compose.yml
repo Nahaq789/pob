@@ -31,6 +31,8 @@ services:
     ports:
       - "8083:8083"
       - "9093:9093"
+    volumes:
+      - ./box/pem/:/pem/
     depends_on:
       box-postgres:
         condition: service_healthy
