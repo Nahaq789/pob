@@ -53,14 +53,6 @@ func main() {
 	defer dexConn.Close()
 	dexClient := proto.NewDexServiceClient(dexConn)
 
-	// 疎通確認
-	_, err = dexClient.GetPokemonList(ctx, &proto.GetPokemonListRequest{})
-	if err != nil {
-		slog.ErrorContext(ctx, "failed to connect to dex gRPC", slog.Any("error", err))
-		return
-	}
-	slog.InfoContext(ctx, "dex gRPC connection ok")
-
 	container, err := di.NewContainer(dbClient, dexClient)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to init container", slog.Any("error", err))
