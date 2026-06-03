@@ -7,11 +7,11 @@ import (
 )
 
 type Box struct {
-	BoxId     uuid.UUID
-	UserId    uuid.UUID
-	Name      string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	BoxId     uuid.UUID `json:"box_id"`
+	UserId    uuid.UUID `json:"-"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func NewBox(userId uuid.UUID, name string) Box {

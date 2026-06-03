@@ -7,11 +7,11 @@ import (
 )
 
 type Party struct {
-	PartyId   uuid.UUID
-	UserId    uuid.UUID
-	Name      string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	PartyId   uuid.UUID `json:"party_id"`
+	UserId    uuid.UUID `json:"-"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func NewParty(userId uuid.UUID, name string) Party {
