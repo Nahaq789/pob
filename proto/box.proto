@@ -21,23 +21,30 @@ message PartyPokemon {
   string box_pokemon_id = 1;
   int32  slot           = 2;
   int32  pokemon_id     = 3;
-  string nickname       = 4;
-  string nature         = 5;
-  int32  ability_id     = 6;
-  int32  move1_id       = 7;  // 0: なし
-  int32  move2_id       = 8;
-  int32  move3_id       = 9;
-  int32  move4_id       = 10;
-  int32  iv_hp          = 11;
-  int32  iv_attack      = 12;
-  int32  iv_defense     = 13;
-  int32  iv_sp_attack   = 14;
-  int32  iv_sp_defense  = 15;
-  int32  iv_speed       = 16;
-  int32  ev_hp          = 17;
-  int32  ev_attack      = 18;
-  int32  ev_defense     = 19;
-  int32  ev_sp_attack   = 20;
-  int32  ev_sp_defense  = 21;
-  int32  ev_speed       = 22;
+  string nickname       = 4; // 空文字はニックネームなし
+  int32  ability_id     = 5;
+  string nature         = 6; // e.g. "timid"
+  int32  held_item_id   = 7; // 0: 道具なし
+
+  // 技スロット（0: 未設定）
+  int32 move1_id = 8;
+  int32 move2_id = 9;
+  int32 move3_id = 10;
+  int32 move4_id = 11;
+
+  // 個体値
+  int32 iv_hp         = 12;
+  int32 iv_attack     = 13;
+  int32 iv_defense    = 14;
+  int32 iv_sp_attack  = 15;
+  int32 iv_sp_defense = 16;
+  int32 iv_speed      = 17;
+
+  // 努力値
+  int32 ev_hp         = 18;
+  int32 ev_attack     = 19;
+  int32 ev_defense    = 20;
+  int32 ev_sp_attack  = 21;
+  int32 ev_sp_defense = 22;
+  int32 ev_speed      = 23;
 }
