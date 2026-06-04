@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v3.21.12
-// source: proto/box.proto
+// source: box.proto
 
 package proto
 
@@ -31,7 +31,7 @@ type GetPartyRequest struct {
 
 func (x *GetPartyRequest) Reset() {
 	*x = GetPartyRequest{}
-	mi := &file_proto_box_proto_msgTypes[0]
+	mi := &file_box_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -43,7 +43,7 @@ func (x *GetPartyRequest) String() string {
 func (*GetPartyRequest) ProtoMessage() {}
 
 func (x *GetPartyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_box_proto_msgTypes[0]
+	mi := &file_box_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56,7 +56,7 @@ func (x *GetPartyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPartyRequest.ProtoReflect.Descriptor instead.
 func (*GetPartyRequest) Descriptor() ([]byte, []int) {
-	return file_proto_box_proto_rawDescGZIP(), []int{0}
+	return file_box_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *GetPartyRequest) GetPartyId() string {
@@ -82,7 +82,7 @@ type PartyResponse struct {
 
 func (x *PartyResponse) Reset() {
 	*x = PartyResponse{}
-	mi := &file_proto_box_proto_msgTypes[1]
+	mi := &file_box_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -94,7 +94,7 @@ func (x *PartyResponse) String() string {
 func (*PartyResponse) ProtoMessage() {}
 
 func (x *PartyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_box_proto_msgTypes[1]
+	mi := &file_box_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -107,7 +107,7 @@ func (x *PartyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PartyResponse.ProtoReflect.Descriptor instead.
 func (*PartyResponse) Descriptor() ([]byte, []int) {
-	return file_proto_box_proto_rawDescGZIP(), []int{1}
+	return file_box_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *PartyResponse) GetPokemon() []*PartyPokemon {
@@ -118,36 +118,41 @@ func (x *PartyResponse) GetPokemon() []*PartyPokemon {
 }
 
 type PartyPokemon struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	BoxPokemonId  string                 `protobuf:"bytes,1,opt,name=box_pokemon_id,json=boxPokemonId,proto3" json:"box_pokemon_id,omitempty"`
-	Slot          int32                  `protobuf:"varint,2,opt,name=slot,proto3" json:"slot,omitempty"`
-	PokemonId     int32                  `protobuf:"varint,3,opt,name=pokemon_id,json=pokemonId,proto3" json:"pokemon_id,omitempty"`
-	Nickname      string                 `protobuf:"bytes,4,opt,name=nickname,proto3" json:"nickname,omitempty"`
-	Nature        string                 `protobuf:"bytes,5,opt,name=nature,proto3" json:"nature,omitempty"`
-	AbilityId     int32                  `protobuf:"varint,6,opt,name=ability_id,json=abilityId,proto3" json:"ability_id,omitempty"`
-	Move1Id       int32                  `protobuf:"varint,7,opt,name=move1_id,json=move1Id,proto3" json:"move1_id,omitempty"` // 0: なし
-	Move2Id       int32                  `protobuf:"varint,8,opt,name=move2_id,json=move2Id,proto3" json:"move2_id,omitempty"`
-	Move3Id       int32                  `protobuf:"varint,9,opt,name=move3_id,json=move3Id,proto3" json:"move3_id,omitempty"`
-	Move4Id       int32                  `protobuf:"varint,10,opt,name=move4_id,json=move4Id,proto3" json:"move4_id,omitempty"`
-	IvHp          int32                  `protobuf:"varint,11,opt,name=iv_hp,json=ivHp,proto3" json:"iv_hp,omitempty"`
-	IvAttack      int32                  `protobuf:"varint,12,opt,name=iv_attack,json=ivAttack,proto3" json:"iv_attack,omitempty"`
-	IvDefense     int32                  `protobuf:"varint,13,opt,name=iv_defense,json=ivDefense,proto3" json:"iv_defense,omitempty"`
-	IvSpAttack    int32                  `protobuf:"varint,14,opt,name=iv_sp_attack,json=ivSpAttack,proto3" json:"iv_sp_attack,omitempty"`
-	IvSpDefense   int32                  `protobuf:"varint,15,opt,name=iv_sp_defense,json=ivSpDefense,proto3" json:"iv_sp_defense,omitempty"`
-	IvSpeed       int32                  `protobuf:"varint,16,opt,name=iv_speed,json=ivSpeed,proto3" json:"iv_speed,omitempty"`
-	EvHp          int32                  `protobuf:"varint,17,opt,name=ev_hp,json=evHp,proto3" json:"ev_hp,omitempty"`
-	EvAttack      int32                  `protobuf:"varint,18,opt,name=ev_attack,json=evAttack,proto3" json:"ev_attack,omitempty"`
-	EvDefense     int32                  `protobuf:"varint,19,opt,name=ev_defense,json=evDefense,proto3" json:"ev_defense,omitempty"`
-	EvSpAttack    int32                  `protobuf:"varint,20,opt,name=ev_sp_attack,json=evSpAttack,proto3" json:"ev_sp_attack,omitempty"`
-	EvSpDefense   int32                  `protobuf:"varint,21,opt,name=ev_sp_defense,json=evSpDefense,proto3" json:"ev_sp_defense,omitempty"`
-	EvSpeed       int32                  `protobuf:"varint,22,opt,name=ev_speed,json=evSpeed,proto3" json:"ev_speed,omitempty"`
+	state        protoimpl.MessageState `protogen:"open.v1"`
+	BoxPokemonId string                 `protobuf:"bytes,1,opt,name=box_pokemon_id,json=boxPokemonId,proto3" json:"box_pokemon_id,omitempty"`
+	Slot         int32                  `protobuf:"varint,2,opt,name=slot,proto3" json:"slot,omitempty"`
+	PokemonId    int32                  `protobuf:"varint,3,opt,name=pokemon_id,json=pokemonId,proto3" json:"pokemon_id,omitempty"`
+	Nickname     string                 `protobuf:"bytes,4,opt,name=nickname,proto3" json:"nickname,omitempty"` // 空文字はニックネームなし
+	AbilityId    int32                  `protobuf:"varint,5,opt,name=ability_id,json=abilityId,proto3" json:"ability_id,omitempty"`
+	Nature       string                 `protobuf:"bytes,6,opt,name=nature,proto3" json:"nature,omitempty"`                              // e.g. "timid"
+	HeldItemId   int32                  `protobuf:"varint,7,opt,name=held_item_id,json=heldItemId,proto3" json:"held_item_id,omitempty"` // 0: 道具なし
+	// 技スロット（0: 未設定）
+	Move1Id int32 `protobuf:"varint,8,opt,name=move1_id,json=move1Id,proto3" json:"move1_id,omitempty"`
+	Move2Id int32 `protobuf:"varint,9,opt,name=move2_id,json=move2Id,proto3" json:"move2_id,omitempty"`
+	Move3Id int32 `protobuf:"varint,10,opt,name=move3_id,json=move3Id,proto3" json:"move3_id,omitempty"`
+	Move4Id int32 `protobuf:"varint,11,opt,name=move4_id,json=move4Id,proto3" json:"move4_id,omitempty"`
+	// 個体値
+	IvHp        int32 `protobuf:"varint,12,opt,name=iv_hp,json=ivHp,proto3" json:"iv_hp,omitempty"`
+	IvAttack    int32 `protobuf:"varint,13,opt,name=iv_attack,json=ivAttack,proto3" json:"iv_attack,omitempty"`
+	IvDefense   int32 `protobuf:"varint,14,opt,name=iv_defense,json=ivDefense,proto3" json:"iv_defense,omitempty"`
+	IvSpAttack  int32 `protobuf:"varint,15,opt,name=iv_sp_attack,json=ivSpAttack,proto3" json:"iv_sp_attack,omitempty"`
+	IvSpDefense int32 `protobuf:"varint,16,opt,name=iv_sp_defense,json=ivSpDefense,proto3" json:"iv_sp_defense,omitempty"`
+	IvSpeed     int32 `protobuf:"varint,17,opt,name=iv_speed,json=ivSpeed,proto3" json:"iv_speed,omitempty"`
+	// 努力値
+	EvHp          int32 `protobuf:"varint,18,opt,name=ev_hp,json=evHp,proto3" json:"ev_hp,omitempty"`
+	EvAttack      int32 `protobuf:"varint,19,opt,name=ev_attack,json=evAttack,proto3" json:"ev_attack,omitempty"`
+	EvDefense     int32 `protobuf:"varint,20,opt,name=ev_defense,json=evDefense,proto3" json:"ev_defense,omitempty"`
+	EvSpAttack    int32 `protobuf:"varint,21,opt,name=ev_sp_attack,json=evSpAttack,proto3" json:"ev_sp_attack,omitempty"`
+	EvSpDefense   int32 `protobuf:"varint,22,opt,name=ev_sp_defense,json=evSpDefense,proto3" json:"ev_sp_defense,omitempty"`
+	EvSpeed       int32 `protobuf:"varint,23,opt,name=ev_speed,json=evSpeed,proto3" json:"ev_speed,omitempty"`
+	Gender        int32 `protobuf:"varint,24,opt,name=gender,proto3" json:"gender,omitempty"` // 0: unknown, 1: male, 2: female
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PartyPokemon) Reset() {
 	*x = PartyPokemon{}
-	mi := &file_proto_box_proto_msgTypes[2]
+	mi := &file_box_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -159,7 +164,7 @@ func (x *PartyPokemon) String() string {
 func (*PartyPokemon) ProtoMessage() {}
 
 func (x *PartyPokemon) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_box_proto_msgTypes[2]
+	mi := &file_box_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -172,7 +177,7 @@ func (x *PartyPokemon) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PartyPokemon.ProtoReflect.Descriptor instead.
 func (*PartyPokemon) Descriptor() ([]byte, []int) {
-	return file_proto_box_proto_rawDescGZIP(), []int{2}
+	return file_box_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *PartyPokemon) GetBoxPokemonId() string {
@@ -203,6 +208,13 @@ func (x *PartyPokemon) GetNickname() string {
 	return ""
 }
 
+func (x *PartyPokemon) GetAbilityId() int32 {
+	if x != nil {
+		return x.AbilityId
+	}
+	return 0
+}
+
 func (x *PartyPokemon) GetNature() string {
 	if x != nil {
 		return x.Nature
@@ -210,9 +222,9 @@ func (x *PartyPokemon) GetNature() string {
 	return ""
 }
 
-func (x *PartyPokemon) GetAbilityId() int32 {
+func (x *PartyPokemon) GetHeldItemId() int32 {
 	if x != nil {
-		return x.AbilityId
+		return x.HeldItemId
 	}
 	return 0
 }
@@ -329,69 +341,79 @@ func (x *PartyPokemon) GetEvSpeed() int32 {
 	return 0
 }
 
-var File_proto_box_proto protoreflect.FileDescriptor
+func (x *PartyPokemon) GetGender() int32 {
+	if x != nil {
+		return x.Gender
+	}
+	return 0
+}
 
-const file_proto_box_proto_rawDesc = "" +
+var File_box_proto protoreflect.FileDescriptor
+
+const file_box_proto_rawDesc = "" +
 	"\n" +
-	"\x0fproto/box.proto\x12\x03box\"E\n" +
+	"\tbox.proto\x12\x03box\"E\n" +
 	"\x0fGetPartyRequest\x12\x19\n" +
 	"\bparty_id\x18\x01 \x01(\tR\apartyId\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\"<\n" +
 	"\rPartyResponse\x12+\n" +
-	"\apokemon\x18\x01 \x03(\v2\x11.box.PartyPokemonR\apokemon\"\x8a\x05\n" +
+	"\apokemon\x18\x01 \x03(\v2\x11.box.PartyPokemonR\apokemon\"\xc4\x05\n" +
 	"\fPartyPokemon\x12$\n" +
 	"\x0ebox_pokemon_id\x18\x01 \x01(\tR\fboxPokemonId\x12\x12\n" +
 	"\x04slot\x18\x02 \x01(\x05R\x04slot\x12\x1d\n" +
 	"\n" +
 	"pokemon_id\x18\x03 \x01(\x05R\tpokemonId\x12\x1a\n" +
-	"\bnickname\x18\x04 \x01(\tR\bnickname\x12\x16\n" +
-	"\x06nature\x18\x05 \x01(\tR\x06nature\x12\x1d\n" +
+	"\bnickname\x18\x04 \x01(\tR\bnickname\x12\x1d\n" +
 	"\n" +
-	"ability_id\x18\x06 \x01(\x05R\tabilityId\x12\x19\n" +
-	"\bmove1_id\x18\a \x01(\x05R\amove1Id\x12\x19\n" +
-	"\bmove2_id\x18\b \x01(\x05R\amove2Id\x12\x19\n" +
-	"\bmove3_id\x18\t \x01(\x05R\amove3Id\x12\x19\n" +
-	"\bmove4_id\x18\n" +
-	" \x01(\x05R\amove4Id\x12\x13\n" +
-	"\x05iv_hp\x18\v \x01(\x05R\x04ivHp\x12\x1b\n" +
-	"\tiv_attack\x18\f \x01(\x05R\bivAttack\x12\x1d\n" +
+	"ability_id\x18\x05 \x01(\x05R\tabilityId\x12\x16\n" +
+	"\x06nature\x18\x06 \x01(\tR\x06nature\x12 \n" +
+	"\fheld_item_id\x18\a \x01(\x05R\n" +
+	"heldItemId\x12\x19\n" +
+	"\bmove1_id\x18\b \x01(\x05R\amove1Id\x12\x19\n" +
+	"\bmove2_id\x18\t \x01(\x05R\amove2Id\x12\x19\n" +
+	"\bmove3_id\x18\n" +
+	" \x01(\x05R\amove3Id\x12\x19\n" +
+	"\bmove4_id\x18\v \x01(\x05R\amove4Id\x12\x13\n" +
+	"\x05iv_hp\x18\f \x01(\x05R\x04ivHp\x12\x1b\n" +
+	"\tiv_attack\x18\r \x01(\x05R\bivAttack\x12\x1d\n" +
 	"\n" +
-	"iv_defense\x18\r \x01(\x05R\tivDefense\x12 \n" +
-	"\fiv_sp_attack\x18\x0e \x01(\x05R\n" +
+	"iv_defense\x18\x0e \x01(\x05R\tivDefense\x12 \n" +
+	"\fiv_sp_attack\x18\x0f \x01(\x05R\n" +
 	"ivSpAttack\x12\"\n" +
-	"\riv_sp_defense\x18\x0f \x01(\x05R\vivSpDefense\x12\x19\n" +
-	"\biv_speed\x18\x10 \x01(\x05R\aivSpeed\x12\x13\n" +
-	"\x05ev_hp\x18\x11 \x01(\x05R\x04evHp\x12\x1b\n" +
-	"\tev_attack\x18\x12 \x01(\x05R\bevAttack\x12\x1d\n" +
+	"\riv_sp_defense\x18\x10 \x01(\x05R\vivSpDefense\x12\x19\n" +
+	"\biv_speed\x18\x11 \x01(\x05R\aivSpeed\x12\x13\n" +
+	"\x05ev_hp\x18\x12 \x01(\x05R\x04evHp\x12\x1b\n" +
+	"\tev_attack\x18\x13 \x01(\x05R\bevAttack\x12\x1d\n" +
 	"\n" +
-	"ev_defense\x18\x13 \x01(\x05R\tevDefense\x12 \n" +
-	"\fev_sp_attack\x18\x14 \x01(\x05R\n" +
+	"ev_defense\x18\x14 \x01(\x05R\tevDefense\x12 \n" +
+	"\fev_sp_attack\x18\x15 \x01(\x05R\n" +
 	"evSpAttack\x12\"\n" +
-	"\rev_sp_defense\x18\x15 \x01(\x05R\vevSpDefense\x12\x19\n" +
-	"\bev_speed\x18\x16 \x01(\x05R\aevSpeed2B\n" +
+	"\rev_sp_defense\x18\x16 \x01(\x05R\vevSpDefense\x12\x19\n" +
+	"\bev_speed\x18\x17 \x01(\x05R\aevSpeed\x12\x16\n" +
+	"\x06gender\x18\x18 \x01(\x05R\x06gender2B\n" +
 	"\n" +
 	"BoxService\x124\n" +
 	"\bGetParty\x12\x14.box.GetPartyRequest\x1a\x12.box.PartyResponseB\x0fZ\rpob/box/protob\x06proto3"
 
 var (
-	file_proto_box_proto_rawDescOnce sync.Once
-	file_proto_box_proto_rawDescData []byte
+	file_box_proto_rawDescOnce sync.Once
+	file_box_proto_rawDescData []byte
 )
 
-func file_proto_box_proto_rawDescGZIP() []byte {
-	file_proto_box_proto_rawDescOnce.Do(func() {
-		file_proto_box_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_box_proto_rawDesc), len(file_proto_box_proto_rawDesc)))
+func file_box_proto_rawDescGZIP() []byte {
+	file_box_proto_rawDescOnce.Do(func() {
+		file_box_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_box_proto_rawDesc), len(file_box_proto_rawDesc)))
 	})
-	return file_proto_box_proto_rawDescData
+	return file_box_proto_rawDescData
 }
 
-var file_proto_box_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
-var file_proto_box_proto_goTypes = []any{
+var file_box_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_box_proto_goTypes = []any{
 	(*GetPartyRequest)(nil), // 0: box.GetPartyRequest
 	(*PartyResponse)(nil),   // 1: box.PartyResponse
 	(*PartyPokemon)(nil),    // 2: box.PartyPokemon
 }
-var file_proto_box_proto_depIdxs = []int32{
+var file_box_proto_depIdxs = []int32{
 	2, // 0: box.PartyResponse.pokemon:type_name -> box.PartyPokemon
 	0, // 1: box.BoxService.GetParty:input_type -> box.GetPartyRequest
 	1, // 2: box.BoxService.GetParty:output_type -> box.PartyResponse
@@ -402,26 +424,26 @@ var file_proto_box_proto_depIdxs = []int32{
 	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_proto_box_proto_init() }
-func file_proto_box_proto_init() {
-	if File_proto_box_proto != nil {
+func init() { file_box_proto_init() }
+func file_box_proto_init() {
+	if File_box_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_box_proto_rawDesc), len(file_proto_box_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_box_proto_rawDesc), len(file_box_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_proto_box_proto_goTypes,
-		DependencyIndexes: file_proto_box_proto_depIdxs,
-		MessageInfos:      file_proto_box_proto_msgTypes,
+		GoTypes:           file_box_proto_goTypes,
+		DependencyIndexes: file_box_proto_depIdxs,
+		MessageInfos:      file_box_proto_msgTypes,
 	}.Build()
-	File_proto_box_proto = out.File
-	file_proto_box_proto_goTypes = nil
-	file_proto_box_proto_depIdxs = nil
+	File_box_proto = out.File
+	file_box_proto_goTypes = nil
+	file_box_proto_depIdxs = nil
 }

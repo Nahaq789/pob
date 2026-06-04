@@ -13,6 +13,7 @@ type BoxPokemon struct {
 	Nickname     *string
 	AbilityId    int
 	Nature       string
+	Gender       Gender
 	HeldItemId   *int
 	IvHp         int
 	IvAttack     int
@@ -39,6 +40,7 @@ func NewBoxPokemon(
 	pokemonId int,
 	abilityId int,
 	nature string,
+	gender Gender,
 ) BoxPokemon {
 	now := time.Now()
 	return BoxPokemon{
@@ -47,6 +49,7 @@ func NewBoxPokemon(
 		PokemonId:    pokemonId,
 		AbilityId:    abilityId,
 		Nature:       nature,
+		Gender:       gender,
 		IvHp:         31,
 		IvAttack:     31,
 		IvDefense:    31,
@@ -64,6 +67,7 @@ func FromBoxPokemon(
 	nickname *string,
 	abilityId int,
 	nature string,
+	gender Gender,
 	heldItemId *int,
 	ivHp, ivAttack, ivDefense, ivSpAttack, ivSpDefense, ivSpeed int,
 	evHp, evAttack, evDefense, evSpAttack, evSpDefense, evSpeed int,
@@ -77,6 +81,7 @@ func FromBoxPokemon(
 		Nickname:     nickname,
 		AbilityId:    abilityId,
 		Nature:       nature,
+		Gender:       gender,
 		HeldItemId:   heldItemId,
 		IvHp:         ivHp,
 		IvAttack:     ivAttack,

@@ -46,6 +46,7 @@ func (h *GrpcHandler) GetParty(ctx context.Context, req *proto.GetPartyRequest) 
 				PokemonId:    int32(bp.PokemonId),
 				Nickname:     strOrEmpty(bp.Nickname),
 				Nature:       bp.Nature,
+				Gender:       int32(bp.Gender),
 				AbilityId:    int32(bp.AbilityId),
 				Move1Id:      intOrZero(bp.Move1Id),
 				Move2Id:      intOrZero(bp.Move2Id),

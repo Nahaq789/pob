@@ -145,6 +145,7 @@ type PartyPokemon struct {
 	EvSpAttack    int32 `protobuf:"varint,21,opt,name=ev_sp_attack,json=evSpAttack,proto3" json:"ev_sp_attack,omitempty"`
 	EvSpDefense   int32 `protobuf:"varint,22,opt,name=ev_sp_defense,json=evSpDefense,proto3" json:"ev_sp_defense,omitempty"`
 	EvSpeed       int32 `protobuf:"varint,23,opt,name=ev_speed,json=evSpeed,proto3" json:"ev_speed,omitempty"`
+	Gender        int32 `protobuf:"varint,24,opt,name=gender,proto3" json:"gender,omitempty"` // 0: unknown, 1: male, 2: female
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -340,6 +341,13 @@ func (x *PartyPokemon) GetEvSpeed() int32 {
 	return 0
 }
 
+func (x *PartyPokemon) GetGender() int32 {
+	if x != nil {
+		return x.Gender
+	}
+	return 0
+}
+
 var File_box_proto protoreflect.FileDescriptor
 
 const file_box_proto_rawDesc = "" +
@@ -349,7 +357,7 @@ const file_box_proto_rawDesc = "" +
 	"\bparty_id\x18\x01 \x01(\tR\apartyId\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\"<\n" +
 	"\rPartyResponse\x12+\n" +
-	"\apokemon\x18\x01 \x03(\v2\x11.box.PartyPokemonR\apokemon\"\xac\x05\n" +
+	"\apokemon\x18\x01 \x03(\v2\x11.box.PartyPokemonR\apokemon\"\xc4\x05\n" +
 	"\fPartyPokemon\x12$\n" +
 	"\x0ebox_pokemon_id\x18\x01 \x01(\tR\fboxPokemonId\x12\x12\n" +
 	"\x04slot\x18\x02 \x01(\x05R\x04slot\x12\x1d\n" +
@@ -381,7 +389,8 @@ const file_box_proto_rawDesc = "" +
 	"\fev_sp_attack\x18\x15 \x01(\x05R\n" +
 	"evSpAttack\x12\"\n" +
 	"\rev_sp_defense\x18\x16 \x01(\x05R\vevSpDefense\x12\x19\n" +
-	"\bev_speed\x18\x17 \x01(\x05R\aevSpeed2B\n" +
+	"\bev_speed\x18\x17 \x01(\x05R\aevSpeed\x12\x16\n" +
+	"\x06gender\x18\x18 \x01(\x05R\x06gender2B\n" +
 	"\n" +
 	"BoxService\x124\n" +
 	"\bGetParty\x12\x14.box.GetPartyRequest\x1a\x12.box.PartyResponseB\x0fZ\rpob/box/protob\x06proto3"

@@ -28,6 +28,11 @@ func NewBoxPokemonService(repo *repository.BoxPokemonRepository, dex gen.DexServ
 func (s *BoxPokemonService) Add(ctx context.Context, boxId uuid.UUID, req dto.AddBoxPokemonRequest) (*model.BoxPokemon, error) {
 	slog.InfoContext(ctx, "add box_pokemon", slog.String("box_id", boxId.String()), slog.Int("pokemon_id", req.PokemonId))
 
+	gender := model.Gender(req.Gender)
+	if !gender.Valid() {
+		return nil, fmt.Errorf("invalid gender: %d", req.Gender)
+	}
+
 	if _, err := s.dex.GetPokemon(ctx, &gen.GetPokemonRequest{PokemonId: int32(req.PokemonId)}); err != nil {
 		slog.WarnContext(ctx, "pokemon not found", slog.Int("pokemon_id", req.PokemonId), slog.Any("error", err))
 		return nil, fmt.Errorf("pokemon %d not found: %w", req.PokemonId, err)
@@ -64,6 +69,7 @@ func (s *BoxPokemonService) Add(ctx context.Context, boxId uuid.UUID, req dto.Ad
 		Nickname:     req.Nickname,
 		AbilityId:    req.AbilityId,
 		Nature:       req.Nature,
+		Gender:       gender,
 		HeldItemId:   req.HeldItemId,
 		IvHp:         req.IvHp,
 		IvAttack:     req.IvAttack,

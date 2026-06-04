@@ -15,6 +15,7 @@ CREATE TABLE box_pokemon (
     nickname        VARCHAR(50),
     ability_id      INT         NOT NULL,  -- dex_db の abilities.id
     nature          VARCHAR(20) NOT NULL,
+    gender          SMALLINT    NOT NULL,  -- 0: unknown, 1: male, 2: female
     held_item_id    INT,                   -- NULL: 道具なし
     -- 個体値
     iv_hp           INT         NOT NULL DEFAULT 31,

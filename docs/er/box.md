@@ -14,6 +14,7 @@ erDiagram
         INT pokemon_id "ポケモンID"
         VARCHAR_50 nickname "ニックネーム"
         INT nature_id "性格ID"
+        SMALLINT gender "性別(0:unknown,1:male,2:female)"
         INT ability_id "特性ID"
         INT move1_id "技1ID"
         INT move2_id "技2ID"

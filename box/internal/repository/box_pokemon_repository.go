@@ -23,20 +23,20 @@ func NewBoxPokemonRepository(db *shared.DBClient) *BoxPokemonRepository {
 func (r *BoxPokemonRepository) Create(ctx context.Context, bp model.BoxPokemon) error {
 	query := `
 		INSERT INTO box_pokemon (
-			id, box_id, pokemon_id, nickname, ability_id, nature, held_item_id,
+			id, box_id, pokemon_id, nickname, ability_id, nature, gender, held_item_id,
 			iv_hp, iv_attack, iv_defense, iv_sp_attack, iv_sp_defense, iv_speed,
 			ev_hp, ev_attack, ev_defense, ev_sp_attack, ev_sp_defense, ev_speed,
 			move1_id, move2_id, move3_id, move4_id,
 			created_at, updated_at
 		) VALUES (
-			$1, $2, $3, $4, $5, $6, $7,
-			$8, $9, $10, $11, $12, $13,
-			$14, $15, $16, $17, $18, $19,
-			$20, $21, $22, $23,
-			$24, $25
+			$1, $2, $3, $4, $5, $6, $7, $8,
+			$9, $10, $11, $12, $13, $14,
+			$15, $16, $17, $18, $19, $20,
+			$21, $22, $23, $24,
+			$25, $26
 		)`
 	_, err := r.db.GetClient().Exec(ctx, query,
-		bp.BoxPokemonId, bp.BoxId, bp.PokemonId, bp.Nickname, bp.AbilityId, bp.Nature, bp.HeldItemId,
+		bp.BoxPokemonId, bp.BoxId, bp.PokemonId, bp.Nickname, bp.AbilityId, bp.Nature, bp.Gender, bp.HeldItemId,
 		bp.IvHp, bp.IvAttack, bp.IvDefense, bp.IvSpAttack, bp.IvSpDefense, bp.IvSpeed,
 		bp.EvHp, bp.EvAttack, bp.EvDefense, bp.EvSpAttack, bp.EvSpDefense, bp.EvSpeed,
 		bp.Move1Id, bp.Move2Id, bp.Move3Id, bp.Move4Id,
@@ -52,7 +52,7 @@ func (r *BoxPokemonRepository) Create(ctx context.Context, bp model.BoxPokemon) 
 func (r *BoxPokemonRepository) FindById(ctx context.Context, id uuid.UUID) (*model.BoxPokemon, error) {
 	query := `
 		SELECT
-			id, box_id, pokemon_id, nickname, ability_id, nature, held_item_id,
+			id, box_id, pokemon_id, nickname, ability_id, nature, gender, held_item_id,
 			iv_hp, iv_attack, iv_defense, iv_sp_attack, iv_sp_defense, iv_speed,
 			ev_hp, ev_attack, ev_defense, ev_sp_attack, ev_sp_defense, ev_speed,
 			move1_id, move2_id, move3_id, move4_id,
@@ -73,7 +73,7 @@ func (r *BoxPokemonRepository) FindById(ctx context.Context, id uuid.UUID) (*mod
 func (r *BoxPokemonRepository) FindByBoxId(ctx context.Context, boxId uuid.UUID) ([]model.BoxPokemon, error) {
 	query := `
 		SELECT
-			id, box_id, pokemon_id, nickname, ability_id, nature, held_item_id,
+			id, box_id, pokemon_id, nickname, ability_id, nature, gender, held_item_id,
 			iv_hp, iv_attack, iv_defense, iv_sp_attack, iv_sp_defense, iv_speed,
 			ev_hp, ev_attack, ev_defense, ev_sp_attack, ev_sp_defense, ev_speed,
 			move1_id, move2_id, move3_id, move4_id,
@@ -137,7 +137,7 @@ type scanner interface {
 func scanBoxPokemon(s scanner) (*model.BoxPokemon, error) {
 	var bp model.BoxPokemon
 	err := s.Scan(
-		&bp.BoxPokemonId, &bp.BoxId, &bp.PokemonId, &bp.Nickname, &bp.AbilityId, &bp.Nature, &bp.HeldItemId,
+		&bp.BoxPokemonId, &bp.BoxId, &bp.PokemonId, &bp.Nickname, &bp.AbilityId, &bp.Nature, &bp.Gender, &bp.HeldItemId,
 		&bp.IvHp, &bp.IvAttack, &bp.IvDefense, &bp.IvSpAttack, &bp.IvSpDefense, &bp.IvSpeed,
 		&bp.EvHp, &bp.EvAttack, &bp.EvDefense, &bp.EvSpAttack, &bp.EvSpDefense, &bp.EvSpeed,
 		&bp.Move1Id, &bp.Move2Id, &bp.Move3Id, &bp.Move4Id,

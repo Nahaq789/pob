@@ -176,7 +176,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"PokemonId\": 1,\n  \"AbilityId\": 65,\n  \"Nature\": \"quirky\",\n  \"Move1Id\": 33\n}"
+              "raw": "{\n  \"PokemonId\": 1,\n  \"AbilityId\": 65,\n  \"Nature\": \"quirky\",\n  \"Gender\": 1,\n  \"Move1Id\": 33\n}"
             }
           }
         },

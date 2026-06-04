@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.2
 // - protoc             v3.21.12
-// source: proto/box.proto
+// source: box.proto
 
 package proto
 
@@ -117,5 +117,5 @@ var BoxService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/box.proto",
+	Metadata: "box.proto",
 }

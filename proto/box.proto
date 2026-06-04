@@ -47,4 +47,6 @@ message PartyPokemon {
   int32 ev_sp_attack  = 21;
   int32 ev_sp_defense = 22;
   int32 ev_speed      = 23;
+
+  int32 gender = 24; // 0: unknown, 1: male, 2: female
 }

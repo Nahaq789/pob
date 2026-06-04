@@ -5,6 +5,7 @@ type AddBoxPokemonRequest struct {
 	Nickname   *string
 	AbilityId  int
 	Nature     string
+	Gender     int
 	HeldItemId *int
 	IvHp       int
 	IvAttack   int
