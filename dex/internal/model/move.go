@@ -8,4 +8,5 @@ type Move struct {
 	Power       int // 0: 固定・変動ダメージ
 	Accuracy    int // 0: 必中
 	Pp          int
+	Priority    int
 }

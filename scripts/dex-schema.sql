@@ -40,6 +40,7 @@ CREATE TABLE moves (
     power        INT,                       -- NULL: 変動・固定ダメージ技など
     accuracy     INT,                       -- NULL: 必中技
     pp           INT          NOT NULL,
+    priority     INT          NOT NULL DEFAULT 0,
     description  TEXT
 );
 

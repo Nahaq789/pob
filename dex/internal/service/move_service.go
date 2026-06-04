@@ -37,5 +37,6 @@ func (s *MoveService) GetMove(ctx context.Context, id int) (*model.Move, error) 
 		Power:       power,
 		Accuracy:    accuracy,
 		Pp:          e.Pp,
+		Priority:    e.Priority,
 	}, nil
 }

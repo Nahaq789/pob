@@ -38,6 +38,7 @@ erDiagram
         INT power "威力"
         INT accuracy "命中率"
         INT pp "PP"
+        INT priority "優先度"
     }
 
     pokemon_moves {

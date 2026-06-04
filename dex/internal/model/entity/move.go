@@ -8,6 +8,7 @@ type Move struct {
 	Power       *int   `gorm:"column:power"`    // NULL: 固定・変動ダメージ
 	Accuracy    *int   `gorm:"column:accuracy"` // NULL: 必中
 	Pp          int    `gorm:"column:pp"`
+	Priority    int    `gorm:"column:priority"`
 }
 
 func (Move) TableName() string { return "moves" }

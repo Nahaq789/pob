@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v3.21.12
-// source: proto/dex.proto
+// source: dex.proto
 
 package proto
 
@@ -31,7 +31,7 @@ type GetPokemonRequest struct {
 
 func (x *GetPokemonRequest) Reset() {
 	*x = GetPokemonRequest{}
-	mi := &file_proto_dex_proto_msgTypes[0]
+	mi := &file_dex_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -43,7 +43,7 @@ func (x *GetPokemonRequest) String() string {
 func (*GetPokemonRequest) ProtoMessage() {}
 
 func (x *GetPokemonRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_dex_proto_msgTypes[0]
+	mi := &file_dex_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56,7 +56,7 @@ func (x *GetPokemonRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPokemonRequest.ProtoReflect.Descriptor instead.
 func (*GetPokemonRequest) Descriptor() ([]byte, []int) {
-	return file_proto_dex_proto_rawDescGZIP(), []int{0}
+	return file_dex_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *GetPokemonRequest) GetPokemonId() int32 {
@@ -85,7 +85,7 @@ type PokemonResponse struct {
 
 func (x *PokemonResponse) Reset() {
 	*x = PokemonResponse{}
-	mi := &file_proto_dex_proto_msgTypes[1]
+	mi := &file_dex_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -97,7 +97,7 @@ func (x *PokemonResponse) String() string {
 func (*PokemonResponse) ProtoMessage() {}
 
 func (x *PokemonResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_dex_proto_msgTypes[1]
+	mi := &file_dex_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -110,7 +110,7 @@ func (x *PokemonResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PokemonResponse.ProtoReflect.Descriptor instead.
 func (*PokemonResponse) Descriptor() ([]byte, []int) {
-	return file_proto_dex_proto_rawDescGZIP(), []int{1}
+	return file_dex_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *PokemonResponse) GetPokemonId() int32 {
@@ -201,7 +201,7 @@ type AbilityInfo struct {
 
 func (x *AbilityInfo) Reset() {
 	*x = AbilityInfo{}
-	mi := &file_proto_dex_proto_msgTypes[2]
+	mi := &file_dex_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -213,7 +213,7 @@ func (x *AbilityInfo) String() string {
 func (*AbilityInfo) ProtoMessage() {}
 
 func (x *AbilityInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_dex_proto_msgTypes[2]
+	mi := &file_dex_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -226,7 +226,7 @@ func (x *AbilityInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AbilityInfo.ProtoReflect.Descriptor instead.
 func (*AbilityInfo) Descriptor() ([]byte, []int) {
-	return file_proto_dex_proto_rawDescGZIP(), []int{2}
+	return file_dex_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *AbilityInfo) GetAbilityId() int32 {
@@ -260,7 +260,7 @@ type GetLearnableMovesRequest struct {
 
 func (x *GetLearnableMovesRequest) Reset() {
 	*x = GetLearnableMovesRequest{}
-	mi := &file_proto_dex_proto_msgTypes[3]
+	mi := &file_dex_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -272,7 +272,7 @@ func (x *GetLearnableMovesRequest) String() string {
 func (*GetLearnableMovesRequest) ProtoMessage() {}
 
 func (x *GetLearnableMovesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_dex_proto_msgTypes[3]
+	mi := &file_dex_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -285,7 +285,7 @@ func (x *GetLearnableMovesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetLearnableMovesRequest.ProtoReflect.Descriptor instead.
 func (*GetLearnableMovesRequest) Descriptor() ([]byte, []int) {
-	return file_proto_dex_proto_rawDescGZIP(), []int{3}
+	return file_dex_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetLearnableMovesRequest) GetPokemonId() int32 {
@@ -304,7 +304,7 @@ type LearnableMovesResponse struct {
 
 func (x *LearnableMovesResponse) Reset() {
 	*x = LearnableMovesResponse{}
-	mi := &file_proto_dex_proto_msgTypes[4]
+	mi := &file_dex_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -316,7 +316,7 @@ func (x *LearnableMovesResponse) String() string {
 func (*LearnableMovesResponse) ProtoMessage() {}
 
 func (x *LearnableMovesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_dex_proto_msgTypes[4]
+	mi := &file_dex_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -329,7 +329,7 @@ func (x *LearnableMovesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LearnableMovesResponse.ProtoReflect.Descriptor instead.
 func (*LearnableMovesResponse) Descriptor() ([]byte, []int) {
-	return file_proto_dex_proto_rawDescGZIP(), []int{4}
+	return file_dex_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *LearnableMovesResponse) GetMoves() []*MoveResponse {
@@ -349,7 +349,7 @@ type GetMoveRequest struct {
 
 func (x *GetMoveRequest) Reset() {
 	*x = GetMoveRequest{}
-	mi := &file_proto_dex_proto_msgTypes[5]
+	mi := &file_dex_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -361,7 +361,7 @@ func (x *GetMoveRequest) String() string {
 func (*GetMoveRequest) ProtoMessage() {}
 
 func (x *GetMoveRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_dex_proto_msgTypes[5]
+	mi := &file_dex_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -374,7 +374,7 @@ func (x *GetMoveRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMoveRequest.ProtoReflect.Descriptor instead.
 func (*GetMoveRequest) Descriptor() ([]byte, []int) {
-	return file_proto_dex_proto_rawDescGZIP(), []int{5}
+	return file_dex_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetMoveRequest) GetMoveId() int32 {
@@ -393,13 +393,14 @@ type MoveResponse struct {
 	Power         int32                  `protobuf:"varint,5,opt,name=power,proto3" json:"power,omitempty"`                               // 威力（固定・変動ダメージ技の場合は 0）
 	Accuracy      int32                  `protobuf:"varint,6,opt,name=accuracy,proto3" json:"accuracy,omitempty"`                         // 命中率（必中技の場合は 0）
 	Pp            int32                  `protobuf:"varint,7,opt,name=pp,proto3" json:"pp,omitempty"`                                     // PP
+	Priority      int32                  `protobuf:"varint,8,opt,name=priority,proto3" json:"priority,omitempty"`                         // 優先度（-7〜+5）
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *MoveResponse) Reset() {
 	*x = MoveResponse{}
-	mi := &file_proto_dex_proto_msgTypes[6]
+	mi := &file_dex_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -411,7 +412,7 @@ func (x *MoveResponse) String() string {
 func (*MoveResponse) ProtoMessage() {}
 
 func (x *MoveResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_dex_proto_msgTypes[6]
+	mi := &file_dex_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -424,7 +425,7 @@ func (x *MoveResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MoveResponse.ProtoReflect.Descriptor instead.
 func (*MoveResponse) Descriptor() ([]byte, []int) {
-	return file_proto_dex_proto_rawDescGZIP(), []int{6}
+	return file_dex_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *MoveResponse) GetMoveId() int32 {
@@ -476,6 +477,13 @@ func (x *MoveResponse) GetPp() int32 {
 	return 0
 }
 
+func (x *MoveResponse) GetPriority() int32 {
+	if x != nil {
+		return x.Priority
+	}
+	return 0
+}
+
 // ── GetAbility ─────────────────────────────────────────────
 type GetAbilityRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -486,7 +494,7 @@ type GetAbilityRequest struct {
 
 func (x *GetAbilityRequest) Reset() {
 	*x = GetAbilityRequest{}
-	mi := &file_proto_dex_proto_msgTypes[7]
+	mi := &file_dex_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -498,7 +506,7 @@ func (x *GetAbilityRequest) String() string {
 func (*GetAbilityRequest) ProtoMessage() {}
 
 func (x *GetAbilityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_dex_proto_msgTypes[7]
+	mi := &file_dex_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -511,7 +519,7 @@ func (x *GetAbilityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAbilityRequest.ProtoReflect.Descriptor instead.
 func (*GetAbilityRequest) Descriptor() ([]byte, []int) {
-	return file_proto_dex_proto_rawDescGZIP(), []int{7}
+	return file_dex_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetAbilityRequest) GetAbilityId() int32 {
@@ -531,7 +539,7 @@ type AbilityResponse struct {
 
 func (x *AbilityResponse) Reset() {
 	*x = AbilityResponse{}
-	mi := &file_proto_dex_proto_msgTypes[8]
+	mi := &file_dex_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -543,7 +551,7 @@ func (x *AbilityResponse) String() string {
 func (*AbilityResponse) ProtoMessage() {}
 
 func (x *AbilityResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_dex_proto_msgTypes[8]
+	mi := &file_dex_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -556,7 +564,7 @@ func (x *AbilityResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AbilityResponse.ProtoReflect.Descriptor instead.
 func (*AbilityResponse) Descriptor() ([]byte, []int) {
-	return file_proto_dex_proto_rawDescGZIP(), []int{8}
+	return file_dex_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *AbilityResponse) GetAbilityId() int32 {
@@ -583,7 +591,7 @@ type GetItemRequest struct {
 
 func (x *GetItemRequest) Reset() {
 	*x = GetItemRequest{}
-	mi := &file_proto_dex_proto_msgTypes[9]
+	mi := &file_dex_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -595,7 +603,7 @@ func (x *GetItemRequest) String() string {
 func (*GetItemRequest) ProtoMessage() {}
 
 func (x *GetItemRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_dex_proto_msgTypes[9]
+	mi := &file_dex_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -608,7 +616,7 @@ func (x *GetItemRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetItemRequest.ProtoReflect.Descriptor instead.
 func (*GetItemRequest) Descriptor() ([]byte, []int) {
-	return file_proto_dex_proto_rawDescGZIP(), []int{9}
+	return file_dex_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetItemRequest) GetItemId() int32 {
@@ -630,7 +638,7 @@ type ItemResponse struct {
 
 func (x *ItemResponse) Reset() {
 	*x = ItemResponse{}
-	mi := &file_proto_dex_proto_msgTypes[10]
+	mi := &file_dex_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -642,7 +650,7 @@ func (x *ItemResponse) String() string {
 func (*ItemResponse) ProtoMessage() {}
 
 func (x *ItemResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_dex_proto_msgTypes[10]
+	mi := &file_dex_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -655,7 +663,7 @@ func (x *ItemResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ItemResponse.ProtoReflect.Descriptor instead.
 func (*ItemResponse) Descriptor() ([]byte, []int) {
-	return file_proto_dex_proto_rawDescGZIP(), []int{10}
+	return file_dex_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ItemResponse) GetItemId() int32 {
@@ -695,7 +703,7 @@ type GetPokemonListRequest struct {
 
 func (x *GetPokemonListRequest) Reset() {
 	*x = GetPokemonListRequest{}
-	mi := &file_proto_dex_proto_msgTypes[11]
+	mi := &file_dex_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -707,7 +715,7 @@ func (x *GetPokemonListRequest) String() string {
 func (*GetPokemonListRequest) ProtoMessage() {}
 
 func (x *GetPokemonListRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_dex_proto_msgTypes[11]
+	mi := &file_dex_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -720,7 +728,7 @@ func (x *GetPokemonListRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPokemonListRequest.ProtoReflect.Descriptor instead.
 func (*GetPokemonListRequest) Descriptor() ([]byte, []int) {
-	return file_proto_dex_proto_rawDescGZIP(), []int{11}
+	return file_dex_proto_rawDescGZIP(), []int{11}
 }
 
 type PokemonListResponse struct {
@@ -732,7 +740,7 @@ type PokemonListResponse struct {
 
 func (x *PokemonListResponse) Reset() {
 	*x = PokemonListResponse{}
-	mi := &file_proto_dex_proto_msgTypes[12]
+	mi := &file_dex_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -744,7 +752,7 @@ func (x *PokemonListResponse) String() string {
 func (*PokemonListResponse) ProtoMessage() {}
 
 func (x *PokemonListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_dex_proto_msgTypes[12]
+	mi := &file_dex_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -757,7 +765,7 @@ func (x *PokemonListResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PokemonListResponse.ProtoReflect.Descriptor instead.
 func (*PokemonListResponse) Descriptor() ([]byte, []int) {
-	return file_proto_dex_proto_rawDescGZIP(), []int{12}
+	return file_dex_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *PokemonListResponse) GetPokemon() []*PokemonList {
@@ -777,7 +785,7 @@ type PokemonList struct {
 
 func (x *PokemonList) Reset() {
 	*x = PokemonList{}
-	mi := &file_proto_dex_proto_msgTypes[13]
+	mi := &file_dex_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -789,7 +797,7 @@ func (x *PokemonList) String() string {
 func (*PokemonList) ProtoMessage() {}
 
 func (x *PokemonList) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_dex_proto_msgTypes[13]
+	mi := &file_dex_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -802,7 +810,7 @@ func (x *PokemonList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PokemonList.ProtoReflect.Descriptor instead.
 func (*PokemonList) Descriptor() ([]byte, []int) {
-	return file_proto_dex_proto_rawDescGZIP(), []int{13}
+	return file_dex_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *PokemonList) GetPokemonId() int32 {
@@ -819,11 +827,11 @@ func (x *PokemonList) GetName() string {
 	return ""
 }
 
-var File_proto_dex_proto protoreflect.FileDescriptor
+var File_dex_proto protoreflect.FileDescriptor
 
-const file_proto_dex_proto_rawDesc = "" +
+const file_dex_proto_rawDesc = "" +
 	"\n" +
-	"\x0fproto/dex.proto\x12\x03dex\"2\n" +
+	"\tdex.proto\x12\x03dex\"2\n" +
 	"\x11GetPokemonRequest\x12\x1d\n" +
 	"\n" +
 	"pokemon_id\x18\x01 \x01(\x05R\tpokemonId\"\xf4\x02\n" +
@@ -854,7 +862,7 @@ const file_proto_dex_proto_rawDesc = "" +
 	"\x16LearnableMovesResponse\x12'\n" +
 	"\x05moves\x18\x01 \x03(\v2\x11.dex.MoveResponseR\x05moves\")\n" +
 	"\x0eGetMoveRequest\x12\x17\n" +
-	"\amove_id\x18\x01 \x01(\x05R\x06moveId\"\xb9\x01\n" +
+	"\amove_id\x18\x01 \x01(\x05R\x06moveId\"\xd5\x01\n" +
 	"\fMoveResponse\x12\x17\n" +
 	"\amove_id\x18\x01 \x01(\x05R\x06moveId\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x17\n" +
@@ -862,7 +870,8 @@ const file_proto_dex_proto_rawDesc = "" +
 	"\fdamage_class\x18\x04 \x01(\tR\vdamageClass\x12\x14\n" +
 	"\x05power\x18\x05 \x01(\x05R\x05power\x12\x1a\n" +
 	"\baccuracy\x18\x06 \x01(\x05R\baccuracy\x12\x0e\n" +
-	"\x02pp\x18\a \x01(\x05R\x02pp\"2\n" +
+	"\x02pp\x18\a \x01(\x05R\x02pp\x12\x1a\n" +
+	"\bpriority\x18\b \x01(\x05R\bpriority\"2\n" +
 	"\x11GetAbilityRequest\x12\x1d\n" +
 	"\n" +
 	"ability_id\x18\x01 \x01(\x05R\tabilityId\"S\n" +
@@ -897,19 +906,19 @@ const file_proto_dex_proto_rawDesc = "" +
 	"\x0eGetPokemonList\x12\x1a.dex.GetPokemonListRequest\x1a\x18.dex.PokemonListResponseB\x0fZ\rpob/dex/protob\x06proto3"
 
 var (
-	file_proto_dex_proto_rawDescOnce sync.Once
-	file_proto_dex_proto_rawDescData []byte
+	file_dex_proto_rawDescOnce sync.Once
+	file_dex_proto_rawDescData []byte
 )
 
-func file_proto_dex_proto_rawDescGZIP() []byte {
-	file_proto_dex_proto_rawDescOnce.Do(func() {
-		file_proto_dex_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_dex_proto_rawDesc), len(file_proto_dex_proto_rawDesc)))
+func file_dex_proto_rawDescGZIP() []byte {
+	file_dex_proto_rawDescOnce.Do(func() {
+		file_dex_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_dex_proto_rawDesc), len(file_dex_proto_rawDesc)))
 	})
-	return file_proto_dex_proto_rawDescData
+	return file_dex_proto_rawDescData
 }
 
-var file_proto_dex_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
-var file_proto_dex_proto_goTypes = []any{
+var file_dex_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_dex_proto_goTypes = []any{
 	(*GetPokemonRequest)(nil),        // 0: dex.GetPokemonRequest
 	(*PokemonResponse)(nil),          // 1: dex.PokemonResponse
 	(*AbilityInfo)(nil),              // 2: dex.AbilityInfo
@@ -925,7 +934,7 @@ var file_proto_dex_proto_goTypes = []any{
 	(*PokemonListResponse)(nil),      // 12: dex.PokemonListResponse
 	(*PokemonList)(nil),              // 13: dex.PokemonList
 }
-var file_proto_dex_proto_depIdxs = []int32{
+var file_dex_proto_depIdxs = []int32{
 	2,  // 0: dex.PokemonResponse.abilities:type_name -> dex.AbilityInfo
 	6,  // 1: dex.LearnableMovesResponse.moves:type_name -> dex.MoveResponse
 	13, // 2: dex.PokemonListResponse.pokemon:type_name -> dex.PokemonList
@@ -948,26 +957,26 @@ var file_proto_dex_proto_depIdxs = []int32{
 	0,  // [0:3] is the sub-list for field type_name
 }
 
-func init() { file_proto_dex_proto_init() }
-func file_proto_dex_proto_init() {
-	if File_proto_dex_proto != nil {
+func init() { file_dex_proto_init() }
+func file_dex_proto_init() {
+	if File_dex_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_dex_proto_rawDesc), len(file_proto_dex_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_dex_proto_rawDesc), len(file_dex_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_proto_dex_proto_goTypes,
-		DependencyIndexes: file_proto_dex_proto_depIdxs,
-		MessageInfos:      file_proto_dex_proto_msgTypes,
+		GoTypes:           file_dex_proto_goTypes,
+		DependencyIndexes: file_dex_proto_depIdxs,
+		MessageInfos:      file_dex_proto_msgTypes,
 	}.Build()
-	File_proto_dex_proto = out.File
-	file_proto_dex_proto_goTypes = nil
-	file_proto_dex_proto_depIdxs = nil
+	File_dex_proto = out.File
+	file_dex_proto_goTypes = nil
+	file_dex_proto_depIdxs = nil
 }

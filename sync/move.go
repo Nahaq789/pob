@@ -21,6 +21,7 @@ type Move struct {
 	Power       *int
 	Accuracy    *int
 	Pp          int
+	Priority    int
 	DamageClass string
 	Description string
 }
@@ -46,6 +47,7 @@ type moveResponse struct {
 	Power             *int `json:"power"`
 	Accuracy          *int `json:"accuracy"`
 	Pp                int  `json:"pp"`
+	Priority          int  `json:"priority"`
 	FlavorTextEntries []struct {
 		Language struct {
 			Name string `json:"name"`
@@ -125,6 +127,7 @@ func (m *MoveRepository) toMoves(responses []*moveResponse) []Move {
 			Power:       res.Power,
 			Accuracy:    res.Accuracy,
 			Pp:          res.Pp,
+			Priority:    res.Priority,
 			Description: jaDesc,
 		})
 	}
@@ -153,6 +156,10 @@ func (m *MoveRepository) read(gen int) ([]Move, error) {
 			if err != nil {
 				return nil, err
 			}
+			priority, err := strconv.Atoi(r[7])
+			if err != nil {
+				return nil, err
+			}
 			var power *int
 			if r[4] != "" {
 				v, err := strconv.Atoi(r[4])
@@ -169,7 +176,7 @@ func (m *MoveRepository) read(gen int) ([]Move, error) {
 				}
 				accuracy = &v
 			}
-			if r[7] == "" {
+			if r[8] == "" {
 				return nil, fmt.Errorf("description is empty at row: %v", r)
 			}
 
@@ -181,7 +188,8 @@ func (m *MoveRepository) read(gen int) ([]Move, error) {
 				Power:       power,
 				Accuracy:    accuracy,
 				Pp:          pp,
-				Description: r[7],
+				Priority:    priority,
+				Description: r[8],
 			})
 		}
 		return moves, nil
@@ -204,6 +212,7 @@ func (m *MoveRepository) insert(ctx context.Context, gen int) error {
 	powers := make([]*int, len(moves))
 	accuracies := make([]*int, len(moves))
 	pps := make([]int, len(moves))
+	priorities := make([]int, len(moves))
 	descriptions := make([]string, len(moves))
 
 	for i, mv := range moves {
@@ -214,13 +223,14 @@ func (m *MoveRepository) insert(ctx context.Context, gen int) error {
 		powers[i] = mv.Power
 		accuracies[i] = mv.Accuracy
 		pps[i] = mv.Pp
+		priorities[i] = mv.Priority
 		descriptions[i] = mv.Description
 	}
 
 	_, err = db.Exec(ctx, `
-		INSERT INTO moves (id, name, type_id, damage_class, power, accuracy, pp, description)
-		SELECT * FROM UNNEST($1::int[], $2::text[], $3::int[], $4::text[], $5::int[], $6::int[], $7::int[], $8::text[])
-	`, ids, names, typeIds, damageClasses, powers, accuracies, pps, descriptions)
+		INSERT INTO moves (id, name, type_id, damage_class, power, accuracy, pp, priority, description)
+		SELECT * FROM UNNEST($1::int[], $2::text[], $3::int[], $4::text[], $5::int[], $6::int[], $7::int[], $8::int[], $9::text[])
+	`, ids, names, typeIds, damageClasses, powers, accuracies, pps, priorities, descriptions)
 	if err != nil {
 		return err
 	}
@@ -240,7 +250,7 @@ func (m *MoveRepository) write(ctx context.Context, gen int) error {
 	moves := m.toMoves(responses)
 	moves = SortById(moves)
 	records := [][]string{
-		{"id", "name", "type_id", "damage_class", "power", "accuracy", "pp", "description"},
+		{"id", "name", "type_id", "damage_class", "power", "accuracy", "pp", "priority", "description"},
 	}
 
 	for _, mv := range moves {
@@ -260,6 +270,7 @@ func (m *MoveRepository) write(ctx context.Context, gen int) error {
 			power,
 			accuracy,
 			strconv.Itoa(mv.Pp),
+			strconv.Itoa(mv.Priority),
 			Replacer(mv.Description),
 		})
 	}

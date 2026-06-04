@@ -393,6 +393,7 @@ type MoveResponse struct {
 	Power         int32                  `protobuf:"varint,5,opt,name=power,proto3" json:"power,omitempty"`                               // 威力（固定・変動ダメージ技の場合は 0）
 	Accuracy      int32                  `protobuf:"varint,6,opt,name=accuracy,proto3" json:"accuracy,omitempty"`                         // 命中率（必中技の場合は 0）
 	Pp            int32                  `protobuf:"varint,7,opt,name=pp,proto3" json:"pp,omitempty"`                                     // PP
+	Priority      int32                  `protobuf:"varint,8,opt,name=priority,proto3" json:"priority,omitempty"`                         // 優先度（-7〜+5）
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -472,6 +473,13 @@ func (x *MoveResponse) GetAccuracy() int32 {
 func (x *MoveResponse) GetPp() int32 {
 	if x != nil {
 		return x.Pp
+	}
+	return 0
+}
+
+func (x *MoveResponse) GetPriority() int32 {
+	if x != nil {
+		return x.Priority
 	}
 	return 0
 }
@@ -854,7 +862,7 @@ const file_dex_proto_rawDesc = "" +
 	"\x16LearnableMovesResponse\x12'\n" +
 	"\x05moves\x18\x01 \x03(\v2\x11.dex.MoveResponseR\x05moves\")\n" +
 	"\x0eGetMoveRequest\x12\x17\n" +
-	"\amove_id\x18\x01 \x01(\x05R\x06moveId\"\xb9\x01\n" +
+	"\amove_id\x18\x01 \x01(\x05R\x06moveId\"\xd5\x01\n" +
 	"\fMoveResponse\x12\x17\n" +
 	"\amove_id\x18\x01 \x01(\x05R\x06moveId\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x17\n" +
@@ -862,7 +870,8 @@ const file_dex_proto_rawDesc = "" +
 	"\fdamage_class\x18\x04 \x01(\tR\vdamageClass\x12\x14\n" +
 	"\x05power\x18\x05 \x01(\x05R\x05power\x12\x1a\n" +
 	"\baccuracy\x18\x06 \x01(\x05R\baccuracy\x12\x0e\n" +
-	"\x02pp\x18\a \x01(\x05R\x02pp\"2\n" +
+	"\x02pp\x18\a \x01(\x05R\x02pp\x12\x1a\n" +
+	"\bpriority\x18\b \x01(\x05R\bpriority\"2\n" +
 	"\x11GetAbilityRequest\x12\x1d\n" +
 	"\n" +
 	"ability_id\x18\x01 \x01(\x05R\tabilityId\"S\n" +

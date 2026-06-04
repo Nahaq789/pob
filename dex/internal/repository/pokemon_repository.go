@@ -150,6 +150,7 @@ func (p *PokemonRepository) FindMovesByPokemonId(ctx context.Context, pokemonId 
 			Power:       power,
 			Accuracy:    accuracy,
 			Pp:          m.Move.Pp,
+			Priority:    m.Move.Priority,
 		}
 	}
 

@@ -65,6 +65,7 @@ func (d *DexHandler) GetLearnableMoves(ctx context.Context, r *gen.GetLearnableM
 			Power:       int32(m.Power),
 			Accuracy:    int32(m.Accuracy),
 			Pp:          int32(m.Pp),
+			Priority:    int32(m.Priority),
 		}
 	}
 
@@ -85,6 +86,7 @@ func (d *DexHandler) GetMove(ctx context.Context, r *gen.GetMoveRequest) (*gen.M
 		Power:       int32(m.Power),
 		Accuracy:    int32(m.Accuracy),
 		Pp:          int32(m.Pp),
+		Priority:    int32(m.Priority),
 	}, nil
 }
 

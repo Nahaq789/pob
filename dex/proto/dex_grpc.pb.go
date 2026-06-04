@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.2
 // - protoc             v3.21.12
-// source: proto/dex.proto
+// source: dex.proto
 
 package proto
 
@@ -307,5 +307,5 @@ var DexService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/dex.proto",
+	Metadata: "dex.proto",
 }
