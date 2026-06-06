@@ -8,14 +8,14 @@
 
 ## Stack
 
-| レイヤー | 技術 |
-|----------|------|
-| Frontend | Next.js |
-| Backend | Go (Gin) |
-| Inter-service | gRPC |
-| Front ↔ Back | REST / WebSocket |
-| Cache | Redis |
-| Auth | JWT (RS256) |
+| レイヤー      | 技術             |
+| ------------- | ---------------- |
+| Frontend      | Next.js          |
+| Backend       | Go (Gin)         |
+| Inter-service | gRPC             |
+| Front ↔ Back  | REST / WebSocket |
+| Cache         | Redis            |
+| Auth          | JWT (RS256)      |
 
 ## Commands
 
@@ -27,8 +27,15 @@ docker compose build <service>                        # 特定サービスのみ
 
 ## Rules
 
+詳細ルールは `.claude/rules/` 配下を参照。
+
 - @.claude/rules/architecture.md
 - @.claude/rules/auth.md
 - @.claude/rules/database.md
 - @.claude/rules/battle.md
 - @.claude/rules/coding.md
+
+## Note for agents
+
+Codex など他のAIエージェントはルートの `AGENTS.md` を参照すること。
+内容は `.claude/rules/` と同期している。
