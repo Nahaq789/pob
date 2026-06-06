@@ -23,4 +23,3 @@ func NewUser(userName, passwordHash string) User {
 		UpdatedAt:    time.Now(),
 	}
 }
-
