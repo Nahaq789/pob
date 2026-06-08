@@ -79,6 +79,7 @@ type PokemonResponse struct {
 	BaseSpDefense int32                  `protobuf:"varint,9,opt,name=base_sp_defense,json=baseSpDefense,proto3" json:"base_sp_defense,omitempty"` // 種族値 とくぼう
 	BaseSpeed     int32                  `protobuf:"varint,10,opt,name=base_speed,json=baseSpeed,proto3" json:"base_speed,omitempty"`              // 種族値 すばやさ
 	Abilities     []*AbilityInfo         `protobuf:"bytes,11,rep,name=abilities,proto3" json:"abilities,omitempty"`                                // 特性リスト（通常特性・夢特性を含む）
+	WeightKg      float32                `protobuf:"fixed32,12,opt,name=weight_kg,json=weightKg,proto3" json:"weight_kg,omitempty"`                // 体重(kg)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -188,6 +189,13 @@ func (x *PokemonResponse) GetAbilities() []*AbilityInfo {
 		return x.Abilities
 	}
 	return nil
+}
+
+func (x *PokemonResponse) GetWeightKg() float32 {
+	if x != nil {
+		return x.WeightKg
+	}
+	return 0
 }
 
 type AbilityInfo struct {
@@ -834,7 +842,7 @@ const file_dex_proto_rawDesc = "" +
 	"\tdex.proto\x12\x03dex\"2\n" +
 	"\x11GetPokemonRequest\x12\x1d\n" +
 	"\n" +
-	"pokemon_id\x18\x01 \x01(\x05R\tpokemonId\"\xf4\x02\n" +
+	"pokemon_id\x18\x01 \x01(\x05R\tpokemonId\"\x91\x03\n" +
 	"\x0fPokemonResponse\x12\x1d\n" +
 	"\n" +
 	"pokemon_id\x18\x01 \x01(\x05R\tpokemonId\x12\x12\n" +
@@ -850,7 +858,8 @@ const file_dex_proto_rawDesc = "" +
 	"\n" +
 	"base_speed\x18\n" +
 	" \x01(\x05R\tbaseSpeed\x12.\n" +
-	"\tabilities\x18\v \x03(\v2\x10.dex.AbilityInfoR\tabilities\"l\n" +
+	"\tabilities\x18\v \x03(\v2\x10.dex.AbilityInfoR\tabilities\x12\x1b\n" +
+	"\tweight_kg\x18\f \x01(\x02R\bweightKg\"l\n" +
 	"\vAbilityInfo\x12\x1d\n" +
 	"\n" +
 	"ability_id\x18\x01 \x01(\x05R\tabilityId\x12!\n" +

@@ -45,6 +45,7 @@ func (d *DexHandler) GetPokemon(ctx context.Context, r *gen.GetPokemonRequest) (
 		BaseSpAttack:  int32(p.BaseSpAttack),
 		BaseSpDefense: int32(p.BaseSpDefense),
 		BaseSpeed:     int32(p.BaseSpeed),
+		WeightKg:      float32(p.WeightKg),
 		Abilities:     abilities,
 	}, nil
 }

@@ -24,6 +24,7 @@ type Pokemon struct {
 	BaseSpAttack  int
 	BaseSpDefense int
 	BaseSpeed     int
+	WeightKg      float64
 }
 
 func (p Pokemon) GetId() int {
@@ -33,8 +34,9 @@ func (p Pokemon) GetId() int {
 // pokemonApiResponse is the shared response type for /pokemon/{id}.
 // Used by PokemonRepository, PokemonAbilityRepository, and PokemonMoveRepository.
 type pokemonApiResponse struct {
-	Id    int `json:"id"`
-	Types []struct {
+	Id     int `json:"id"`
+	Weight int `json:"weight"`
+	Types  []struct {
 		Slot int `json:"slot"`
 		Type struct {
 			Url string `json:"url"`
@@ -176,6 +178,7 @@ func (p *PokemonRepository) toPokemons(results []*pokemonFetchResult) []Pokemon 
 			BaseSpAttack:  statsMap["special-attack"],
 			BaseSpDefense: statsMap["special-defense"],
 			BaseSpeed:     statsMap["speed"],
+			WeightKg:      float64(res.pokemon.Weight) / 10,
 		})
 	}
 	return pokemons
@@ -228,6 +231,10 @@ func (p *PokemonRepository) read(gen int) ([]Pokemon, error) {
 			if err != nil {
 				return nil, err
 			}
+			weightKg, err := strconv.ParseFloat(r[10], 64)
+			if err != nil {
+				return nil, err
+			}
 			pokemons = append(pokemons, Pokemon{
 				Id:            id,
 				Name:          r[1],
@@ -239,6 +246,7 @@ func (p *PokemonRepository) read(gen int) ([]Pokemon, error) {
 				BaseSpAttack:  baseSpAttack,
 				BaseSpDefense: baseSpDefense,
 				BaseSpeed:     baseSpeed,
+				WeightKg:      weightKg,
 			})
 		}
 		return pokemons, nil
@@ -257,7 +265,7 @@ func (p *PokemonRepository) write(ctx context.Context, gen int) error {
 	pokemons = SortById(pokemons)
 
 	records := [][]string{
-		{"id", "name", "type1_id", "type2_id", "base_hp", "base_attack", "base_defense", "base_sp_attack", "base_sp_defense", "base_speed"},
+		{"id", "name", "type1_id", "type2_id", "base_hp", "base_attack", "base_defense", "base_sp_attack", "base_sp_defense", "base_speed", "weight_kg"},
 	}
 	for _, pk := range pokemons {
 		type2Id := ""
@@ -275,6 +283,7 @@ func (p *PokemonRepository) write(ctx context.Context, gen int) error {
 			strconv.Itoa(pk.BaseSpAttack),
 			strconv.Itoa(pk.BaseSpDefense),
 			strconv.Itoa(pk.BaseSpeed),
+			strconv.FormatFloat(pk.WeightKg, 'f', 1, 64),
 		})
 	}
 
@@ -305,6 +314,7 @@ func (p *PokemonRepository) insert(ctx context.Context, gen int) error {
 	baseSpAttacks := make([]int, len(pokemons))
 	baseSpDefenses := make([]int, len(pokemons))
 	baseSpeeds := make([]int, len(pokemons))
+	weightKgs := make([]float64, len(pokemons))
 
 	for i, pk := range pokemons {
 		ids[i] = pk.Id
@@ -317,12 +327,13 @@ func (p *PokemonRepository) insert(ctx context.Context, gen int) error {
 		baseSpAttacks[i] = pk.BaseSpAttack
 		baseSpDefenses[i] = pk.BaseSpDefense
 		baseSpeeds[i] = pk.BaseSpeed
+		weightKgs[i] = pk.WeightKg
 	}
 
 	_, err = db.Exec(ctx, `
-		INSERT INTO pokemon (id, name, type1_id, type2_id, base_hp, base_attack, base_defense, base_sp_attack, base_sp_defense, base_speed)
-		SELECT * FROM UNNEST($1::int[], $2::text[], $3::int[], $4::int[], $5::int[], $6::int[], $7::int[], $8::int[], $9::int[], $10::int[])
-	`, ids, names, type1Ids, type2Ids, baseHps, baseAttacks, baseDefenses, baseSpAttacks, baseSpDefenses, baseSpeeds)
+		INSERT INTO pokemon (id, name, type1_id, type2_id, base_hp, base_attack, base_defense, base_sp_attack, base_sp_defense, base_speed, weight_kg)
+		SELECT * FROM UNNEST($1::int[], $2::text[], $3::int[], $4::int[], $5::int[], $6::int[], $7::int[], $8::int[], $9::int[], $10::int[], $11::numeric[])
+	`, ids, names, type1Ids, type2Ids, baseHps, baseAttacks, baseDefenses, baseSpAttacks, baseSpDefenses, baseSpeeds, weightKgs)
 	if err != nil {
 		return err
 	}

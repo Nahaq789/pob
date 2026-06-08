@@ -16,6 +16,7 @@ type Pokemon struct {
 	BaseSpAttack  int
 	BaseSpDefense int
 	BaseSpeed     int
+	WeightKg      float64
 	Abilities     []AbilitySlot
 }
 

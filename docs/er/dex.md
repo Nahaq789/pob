@@ -16,6 +16,7 @@ erDiagram
         INT base_sp_attack "種族値とくこう"
         INT base_sp_defense "種族値とくぼう"
         INT base_speed "種族値すばやさ"
+        DECIMAL weight_kg "体重(kg)"
     }
 
     abilities {

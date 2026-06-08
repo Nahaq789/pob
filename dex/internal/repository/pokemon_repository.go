@@ -94,6 +94,7 @@ func toModel(e entity.Pokemon, abilities []entity.PokemonAbility) *model.Pokemon
 		BaseSpAttack:  e.BaseSpAttack,
 		BaseSpDefense: e.BaseSpDefense,
 		BaseSpeed:     e.BaseSpeed,
+		WeightKg:      e.WeightKg,
 		Abilities:     slots,
 	}
 }

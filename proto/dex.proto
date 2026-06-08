@@ -30,6 +30,7 @@ message PokemonResponse {
   int32  base_sp_defense = 9;  // 種族値 とくぼう
   int32  base_speed      = 10; // 種族値 すばやさ
   repeated AbilityInfo abilities = 11; // 特性リスト（通常特性・夢特性を含む）
+  float  weight_kg       = 12; // 体重(kg)
 }
 
 message AbilityInfo {

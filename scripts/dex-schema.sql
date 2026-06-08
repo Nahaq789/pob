@@ -21,7 +21,8 @@ CREATE TABLE pokemon (
     base_defense    INT          NOT NULL,
     base_sp_attack  INT          NOT NULL,
     base_sp_defense INT          NOT NULL,
-    base_speed      INT          NOT NULL
+    base_speed      INT          NOT NULL,
+    weight_kg       DECIMAL(6,1) NOT NULL
 );
 
 CREATE TABLE pokemon_abilities (
