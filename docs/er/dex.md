@@ -2,12 +2,12 @@
 erDiagram
     types {
         INT id PK "タイプID"
-        VARCHAR_20 name "タイプ名"
+        VARCHAR_50 name "タイプ名"
     }
 
     pokemon {
         INT id PK "ポケモンID"
-        VARCHAR_50 name "ポケモン名"
+        VARCHAR_100 name "ポケモン名"
         INT type1_id FK "タイプ1ID"
         INT type2_id FK "タイプ2ID"
         INT base_hp "種族値HP"
@@ -21,25 +21,27 @@ erDiagram
 
     abilities {
         INT id PK "特性ID"
-        VARCHAR_50 name "特性名"
+        VARCHAR_100 name "特性名"
         TEXT description "説明文"
     }
 
     pokemon_abilities {
         INT pokemon_id FK "ポケモンID"
         INT ability_id FK "特性ID"
-        SMALLINT slot "スロット"
+        INT slot "スロット"
+        BOOLEAN is_hidden "隠れ特性"
     }
 
     moves {
         INT id PK "技ID"
-        VARCHAR_50 name "技名"
+        VARCHAR_100 name "技名"
         INT type_id FK "タイプID"
-        VARCHAR_10 damage_class "分類"
+        VARCHAR_20 damage_class "分類"
         INT power "威力"
         INT accuracy "命中率"
         INT pp "PP"
         INT priority "優先度"
+        TEXT description "説明文"
     }
 
     pokemon_moves {
