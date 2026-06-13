@@ -24,7 +24,7 @@ type AccuracyRank struct {
 }
 
 func NewAccuracyRank(h, e int) (AccuracyRank, error) {
-	s := min(max(h-e, -6), 6)
+	s := min(max(h-e, AccuracyMinStage), AccuracyMaxStage)
 	f, ok := accuracyRankTable[s]
 	if !ok {
 		return AccuracyRank{}, fmt.Errorf("accuracy rank: invalid stage %d", s)

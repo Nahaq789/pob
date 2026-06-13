@@ -98,6 +98,9 @@ func (r BasicRank) Reset() BasicRank {
 	return NewBasicRank()
 }
 
+func (r BasicRank) Value() float64 { return r.value }
+func (r BasicRank) Stage() int     { return r.stage }
+
 func message(delta int) string {
 	switch {
 	case delta == BasicMaxStage:
