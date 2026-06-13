@@ -39,32 +39,32 @@ func TestUp(t *testing.T) {
 		},
 		{
 			// stage=5 + up=3 → 8 → clamp 6, delta=1
-			name: "上限クランプ: delta=1",
+			name:         "上限クランプ: delta=1",
 			initialStage: 5, up: 3, wantStage: 6, wantValue: 4.0, wantMsg: "が あがった",
 		},
 		{
 			// stage=4 + up=4 → 8 → clamp 6, delta=2
-			name: "上限クランプ: delta=2",
+			name:         "上限クランプ: delta=2",
 			initialStage: 4, up: 4, wantStage: 6, wantValue: 4.0, wantMsg: "が ぐーんとあがった",
 		},
 		{
 			// stage=3 + up=4 → 7 → clamp 6, delta=3
-			name: "上限クランプ: delta=3以上",
+			name:         "上限クランプ: delta=3以上",
 			initialStage: 3, up: 4, wantStage: 6, wantValue: 4.0, wantMsg: "が ぐぐーんとあがった",
 		},
 		{
 			name: "MaxStage: stage=0から強制最大",
-			up:   MaxStage, wantStage: 6, wantValue: 4.0, wantMsg: "が さいだいまであがった",
+			up:   BasicMaxStage, wantStage: 6, wantValue: 4.0, wantMsg: "が さいだいまであがった",
 		},
 		{
-			name: "MaxStage: 途中から強制最大",
-			initialStage: 3, up: MaxStage, wantStage: 6, wantValue: 4.0, wantMsg: "が さいだいまであがった",
+			name:         "MaxStage: 途中から強制最大",
+			initialStage: 3, up: BasicMaxStage, wantStage: 6, wantValue: 4.0, wantMsg: "が さいだいまであがった",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := BasicRank{stage: tt.initialStage, value: basicRank[tt.initialStage]}
+			r := BasicRank{stage: tt.initialStage, value: basicRankMap[tt.initialStage]}
 			got, msg, err := r.Up(tt.up)
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
@@ -109,24 +109,24 @@ func TestDown(t *testing.T) {
 		},
 		{
 			// stage=-5 + down=3 → -8 → clamp -6, delta=-1
-			name: "下限クランプ: delta=-1",
+			name:         "下限クランプ: delta=-1",
 			initialStage: -5, down: 3, wantStage: -6, wantValue: 0.25, wantMsg: "が さがった",
 		},
 		{
 			// stage=-4 + down=4 → -8 → clamp -6, delta=-2
-			name: "下限クランプ: delta=-2",
+			name:         "下限クランプ: delta=-2",
 			initialStage: -4, down: 4, wantStage: -6, wantValue: 0.25, wantMsg: "が がくっとさがった",
 		},
 		{
 			// stage=-3 + down=4 → -7 → clamp -6, delta=-3
-			name: "下限クランプ: delta=-3以下",
+			name:         "下限クランプ: delta=-3以下",
 			initialStage: -3, down: 4, wantStage: -6, wantValue: 0.25, wantMsg: "が がくーんとさがった",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := BasicRank{stage: tt.initialStage, value: basicRank[tt.initialStage]}
+			r := BasicRank{stage: tt.initialStage, value: basicRankMap[tt.initialStage]}
 			got, msg, err := r.Down(tt.down)
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
@@ -145,7 +145,7 @@ func TestDown(t *testing.T) {
 }
 
 func TestReset(t *testing.T) {
-	r := BasicRank{stage: 4, value: basicRank[4]}
+	r := BasicRank{stage: 4, value: basicRankMap[4]}
 	got := r.Reset()
 	if got.stage != 0 {
 		t.Errorf("stage: got %d, want 0", got.stage)

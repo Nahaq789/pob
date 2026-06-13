@@ -2,7 +2,7 @@ package rank
 
 import "fmt"
 
-var basicRank = map[int]float64{
+var basicRankMap = map[int]float64{
 	0:  1.0,
 	1:  1.5,
 	2:  2.0,
@@ -19,20 +19,18 @@ var basicRank = map[int]float64{
 	-6: 0.25,
 }
 
-const MaxStage = 12
-const ResetStage = 0
-
 type BasicRank struct {
 	stage int
 	value float64
 }
 
 func NewBasicRank() BasicRank {
-	return BasicRank{stage: 0, value: 1.0}
+	f, _ := basicRankMap[ResetStage]
+	return BasicRank{stage: ResetStage, value: f}
 }
 
 func (r BasicRank) get(n int) (float64, error) {
-	f, ok := basicRank[n]
+	f, ok := basicRankMap[n]
 	if !ok {
 		return 0.0, fmt.Errorf("unexpected rank: %v", n)
 	}
@@ -51,10 +49,10 @@ func (r BasicRank) get(n int) (float64, error) {
 func (r BasicRank) Up(stage int) (BasicRank, string, error) {
 	// 「はらだいこ」や「いかりのつぼ」のような
 	// 現在の状態に関わらず能力値を最大まであげる場合の処理
-	if stage == MaxStage {
+	if stage == BasicMaxStage {
 		// 取得できないケースはありえないので、エラーチェックなし
-		f, _ := r.get(MaxStage)
-		return BasicRank{stage: 6, value: f}, message(MaxStage), nil
+		f, _ := r.get(BasicMaxStage)
+		return BasicRank{stage: 6, value: f}, message(BasicMaxStage), nil
 	}
 
 	var n = r.stage + stage
@@ -97,13 +95,12 @@ func (r BasicRank) Down(stage int) (BasicRank, string, error) {
 }
 
 func (r BasicRank) Reset() BasicRank {
-	f, _ := r.get(ResetStage)
-	return BasicRank{stage: ResetStage, value: f}
+	return NewBasicRank()
 }
 
 func message(delta int) string {
 	switch {
-	case delta == MaxStage:
+	case delta == BasicMaxStage:
 		return "が さいだいまであがった"
 	case delta >= 3:
 		return "が ぐぐーんとあがった"
