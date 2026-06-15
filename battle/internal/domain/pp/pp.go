@@ -28,7 +28,7 @@ func (p PP) Recover(n int) (PP, error) {
 	if p.current.Value()+n > p.max {
 		return PP{}, fmt.Errorf("recover amount %d exceeds max pp %d", n, p.max)
 	}
-	c := p.current.Increment(n)
+	c := p.current.Recover(n)
 	return PP{current: c, max: p.max}, nil
 }
 
