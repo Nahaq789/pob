@@ -20,6 +20,7 @@ const (
 	Confusion OtherCondition = "confusion"
 )
 
+// 仮
 type OtherConditionHandler interface {
 	Execute(ctx context.Context, s OtherStatus) error
 }
