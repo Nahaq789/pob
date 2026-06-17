@@ -13,13 +13,17 @@ const (
 	Snow
 )
 
+var Conditions = map[condition]StateHandler{
+	// Sunny: SunnyHandler
+}
+
 type State struct {
 	c     condition
 	count vo.Count
 }
 
-func NewState(c condition, count vo.Count) State {
-	return State{c: c, count: count}
+func NewState(c condition) State {
+	return State{c: c, count: vo.NewCount(5)}
 }
 
 func (w State) C() condition {
@@ -35,4 +39,9 @@ func (w State) Decrement() State {
 		c:     w.c,
 		count: w.count.Decrement(),
 	}
+}
+
+// 仮
+type StateHandler interface {
+	Execute() error
 }
