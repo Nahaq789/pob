@@ -1,7 +1,5 @@
 package status
 
-import "context"
-
 type Condition string
 
 const (
@@ -19,8 +17,3 @@ type OtherCondition string
 const (
 	Confusion OtherCondition = "confusion"
 )
-
-// 仮
-type OtherConditionHandler interface {
-	Execute(ctx context.Context, s OtherStatus) error
-}

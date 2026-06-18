@@ -1,14 +1,9 @@
 package status
 
 import (
-	"fmt"
 	"math/rand/v2"
 	"pob/battle/internal/domain/vo"
 )
-
-var overridableStatusMoves = map[int]string{
-	173: "ねむる",
-}
 
 type Status struct {
 	main  *MainStatus
@@ -26,15 +21,11 @@ func (s *Status) SetMainStatus(m *MainStatus) {
 	s.main = m
 }
 
-func (s *Status) OverrideMainStatus(m *MainStatus, moveId int) error {
-	_, ok := overridableStatusMoves[moveId]
-	if !ok {
-		return fmt.Errorf("move %d is not overridable", moveId)
-	}
+func (s *Status) ForceSetMainStatus(m *MainStatus) {
 	s.main = m
-	return nil
 }
 
+// 仮 pokemon集約側に移動する
 func RollSleepCount() vo.Count {
 	return vo.NewCount(2 + rand.IntN(2))
 }
