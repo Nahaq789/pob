@@ -21,10 +21,10 @@ var uncopyableIds = map[AbilityId]struct{}{
 	// おしらく初期リリース時点の第一世代では存在しない
 }
 
-func NewAbility(originalId int, originalName string) *Ability {
+func NewAbility(originalId int, originalName string) Ability {
 	_, swapOk := unswappableIds[AbilityId(originalId)]
 	_, copyOk := uncopyableIds[AbilityId(originalId)]
-	return &Ability{
+	return Ability{
 		originalId:   AbilityId(originalId),
 		originalName: originalName,
 		changedId:    nil,
@@ -32,4 +32,19 @@ func NewAbility(originalId int, originalName string) *Ability {
 		canSwap:      !swapOk,
 		canCopy:      !copyOk,
 	}
+}
+
+func (a Ability) GetCurrentId() AbilityId {
+	if a.changedId != nil {
+		return *a.changedId
+	}
+	return a.originalId
+}
+
+func (a Ability) GetCurrentName() string {
+	if a.changedName != nil {
+		return *a.changedName
+	}
+
+	return a.originalName
 }
