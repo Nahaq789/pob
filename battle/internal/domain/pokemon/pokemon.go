@@ -1,6 +1,7 @@
 package pokemon
 
 import (
+	"pob/battle/internal/domain/ability"
 	"pob/battle/internal/domain/item"
 	"pob/battle/internal/domain/move"
 	"pob/battle/internal/domain/pp"
@@ -25,9 +26,6 @@ type RealStats struct {
 // 性格補正を扱う専用パッケージ実装後に差し替え予定。
 type Nature string
 
-// abilityパッケージ実装後に差し替え予定。中身は空。
-type Ability struct{}
-
 // Pokemon はバトル中の1体のポケモンを表す集約。
 // フィールドが多いため、値のコピーを避けるためポインタレシーバーで統一する。
 type Pokemon struct {
@@ -39,7 +37,7 @@ type Pokemon struct {
 	baseStats BaseStats
 	realStats RealStats
 	nature    Nature
-	ability   *Ability
+	ability   *ability.Ability
 	moves     [4]*move.Move
 
 	// 動的データ
@@ -63,7 +61,7 @@ func NewPokemon(
 	baseStats BaseStats,
 	realStats RealStats,
 	nature Nature,
-	ability *Ability,
+	ability *ability.Ability,
 	moves [4]*move.Move,
 	currentHP vo.Count,
 	ranks rank.Rank,
@@ -107,7 +105,7 @@ func (p *Pokemon) RealStats() RealStats { return p.realStats }
 
 func (p *Pokemon) Nature() Nature { return p.nature }
 
-func (p *Pokemon) Ability() *Ability { return p.ability }
+func (p *Pokemon) Ability() *ability.Ability { return p.ability }
 
 func (p *Pokemon) Moves() [4]*move.Move { return p.moves }
 
