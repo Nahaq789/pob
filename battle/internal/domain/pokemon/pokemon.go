@@ -11,7 +11,7 @@ import (
 	"pob/battle/internal/domain/vo"
 )
 
-type PokemonID int
+type PokemonId int
 
 // 種族値を管理する専用パッケージ実装後に差し替え予定。
 type BaseStats struct {
@@ -30,7 +30,7 @@ type Nature string
 // フィールドが多いため、値のコピーを避けるためポインタレシーバーで統一する。
 type Pokemon struct {
 	// 固定データ
-	id        PokemonID
+	id        PokemonId
 	slot      int
 	nickname  string
 	types     [2]ptype.Type
@@ -54,7 +54,7 @@ type Pokemon struct {
 // box-serviceから集約された全データを一括で受け取る想定のため、
 // 部分的な省略を許容しないフルコンストラクタとする。
 func NewPokemon(
-	id PokemonID,
+	id PokemonId,
 	slot int,
 	nickname string,
 	types [2]ptype.Type,
@@ -91,7 +91,7 @@ func NewPokemon(
 	}
 }
 
-func (p *Pokemon) ID() PokemonID { return p.id }
+func (p *Pokemon) ID() PokemonId { return p.id }
 
 func (p *Pokemon) Slot() int { return p.slot }
 
