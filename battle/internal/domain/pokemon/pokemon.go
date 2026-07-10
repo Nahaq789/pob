@@ -43,7 +43,7 @@ type Pokemon struct {
 	// 動的データ
 	currentHP        vo.Count
 	ranks            rank.Rank
-	mainStatus       status.MainStatus
+	mainStatus       *status.MainStatus
 	otherStatuses    []status.OtherStatus
 	pp               [4]pp.PP
 	heldItem         *item.Item
@@ -65,7 +65,7 @@ func NewPokemon(
 	moves [4]*move.Move,
 	currentHP vo.Count,
 	ranks rank.Rank,
-	mainStatus status.MainStatus,
+	mainStatus *status.MainStatus,
 	otherStatuses []status.OtherStatus,
 	pp [4]pp.PP,
 	heldItem *item.Item,
