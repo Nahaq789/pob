@@ -7,14 +7,16 @@ import (
 )
 
 type Player struct {
+	id         string
 	party      [6]*pokemon.Pokemon // 手持ちポケモン
 	selected   [3]*pokemon.Pokemon // 選出された3匹
 	activeSlot int                 // 現在場に出ているポケモンのindex
 	grounds    []ground.State      // プレイヤーに影響するフィールド効果(ステロとか)
 }
 
-func NewPlayer(party [6]*pokemon.Pokemon, grounds []ground.State) *Player {
+func NewPlayer(id string, party [6]*pokemon.Pokemon, grounds []ground.State) *Player {
 	return &Player{
+		id:         id,
 		party:      party,
 		selected:   [3]*pokemon.Pokemon{},
 		activeSlot: 0,
@@ -77,4 +79,8 @@ func (p *Player) validateSlot(index int) error {
 		return fmt.Errorf("invalid selected slot: %d", index)
 	}
 	return nil
+}
+
+func (p *Player) Id() string {
+	return p.id
 }
