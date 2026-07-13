@@ -95,6 +95,9 @@ func (p *Pokemon) IsFainted() bool {
 	return p.currentHP.IsEmpty()
 }
 
+func (p *Pokemon) ResetOnSwitchOut() {
+}
+
 // func (p *Pokemon) ID() PokemonId { return p.id }
 //
 // func (p *Pokemon) Slot() int { return p.slot }

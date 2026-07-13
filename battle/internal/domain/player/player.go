@@ -61,7 +61,7 @@ func (p *Player) Switch(index int) error {
 	}
 
 	p.setActiveSlot(index)
-	// ポケモンの能力リセットとかをやる
+	p.Active().ResetOnSwitchOut()
 	return nil
 }
 
