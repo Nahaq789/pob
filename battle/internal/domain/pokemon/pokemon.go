@@ -2,13 +2,13 @@ package pokemon
 
 import (
 	"pob/battle/internal/domain/ability"
+	"pob/battle/internal/domain/hp"
 	"pob/battle/internal/domain/item"
 	"pob/battle/internal/domain/move"
 	"pob/battle/internal/domain/pp"
 	"pob/battle/internal/domain/ptype"
 	"pob/battle/internal/domain/rank"
 	"pob/battle/internal/domain/status"
-	"pob/battle/internal/domain/vo"
 )
 
 type PokemonId int
@@ -41,7 +41,7 @@ type Pokemon struct {
 	moves     [4]*move.Move
 
 	// 動的データ
-	currentHP        vo.Count
+	currentHP        hp.HP
 	ranks            rank.Rank
 	mainStatus       *status.MainStatus
 	otherStatuses    []status.OtherStatus
@@ -63,7 +63,7 @@ func NewPokemon(
 	nature Nature,
 	ability *ability.Ability,
 	moves [4]*move.Move,
-	currentHP vo.Count,
+	currentHP hp.HP,
 	ranks rank.Rank,
 	mainStatus *status.MainStatus,
 	otherStatuses []status.OtherStatus,
@@ -89,6 +89,10 @@ func NewPokemon(
 		heldItem:         heldItem,
 		lastConsumedItem: lastConsumedItem,
 	}
+}
+
+func (p *Pokemon) IsFainted() bool {
+	return p.currentHP.IsEmpty()
 }
 
 // func (p *Pokemon) ID() PokemonId { return p.id }
