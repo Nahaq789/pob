@@ -52,3 +52,8 @@ func (i Item) IsBerry() bool {
 	_, ok := berryIds[i.id]
 	return ok
 }
+
+func (i Item) ConfuseFlavor() (Flavor, bool) {
+	f, ok := confuseFlavors[i.id]
+	return f, ok
+}
