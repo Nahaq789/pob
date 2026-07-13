@@ -14,7 +14,7 @@ func (c Count) Decrement() Count {
 }
 
 func (c Count) Consume(n int) Count {
-	v := c.value - n
+	v := max(c.value-n, 0)
 	return Count{value: v}
 }
 
