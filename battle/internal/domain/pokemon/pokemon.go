@@ -48,6 +48,8 @@ type Pokemon struct {
 	pp               [4]pp.PP
 	heldItem         *item.Item
 	lastConsumedItem *item.Item
+	// このターンに場に出たばかりかフラグ
+	justEntered bool
 }
 
 // NewPokemon はPokemonのコンストラクタ。
@@ -70,6 +72,7 @@ func NewPokemon(
 	pp [4]pp.PP,
 	heldItem *item.Item,
 	lastConsumedItem *item.Item,
+	justEntered bool,
 ) *Pokemon {
 	return &Pokemon{
 		id:               id,
@@ -88,7 +91,14 @@ func NewPokemon(
 		pp:               pp,
 		heldItem:         heldItem,
 		lastConsumedItem: lastConsumedItem,
+		justEntered:      justEntered,
 	}
+}
+
+// Entered はこのポケモンが場に出た直後の状態遷移をまとめる。
+// 現状はjustEnteredのセットのみ。将来的に場に出た時の他の状態変化があればここに追加。
+func (p *Pokemon) Entered() {
+	p.justEntered = true
 }
 
 func (p *Pokemon) IsFainted() bool {
@@ -129,3 +139,18 @@ func (p *Pokemon) ResetOnSwitchOut() {
 // func (p *Pokemon) HeldItem() *item.Item { return p.heldItem }
 //
 // func (p *Pokemon) LastConsumedItem() *item.Item { return p.lastConsumedItem }
+
+// SetJustEntered は場に出た直後（初手選出・交代成立時）に呼び出す。
+func (p *Pokemon) SetJustEntered() {
+	p.justEntered = true
+}
+
+// ClearJustEntered はターン終了時（フェーズ6）に呼び出し、フラグを解除する。
+func (p *Pokemon) ClearJustEntered() {
+	p.justEntered = false
+}
+
+// IsJustEntered は場に出たばかりかどうかを返す。
+func (p *Pokemon) IsJustEntered() bool {
+	return p.justEntered
+}
