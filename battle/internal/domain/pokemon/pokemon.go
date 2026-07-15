@@ -5,6 +5,7 @@ import (
 	"pob/battle/internal/domain/hp"
 	"pob/battle/internal/domain/item"
 	"pob/battle/internal/domain/move"
+	"pob/battle/internal/domain/nature"
 	"pob/battle/internal/domain/pp"
 	"pob/battle/internal/domain/ptype"
 	"pob/battle/internal/domain/rank"
@@ -23,9 +24,6 @@ type RealStats struct {
 	HP, Attack, Defense, SpAttack, SpDefense, Speed int
 }
 
-// 性格補正を扱う専用パッケージ実装後に差し替え予定。
-type Nature string
-
 // Pokemon はバトル中の1体のポケモンを表す集約。
 // フィールドが多いため、値のコピーを避けるためポインタレシーバーで統一する。
 type Pokemon struct {
@@ -36,7 +34,7 @@ type Pokemon struct {
 	types     [2]ptype.Type
 	baseStats BaseStats
 	realStats RealStats
-	nature    Nature
+	nature    nature.Nature
 	ability   *ability.Ability
 	moves     [4]*move.Move
 
@@ -62,7 +60,7 @@ func NewPokemon(
 	types [2]ptype.Type,
 	baseStats BaseStats,
 	realStats RealStats,
-	nature Nature,
+	nature nature.Nature,
 	ability *ability.Ability,
 	moves [4]*move.Move,
 	currentHP hp.HP,
@@ -106,6 +104,10 @@ func (p *Pokemon) IsFainted() bool {
 }
 
 func (p *Pokemon) ResetOnSwitchOut() {
+}
+
+func (p *Pokemon) Speed() int {
+	return p.realStats.Speed
 }
 
 // func (p *Pokemon) ID() PokemonId { return p.id }

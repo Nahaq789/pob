@@ -1,18 +1,35 @@
 package phase
 
-// EntryContext は「場に出たとき」フェーズで handler に渡されるコンテキスト。
-// フィールドは今後の設計で詰める。
-type EntryContext struct {
-	// TODO: actorId, abilityId, itemId, battle 等を必要に応じて追加
-	// battle *battle.Battle  // Battle 集約実装後に有効化
+import (
+	"pob/battle/internal/domain/battle"
+	"pob/battle/internal/domain/pokemon"
+	"sort"
+)
+
+type EntryPhaseHandler struct {
+	registry *Registry
 }
 
-func NewEntryContext( /* battle *battle.Battle */ ) *EntryContext {
-	return &EntryContext{}
+func NewEntryPhaseHandler(r *Registry) *EntryPhaseHandler {
+	return &EntryPhaseHandler{
+		registry: r,
+	}
 }
 
-// EntryHandler は「場に出たとき」フェーズで実行される handler の共通 interface。
-// 特性発動(いかく・てんねん等)、天候変化系特性、入場時アイテム効果などを扱う。
-type EntryHandler interface {
-	Handle(ctx *EntryContext)
+func (e *EntryPhaseHandler) Handle(entered []*pokemon.Pokemon, b *battle.Battle) error {
+	ordered := make([]*pokemon.Pokemon, len(entered))
+	copy(ordered, entered)
+	sort.SliceStable(ordered, func(i, j int) bool {
+		return ordered[i].Speed() > ordered[j].Speed()
+	})
+
+	for _, p := range ordered {
+		p.Entered()
+		e.dispatch(p, b)
+	}
+	return nil
+}
+
+func (e *EntryPhaseHandler) dispatch(p *pokemon.Pokemon, b *battle.Battle) error {
+	return nil
 }
