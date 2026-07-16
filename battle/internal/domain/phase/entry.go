@@ -31,5 +31,16 @@ func (e *EntryPhaseHandler) Handle(entered []*pokemon.Pokemon, b *battle.Battle)
 }
 
 func (e *EntryPhaseHandler) dispatch(p *pokemon.Pokemon, b *battle.Battle) error {
+	events := p.PullEvent()
+	for _, event := range events {
+		if event.Kind != pokemon.EventEntered {
+			continue
+		}
+		if handler, ok := e.registry.entryAbilityHandler[int(p.Ability().GetCurrentId())]; ok {
+			// ctx := NewEntryContext() ctx作成する
+			handler.Handle(nil)
+		}
+	}
+
 	return nil
 }

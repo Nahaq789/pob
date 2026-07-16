@@ -48,6 +48,7 @@ type Pokemon struct {
 	lastConsumedItem *item.Item
 	// このターンに場に出たばかりかフラグ
 	justEntered bool
+	events      []DomainEvent
 }
 
 // NewPokemon はPokemonのコンストラクタ。
@@ -90,6 +91,7 @@ func NewPokemon(
 		heldItem:         heldItem,
 		lastConsumedItem: lastConsumedItem,
 		justEntered:      justEntered,
+		events:           []DomainEvent{},
 	}
 }
 
@@ -123,8 +125,8 @@ func (p *Pokemon) Speed() int {
 // func (p *Pokemon) RealStats() RealStats { return p.realStats }
 //
 // func (p *Pokemon) Nature() Nature { return p.nature }
-//
-// func (p *Pokemon) Ability() *ability.Ability { return p.ability }
+func (p *Pokemon) Ability() *ability.Ability { return p.ability }
+
 //
 // func (p *Pokemon) Moves() [4]*move.Move { return p.moves }
 //
