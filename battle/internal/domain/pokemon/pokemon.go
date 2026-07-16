@@ -112,8 +112,8 @@ func (p *Pokemon) Speed() int {
 	return p.realStats.Speed
 }
 
-// func (p *Pokemon) ID() PokemonId { return p.id }
-//
+func (p *Pokemon) Id() PokemonId { return p.id }
+
 // func (p *Pokemon) Slot() int { return p.slot }
 //
 // func (p *Pokemon) Nickname() string { return p.nickname }
@@ -127,7 +127,6 @@ func (p *Pokemon) Speed() int {
 // func (p *Pokemon) Nature() Nature { return p.nature }
 func (p *Pokemon) Ability() *ability.Ability { return p.ability }
 
-//
 // func (p *Pokemon) Moves() [4]*move.Move { return p.moves }
 //
 // func (p *Pokemon) CurrentHP() vo.Count { return p.currentHP }
@@ -139,8 +138,8 @@ func (p *Pokemon) Ability() *ability.Ability { return p.ability }
 // func (p *Pokemon) OtherStatuses() []status.OtherStatus { return p.otherStatuses }
 //
 // func (p *Pokemon) PP() [4]pp.PP { return p.pp }
-//
-// func (p *Pokemon) HeldItem() *item.Item { return p.heldItem }
+func (p *Pokemon) HeldItem() *item.Item { return p.heldItem }
+
 //
 // func (p *Pokemon) LastConsumedItem() *item.Item { return p.lastConsumedItem }
 

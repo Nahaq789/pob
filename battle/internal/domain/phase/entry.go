@@ -37,7 +37,14 @@ func (e *EntryPhaseHandler) dispatch(p *pokemon.Pokemon, b *battle.Battle) error
 			continue
 		}
 		if handler, ok := e.registry.entryAbilityHandler[int(p.Ability().GetCurrentId())]; ok {
-			// ctx := NewEntryContext() ctx作成する
+			abilityId := p.Ability().GetCurrentId()
+			itemId := p.HeldItem().Id()
+			ctx := NewEntryContext(
+				int(p.Id()),
+				int(abilityId),
+				int(itemId),
+				b,
+			)
 			handler.Handle(nil)
 		}
 	}
