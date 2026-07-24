@@ -8,10 +8,10 @@ type DomainEvent struct {
 }
 
 const (
-	EventEntered EventKind = "entered"
+	EventEntered EventKind = "entered" // ポケモンを出したときのイベント
 )
 
-func (p *Pokemon) PullEvent() []DomainEvent {
+func (p *Pokemon) PullEvents() []DomainEvent {
 	events := p.events
 	p.events = nil
 	return events
