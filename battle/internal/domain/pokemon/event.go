@@ -9,6 +9,7 @@ type DomainEvent struct {
 
 const (
 	EventEntered EventKind = "entered" // ポケモンを出したときのイベント
+	EventExited  EventKind = "exited"  // ポケモンが退場するときのイベント
 )
 
 func (p *Pokemon) PullEvents() []DomainEvent {

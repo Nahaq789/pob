@@ -1,14 +1,19 @@
 package phase
 
 type Registry struct {
-	entryAbilityHandler map[int]EntryHandler
-	entryItemHandler    map[int]EntryHandler
+	entryAbilityHandlers map[int]EntryHandler
+	entryItemHandlers    map[int]EntryHandler
+
+	exitAbilityHandlers map[int]ExitHandler
+	exitItemHandlers    map[int]ExitHandler
 }
 
 func NewRegistry() *Registry {
 	r := &Registry{
-		entryAbilityHandler: map[int]EntryHandler{},
-		entryItemHandler:    map[int]EntryHandler{},
+		entryAbilityHandlers: map[int]EntryHandler{},
+		entryItemHandlers:    map[int]EntryHandler{},
+		exitAbilityHandlers:  map[int]ExitHandler{},
+		exitItemHandlers:     map[int]ExitHandler{},
 	}
 
 	return r

@@ -5,3 +5,7 @@ package phase
 type EntryHandler interface {
 	Handle(ctx EntryContext) Result
 }
+
+type ExitHandler interface {
+	Handle(ctx ExitContext) Result
+}

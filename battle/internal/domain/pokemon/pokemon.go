@@ -101,6 +101,10 @@ func (p *Pokemon) Entered() {
 	p.justEntered = true
 }
 
+func (p *Pokemon) Exited() {
+	p.justEntered = false
+}
+
 func (p *Pokemon) IsFainted() bool {
 	return p.currentHP.IsEmpty()
 }
