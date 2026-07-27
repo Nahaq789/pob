@@ -7,20 +7,22 @@ import (
 )
 
 type Player struct {
-	id         string
-	party      [6]*pokemon.Pokemon // 手持ちポケモン
-	selected   [3]*pokemon.Pokemon // 選出された3匹
-	activeSlot int                 // 現在場に出ているポケモンのindex
-	grounds    []ground.State      // プレイヤーに影響するフィールド効果(ステロとか)
+	id            string
+	party         [6]*pokemon.Pokemon // 手持ちポケモン
+	selected      [3]*pokemon.Pokemon // 選出された3匹
+	activeSlot    int                 // 現在場に出ているポケモンのindex
+	grounds       []ground.State      // プレイヤーに影響するフィールド効果(ステロとか)
+	pendingSwitch *SwitchRequest      // ポケモン交代
 }
 
 func NewPlayer(id string, party [6]*pokemon.Pokemon, grounds []ground.State) *Player {
 	return &Player{
-		id:         id,
-		party:      party,
-		selected:   [3]*pokemon.Pokemon{},
-		activeSlot: 0,
-		grounds:    grounds,
+		id:            id,
+		party:         party,
+		selected:      [3]*pokemon.Pokemon{},
+		activeSlot:    0,
+		grounds:       grounds,
+		pendingSwitch: nil,
 	}
 }
 
@@ -51,23 +53,25 @@ func (p *Player) Select(indices [3]int) error {
 	return nil
 }
 
+// アクティブポケモンを交換する
+// 実際、交換自体が複雑なので、ここでは交換意思を表明する
 func (p *Player) Switch(index int) error {
-	// アクティブポケモンを変更する
 	err := p.validateSlot(index)
 	if err != nil {
 		return err
 	}
 
-	if p.selected[index].IsFainted() {
+	incoming := p.selected[index]
+	if incoming.IsFainted() {
 		return fmt.Errorf("cannot switch to a fainted pokemon at slot: %d", index)
 	}
 
-	p.setActiveSlot(index)
-	p.Active().ResetOnSwitchOut()
+	outgoing := p.Active()
+	p.pendingSwitch = &SwitchRequest{Outgoing: outgoing, Incoming: incoming}
 	return nil
 }
 
-func (p *Player) setActiveSlot(index int) {
+func (p *Player) SetActiveSlot(index int) {
 	p.activeSlot = index
 }
 
@@ -83,4 +87,10 @@ func (p *Player) validateSlot(index int) error {
 
 func (p *Player) Id() string {
 	return p.id
+}
+
+func (p *Player) PullPendingSwitch() *SwitchRequest {
+	req := p.pendingSwitch
+	p.pendingSwitch = nil
+	return req
 }
