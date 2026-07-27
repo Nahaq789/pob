@@ -59,3 +59,6 @@ func (b *Battle) PlayerById(id string) *player.Player {
 	}
 	return nil
 }
+
+func (b *Battle) Player1() *player.Player { return b.player1 }
+func (b *Battle) Player2() *player.Player { return b.player2 }

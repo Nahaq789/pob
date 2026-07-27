@@ -67,7 +67,7 @@ func (p *Player) Switch(index int) error {
 	}
 
 	outgoing := p.Active()
-	p.pendingSwitch = &SwitchRequest{Outgoing: outgoing, Incoming: incoming}
+	p.pendingSwitch = &SwitchRequest{Outgoing: outgoing, Incoming: incoming, IncomingIndex: index}
 	return nil
 }
 
