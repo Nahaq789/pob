@@ -20,11 +20,11 @@ type pendingSwitch struct {
 	req    *player.SwitchRequest
 }
 
-func (p *ActionResolvePhaseHandler) Handle(b *battle.Battle) (map[string][]string, error) {
+func (ar *ActionResolvePhaseHandler) Handle(b *battle.Battle) (map[string][]string, error) {
 	players := []*player.Player{b.Player1(), b.Player2()}
 
 	// プレイヤーの選択した行動チェック
-	if err := p.validatePendingActions(players); err != nil {
+	if err := ar.validatePendingActions(players); err != nil {
 		return nil, err
 	}
 
@@ -39,21 +39,21 @@ func (p *ActionResolvePhaseHandler) Handle(b *battle.Battle) (map[string][]strin
 	}
 
 	// 交代
-	exiting, pendings := p.collectPendingSwitches(players)
+	exiting, pendings := ar.collectPendingSwitches(players)
 	if len(exiting) > 0 {
-		exitMsgs, err := p.exitHandler.Handle(exiting, b)
+		exitMsgs, err := ar.exitHandler.Handle(exiting, b)
 		if err != nil {
 			return nil, err
 		}
-		p.mergeMessages(result, exitMsgs)
+		ar.mergeMessages(result, exitMsgs)
 
-		entered := p.commitSwitches(pendings)
-		entryMsgs, err := p.entryHandler.Handle(entered, b)
+		entered := ar.commitSwitches(pendings)
+		entryMsgs, err := ar.entryHandler.Handle(entered, b)
 		if err != nil {
 			return nil, err
 		}
 
-		p.mergeMessages(result, entryMsgs)
+		ar.mergeMessages(result, entryMsgs)
 	}
 
 	// 技
@@ -68,7 +68,7 @@ func (p *ActionResolvePhaseHandler) Handle(b *battle.Battle) (map[string][]strin
 
 // collectPendingSwitches は各プレイヤーの交代リクエストを取り出し、
 // ExitPhase に渡す exiting リストと、スロット確定用の pendings を返す。
-func (p *ActionResolvePhaseHandler) collectPendingSwitches(players []*player.Player) ([]ExitingPokemon, []pendingSwitch) {
+func (ar *ActionResolvePhaseHandler) collectPendingSwitches(players []*player.Player) ([]ExitingPokemon, []pendingSwitch) {
 	var exiting []ExitingPokemon
 	var pendings []pendingSwitch
 	for _, pl := range players {
@@ -84,7 +84,7 @@ func (p *ActionResolvePhaseHandler) collectPendingSwitches(players []*player.Pla
 
 // commitSwitches は各プレイヤーのアクティブスロットを確定させ、
 // EntryPhase に渡す entered リストを返す。
-func (p *ActionResolvePhaseHandler) commitSwitches(pendings []pendingSwitch) []EnteredPokemon {
+func (ar *ActionResolvePhaseHandler) commitSwitches(pendings []pendingSwitch) []EnteredPokemon {
 	entered := make([]EnteredPokemon, 0, len(pendings))
 	for _, pd := range pendings {
 		pd.player.SetActiveSlot(pd.req.IncomingIndex)
@@ -96,7 +96,7 @@ func (p *ActionResolvePhaseHandler) commitSwitches(pendings []pendingSwitch) []E
 	return entered
 }
 
-func (p *ActionResolvePhaseHandler) validatePendingActions(players []*player.Player) error {
+func (ar *ActionResolvePhaseHandler) validatePendingActions(players []*player.Player) error {
 	for _, pl := range players {
 		count := 0
 		if pl.HasPendingSwitch() {
@@ -122,7 +122,7 @@ func (p *ActionResolvePhaseHandler) validatePendingActions(players []*player.Pla
 	return nil
 }
 
-func (p *ActionResolvePhaseHandler) mergeMessages(dst, src map[string][]string) {
+func (ar *ActionResolvePhaseHandler) mergeMessages(dst, src map[string][]string) {
 	for k, v := range src {
 		dst[k] = append(dst[k], v...)
 	}
