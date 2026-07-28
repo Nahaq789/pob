@@ -6,13 +6,13 @@ import (
 	"pob/battle/internal/domain/player"
 )
 
-type PreMoveSelectPhaseHandler struct {
+type ActionResolvePhaseHandler struct {
 	exitHandler  *ExitPhaseHandler
 	entryHandler *EntryPhaseHandler
 }
 
-func NewPreMoveSelectPhaseHandler(exit *ExitPhaseHandler, entry *EntryPhaseHandler) *PreMoveSelectPhaseHandler {
-	return &PreMoveSelectPhaseHandler{exitHandler: exit, entryHandler: entry}
+func NewActionResolvePhaseHandler(exit *ExitPhaseHandler, entry *EntryPhaseHandler) *ActionResolvePhaseHandler {
+	return &ActionResolvePhaseHandler{exitHandler: exit, entryHandler: entry}
 }
 
 type pendingSwitch struct {
@@ -20,7 +20,7 @@ type pendingSwitch struct {
 	req    *player.SwitchRequest
 }
 
-func (p *PreMoveSelectPhaseHandler) Handle(b *battle.Battle) (map[string][]string, error) {
+func (p *ActionResolvePhaseHandler) Handle(b *battle.Battle) (map[string][]string, error) {
 	players := []*player.Player{b.Player1(), b.Player2()}
 
 	// プレイヤーの選択した行動チェック
@@ -68,7 +68,7 @@ func (p *PreMoveSelectPhaseHandler) Handle(b *battle.Battle) (map[string][]strin
 
 // collectPendingSwitches は各プレイヤーの交代リクエストを取り出し、
 // ExitPhase に渡す exiting リストと、スロット確定用の pendings を返す。
-func (p *PreMoveSelectPhaseHandler) collectPendingSwitches(players []*player.Player) ([]ExitingPokemon, []pendingSwitch) {
+func (p *ActionResolvePhaseHandler) collectPendingSwitches(players []*player.Player) ([]ExitingPokemon, []pendingSwitch) {
 	var exiting []ExitingPokemon
 	var pendings []pendingSwitch
 	for _, pl := range players {
@@ -84,7 +84,7 @@ func (p *PreMoveSelectPhaseHandler) collectPendingSwitches(players []*player.Pla
 
 // commitSwitches は各プレイヤーのアクティブスロットを確定させ、
 // EntryPhase に渡す entered リストを返す。
-func (p *PreMoveSelectPhaseHandler) commitSwitches(pendings []pendingSwitch) []EnteredPokemon {
+func (p *ActionResolvePhaseHandler) commitSwitches(pendings []pendingSwitch) []EnteredPokemon {
 	entered := make([]EnteredPokemon, 0, len(pendings))
 	for _, pd := range pendings {
 		pd.player.SetActiveSlot(pd.req.IncomingIndex)
@@ -96,7 +96,7 @@ func (p *PreMoveSelectPhaseHandler) commitSwitches(pendings []pendingSwitch) []E
 	return entered
 }
 
-func (p *PreMoveSelectPhaseHandler) validatePendingActions(players []*player.Player) error {
+func (p *ActionResolvePhaseHandler) validatePendingActions(players []*player.Player) error {
 	for _, pl := range players {
 		count := 0
 		if pl.HasPendingSwitch() {
@@ -122,7 +122,7 @@ func (p *PreMoveSelectPhaseHandler) validatePendingActions(players []*player.Pla
 	return nil
 }
 
-func (p *PreMoveSelectPhaseHandler) mergeMessages(dst, src map[string][]string) {
+func (p *ActionResolvePhaseHandler) mergeMessages(dst, src map[string][]string) {
 	for k, v := range src {
 		dst[k] = append(dst[k], v...)
 	}
