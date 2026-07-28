@@ -7,3 +7,11 @@ type SwitchRequest struct {
 	Incoming      *pokemon.Pokemon
 	IncomingIndex int
 }
+
+type MoveRequest struct {
+	PlayerId string
+	Pokemon  *pokemon.Pokemon
+	MoveId   int
+}
+
+type ForfeitRequest bool

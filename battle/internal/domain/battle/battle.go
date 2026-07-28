@@ -8,24 +8,30 @@ import (
 )
 
 type Battle struct {
-	player1 *player.Player
-	player2 *player.Player
-	turn    int
-	weather *weather.State
-	field   *field.State
-	room    *room.State
+	player1      *player.Player
+	player2      *player.Player
+	turn         int
+	weather      *weather.State
+	field        *field.State
+	room         *room.State
+	pendingMoves []player.MoveRequest
+	winner       *player.Player
 }
 
 func NewBattle(p1, p2 *player.Player) *Battle {
 	return &Battle{
-		player1: p1,
-		player2: p2,
-		turn:    1,
-		weather: nil,
-		field:   nil,
-		room:    nil,
+		player1:      p1,
+		player2:      p2,
+		turn:         1,
+		weather:      nil,
+		field:        nil,
+		room:         nil,
+		pendingMoves: nil,
+		winner:       nil,
 	}
 }
+
+func (b *Battle) SetWinner(p *player.Player) { b.winner = p }
 
 func (b *Battle) Opponent(p *player.Player) *player.Player {
 	if p == b.player1 {
@@ -62,3 +68,9 @@ func (b *Battle) PlayerById(id string) *player.Player {
 
 func (b *Battle) Player1() *player.Player { return b.player1 }
 func (b *Battle) Player2() *player.Player { return b.player2 }
+
+func (b *Battle) PushPendingMove(req player.MoveRequest) {
+	b.pendingMoves = append(b.pendingMoves, req)
+}
+func (b *Battle) PendingMoves() []player.MoveRequest { return b.pendingMoves }
+func (b *Battle) ClearPendingMoves()                 { b.pendingMoves = nil }

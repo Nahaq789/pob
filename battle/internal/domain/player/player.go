@@ -7,12 +7,14 @@ import (
 )
 
 type Player struct {
-	id            string
-	party         [6]*pokemon.Pokemon // 手持ちポケモン
-	selected      [3]*pokemon.Pokemon // 選出された3匹
-	activeSlot    int                 // 現在場に出ているポケモンのindex
-	grounds       []ground.State      // プレイヤーに影響するフィールド効果(ステロとか)
-	pendingSwitch *SwitchRequest      // ポケモン交代
+	id             string
+	party          [6]*pokemon.Pokemon // 手持ちポケモン
+	selected       [3]*pokemon.Pokemon // 選出された3匹
+	activeSlot     int                 // 現在場に出ているポケモンのindex
+	grounds        []ground.State      // プレイヤーに影響するフィールド効果(ステロとか)
+	pendingSwitch  *SwitchRequest      // ポケモン交代
+	pendingMove    *MoveRequest
+	pendingForfeit ForfeitRequest
 }
 
 func NewPlayer(id string, party [6]*pokemon.Pokemon, grounds []ground.State) *Player {
@@ -68,7 +70,23 @@ func (p *Player) Switch(index int) error {
 
 	outgoing := p.Active()
 	p.pendingSwitch = &SwitchRequest{Outgoing: outgoing, Incoming: incoming, IncomingIndex: index}
+	p.pendingMove = nil
 	return nil
+}
+
+// ポケモンの技選択
+func (p *Player) SelectMove(moveId int) error {
+	pokemon := p.Active()
+	p.pendingMove = &MoveRequest{Pokemon: pokemon, MoveId: moveId}
+	p.pendingSwitch = nil
+	return nil
+}
+
+// サレンダー
+func (p *Player) Forfeit() {
+	p.pendingForfeit = true
+	p.pendingSwitch = nil
+	p.pendingMove = nil
 }
 
 func (p *Player) SetActiveSlot(index int) {
@@ -94,3 +112,19 @@ func (p *Player) PullPendingSwitch() *SwitchRequest {
 	p.pendingSwitch = nil
 	return req
 }
+
+func (p *Player) PullPendingForfeit() ForfeitRequest {
+	req := p.pendingForfeit
+	p.pendingForfeit = false
+	return req
+}
+
+func (p *Player) PullPendingMove() *MoveRequest {
+	req := p.pendingMove
+	p.pendingMove = nil
+	return req
+}
+
+func (p *Player) HasPendingSwitch() bool  { return p.pendingSwitch != nil }
+func (p *Player) HasPendingMove() bool    { return p.pendingMove != nil }
+func (p *Player) HasPendingForfeit() bool { return bool(p.pendingForfeit) }

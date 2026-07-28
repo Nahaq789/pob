@@ -1,6 +1,7 @@
 package phase
 
 import (
+	"fmt"
 	"pob/battle/internal/domain/battle"
 	"pob/battle/internal/domain/player"
 )
@@ -21,28 +22,45 @@ type pendingSwitch struct {
 
 func (p *PreMoveSelectPhaseHandler) Handle(b *battle.Battle) (map[string][]string, error) {
 	players := []*player.Player{b.Player1(), b.Player2()}
-	exiting, pendings := collectPendingSwitches(players)
-	if len(exiting) == 0 {
-		return nil, nil
+
+	// プレイヤーの選択した行動チェック
+	if err := p.validatePendingActions(players); err != nil {
+		return nil, err
 	}
 
 	result := make(map[string][]string)
+	for _, pl := range players {
+		if pl.HasPendingForfeit() {
+			pl.PullPendingForfeit()
+			b.SetWinner(b.Opponent(pl))
+			result[pl.Id()] = append(result[pl.Id()], fmt.Sprintf("プレイヤー%sが降参しました。", pl.Id()))
+			return result, nil
+		}
+	}
 
-	exitMsgs, err := p.exitHandler.Handle(exiting, b)
-	if err != nil {
-		return nil, err
-	}
-	for k, v := range exitMsgs {
-		result[k] = append(result[k], v...)
+	// 交代
+	exiting, pendings := p.collectPendingSwitches(players)
+	if len(exiting) > 0 {
+		exitMsgs, err := p.exitHandler.Handle(exiting, b)
+		if err != nil {
+			return nil, err
+		}
+		p.mergeMessages(result, exitMsgs)
+
+		entered := p.commitSwitches(pendings)
+		entryMsgs, err := p.entryHandler.Handle(entered, b)
+		if err != nil {
+			return nil, err
+		}
+
+		p.mergeMessages(result, entryMsgs)
 	}
 
-	entered := commitSwitches(pendings)
-	entryMsgs, err := p.entryHandler.Handle(entered, b)
-	if err != nil {
-		return nil, err
-	}
-	for k, v := range entryMsgs {
-		result[k] = append(result[k], v...)
+	// 技
+	for _, pl := range players {
+		if req := pl.PullPendingMove(); req != nil {
+			b.PushPendingMove(*req)
+		}
 	}
 
 	return result, nil
@@ -50,7 +68,7 @@ func (p *PreMoveSelectPhaseHandler) Handle(b *battle.Battle) (map[string][]strin
 
 // collectPendingSwitches は各プレイヤーの交代リクエストを取り出し、
 // ExitPhase に渡す exiting リストと、スロット確定用の pendings を返す。
-func collectPendingSwitches(players []*player.Player) ([]ExitingPokemon, []pendingSwitch) {
+func (p *PreMoveSelectPhaseHandler) collectPendingSwitches(players []*player.Player) ([]ExitingPokemon, []pendingSwitch) {
 	var exiting []ExitingPokemon
 	var pendings []pendingSwitch
 	for _, pl := range players {
@@ -66,7 +84,7 @@ func collectPendingSwitches(players []*player.Player) ([]ExitingPokemon, []pendi
 
 // commitSwitches は各プレイヤーのアクティブスロットを確定させ、
 // EntryPhase に渡す entered リストを返す。
-func commitSwitches(pendings []pendingSwitch) []EnteredPokemon {
+func (p *PreMoveSelectPhaseHandler) commitSwitches(pendings []pendingSwitch) []EnteredPokemon {
 	entered := make([]EnteredPokemon, 0, len(pendings))
 	for _, pd := range pendings {
 		pd.player.SetActiveSlot(pd.req.IncomingIndex)
@@ -76,4 +94,36 @@ func commitSwitches(pendings []pendingSwitch) []EnteredPokemon {
 		})
 	}
 	return entered
+}
+
+func (p *PreMoveSelectPhaseHandler) validatePendingActions(players []*player.Player) error {
+	for _, pl := range players {
+		count := 0
+		if pl.HasPendingSwitch() {
+			count++
+		}
+
+		if pl.HasPendingMove() {
+			count++
+		}
+
+		if pl.HasPendingForfeit() {
+			count++
+		}
+
+		switch count {
+		case 0:
+			return fmt.Errorf("player %s has no pending action", pl.Id())
+		case 1:
+		default:
+			return fmt.Errorf("player %s has multiple pending actions", pl.Id())
+		}
+	}
+	return nil
+}
+
+func (p *PreMoveSelectPhaseHandler) mergeMessages(dst, src map[string][]string) {
+	for k, v := range src {
+		dst[k] = append(dst[k], v...)
+	}
 }
