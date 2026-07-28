@@ -2,11 +2,11 @@ package pokemon
 
 import (
 	"pob/battle/internal/domain/ability"
+	"pob/battle/internal/domain/apperror"
 	"pob/battle/internal/domain/hp"
 	"pob/battle/internal/domain/item"
 	"pob/battle/internal/domain/move"
 	"pob/battle/internal/domain/nature"
-	"pob/battle/internal/domain/pp"
 	"pob/battle/internal/domain/ptype"
 	"pob/battle/internal/domain/rank"
 	"pob/battle/internal/domain/status"
@@ -43,7 +43,6 @@ type Pokemon struct {
 	ranks            rank.Rank
 	mainStatus       *status.MainStatus
 	otherStatuses    []status.OtherStatus
-	pp               [4]pp.PP
 	heldItem         *item.Item
 	lastConsumedItem *item.Item
 	// このターンに場に出たばかりかフラグ
@@ -68,7 +67,6 @@ func NewPokemon(
 	ranks rank.Rank,
 	mainStatus *status.MainStatus,
 	otherStatuses []status.OtherStatus,
-	pp [4]pp.PP,
 	heldItem *item.Item,
 	lastConsumedItem *item.Item,
 	justEntered bool,
@@ -87,7 +85,6 @@ func NewPokemon(
 		ranks:            ranks,
 		mainStatus:       mainStatus,
 		otherStatuses:    otherStatuses,
-		pp:               pp,
 		heldItem:         heldItem,
 		lastConsumedItem: lastConsumedItem,
 		justEntered:      justEntered,
@@ -131,8 +128,19 @@ func (p *Pokemon) Id() PokemonId { return p.id }
 // func (p *Pokemon) Nature() Nature { return p.nature }
 func (p *Pokemon) Ability() *ability.Ability { return p.ability }
 
-// func (p *Pokemon) Moves() [4]*move.Move { return p.moves }
-//
+func (p *Pokemon) Moves() [4]*move.Move { return p.moves }
+func (p *Pokemon) MoveById(moveId int) (*move.Move, error) {
+	for _, m := range p.moves {
+		if m == nil {
+			continue
+		}
+		if m.Id() == moveId {
+			return m, nil
+		}
+	}
+	return nil, apperror.ErrMoveNotFound
+}
+
 // func (p *Pokemon) CurrentHP() vo.Count { return p.currentHP }
 //
 // func (p *Pokemon) Ranks() rank.Rank { return p.ranks }
@@ -140,8 +148,6 @@ func (p *Pokemon) Ability() *ability.Ability { return p.ability }
 // func (p *Pokemon) MainStatus() status.MainStatus { return p.mainStatus }
 //
 // func (p *Pokemon) OtherStatuses() []status.OtherStatus { return p.otherStatuses }
-//
-// func (p *Pokemon) PP() [4]pp.PP { return p.pp }
 func (p *Pokemon) HeldItem() *item.Item { return p.heldItem }
 
 //

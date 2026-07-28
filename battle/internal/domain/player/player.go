@@ -1,6 +1,7 @@
 package player
 
 import (
+	"errors"
 	"fmt"
 	"pob/battle/internal/domain/ground"
 	"pob/battle/internal/domain/pokemon"
@@ -77,6 +78,15 @@ func (p *Player) Switch(index int) error {
 // ポケモンの技選択
 func (p *Player) SelectMove(moveId int) error {
 	pokemon := p.Active()
+	// PPの計算チェックとかする
+	move, err := pokemon.MoveById(moveId)
+	if err != nil {
+		return err
+	}
+	if move.PP().IsEmpty() {
+		return errors.New("cannot select this move")
+	}
+
 	p.pendingMove = &MoveRequest{Pokemon: pokemon, MoveId: moveId}
 	p.pendingSwitch = nil
 	return nil
