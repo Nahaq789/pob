@@ -7,7 +7,7 @@ import (
 )
 
 // ExitPhaseHandler はポケモンが場から退いた際の処理を担う。
-// 複数体の同時退場は呼び出し元（orchestrate.ActionResolvePhaseHandler）が素早さ順にソートして
+// 複数体の同時退場は呼び出し元（orchestrate.ActionResolveOrchestrator）が素早さ順にソートして
 // 1体ずつ Handle を呼び出す責務を持つ。
 type ExitPhaseHandler struct {
 	registry *Registry

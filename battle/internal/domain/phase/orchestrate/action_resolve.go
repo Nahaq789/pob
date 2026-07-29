@@ -8,16 +8,16 @@ import (
 	"sort"
 )
 
-// ActionResolvePhaseHandler は各プレイヤーの保留行動を解決するオーケストレーター。
+// ActionResolveOrchestrator は各プレイヤーの保留行動を解決するオーケストレーター。
 // 個々のフェーズハンドラー（ExitPhaseHandler・EntryPhaseHandler）を呼び出し、
 // バトル1ターン分の行動解決フローを制御する。
-type ActionResolvePhaseHandler struct {
+type ActionResolveOrchestrator struct {
 	exitHandler  *phase.ExitPhaseHandler
 	entryHandler *phase.EntryPhaseHandler
 }
 
-func NewActionResolvePhaseHandler(exit *phase.ExitPhaseHandler, entry *phase.EntryPhaseHandler) *ActionResolvePhaseHandler {
-	return &ActionResolvePhaseHandler{exitHandler: exit, entryHandler: entry}
+func NewActionResolveOrchestrator(exit *phase.ExitPhaseHandler, entry *phase.EntryPhaseHandler) *ActionResolveOrchestrator {
+	return &ActionResolveOrchestrator{exitHandler: exit, entryHandler: entry}
 }
 
 // pendingSwitch はプレイヤーと交代リクエストのペア。commitSwitch に渡す内部型。
@@ -37,7 +37,7 @@ type switchEntry struct {
 // 降参はバトルを即座に終了させる。交代は素早さ順で退場→入場を処理する。
 // 技は PendingMove としてバトルに積み、後続フェーズで処理される。
 // 戻り値はプレイヤーIDごとの発動メッセージ一覧。
-func (ar *ActionResolvePhaseHandler) Handle(b *battle.Battle) (map[string][]string, error) {
+func (ar *ActionResolveOrchestrator) Handle(b *battle.Battle) (map[string][]string, error) {
 	players := []*player.Player{b.Player1(), b.Player2()}
 
 	// プレイヤーの選択した行動チェック
@@ -94,7 +94,7 @@ func (ar *ActionResolvePhaseHandler) Handle(b *battle.Battle) (map[string][]stri
 
 // collectPendingSwitches は各プレイヤーの交代リクエストを取り出し、
 // 素早さ順ソートと commitSwitch に必要な情報をまとめた switchEntry スライスを返す。
-func (ar *ActionResolvePhaseHandler) collectPendingSwitches(players []*player.Player) []switchEntry {
+func (ar *ActionResolveOrchestrator) collectPendingSwitches(players []*player.Player) []switchEntry {
 	var entries []switchEntry
 
 	for _, pl := range players {
@@ -111,7 +111,7 @@ func (ar *ActionResolvePhaseHandler) collectPendingSwitches(players []*player.Pl
 }
 
 // commitSwitch はプレイヤーのアクティブスロットを確定させ、EntryPhase に渡す EnteredPokemon を返す。
-func (ar *ActionResolvePhaseHandler) commitSwitch(pending pendingSwitch) phase.EnteredPokemon {
+func (ar *ActionResolveOrchestrator) commitSwitch(pending pendingSwitch) phase.EnteredPokemon {
 	pending.player.SetActiveSlot(pending.req.IncomingIndex)
 	return phase.EnteredPokemon{
 		PlayerId: pending.player.Id(),
@@ -120,7 +120,7 @@ func (ar *ActionResolvePhaseHandler) commitSwitch(pending pendingSwitch) phase.E
 }
 
 // validatePendingActions は各プレイヤーが保留行動をちょうど1つ持っていることを検証する。
-func (ar *ActionResolvePhaseHandler) validatePendingActions(players []*player.Player) error {
+func (ar *ActionResolveOrchestrator) validatePendingActions(players []*player.Player) error {
 	for _, pl := range players {
 		count := 0
 		if pl.HasPendingSwitch() {
