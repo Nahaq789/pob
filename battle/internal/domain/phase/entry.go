@@ -4,12 +4,11 @@ import (
 	"errors"
 	"pob/battle/internal/domain/battle"
 	"pob/battle/internal/domain/pokemon"
-	"sort"
 )
 
-// EntryPhaseHandler はポケモンが場に出た際の一連の処理を担う。
-// バトル開始時の同時入場（複数体）と、ターン中の交代による入場（1体、
-// または双方同時交代時は2体）の両方をこのHandleで処理する。
+// EntryPhaseHandler はポケモンが場に出た際の処理を担う。
+// 複数体の同時入場は呼び出し元（ActionResolvePhaseHandler）が素早さ順にソートして
+// 1体ずつ Handle を呼び出す責務を持つ。
 type EntryPhaseHandler struct {
 	registry *Registry
 }
@@ -28,33 +27,15 @@ type EnteredPokemon struct {
 	Pokemon  *pokemon.Pokemon
 }
 
-// Handle は entered を素早さ順（降順）にソートしたうえで、
-// 1体ずつ Entered() を呼び出し、発動した特性・道具のハンドラーを実行する。
-// 戻り値はプレイヤーIDごとの発動メッセージ一覧。
-func (e *EntryPhaseHandler) Handle(entered []EnteredPokemon, b *battle.Battle) (map[string][]string, error) {
-	ordered := make([]EnteredPokemon, len(entered))
-	copy(ordered, entered)
-
-	sort.SliceStable(ordered, func(i, j int) bool {
-		return ordered[i].Pokemon.Speed() > ordered[j].Pokemon.Speed()
-	})
-
-	resultMessages := make(map[string][]string, 0)
-	for _, ep := range ordered {
-		// 同一プレイヤーの重複入場は呼び出し元の実装ミス以外では起こり得ないため異常系とする
-		if _, exists := resultMessages[ep.PlayerId]; exists {
-			return nil, errors.New("同一プレイヤーのポケモンが重複しています")
-		}
-
-		ep.Pokemon.Entered()
-		messages, err := e.dispatch(ep, b)
-		if err != nil {
-			return nil, err
-		}
-
-		resultMessages[ep.PlayerId] = messages
+// Handle は1体のポケモンの入場処理を行い、発動した特性・道具のハンドラーを実行する。
+// 戻り値は発動メッセージ一覧。
+func (e *EntryPhaseHandler) Handle(entered EnteredPokemon, b *battle.Battle) ([]string, error) {
+	entered.Pokemon.Entered()
+	messages, err := e.dispatch(entered, b)
+	if err != nil {
+		return nil, err
 	}
-	return resultMessages, nil
+	return messages, nil
 }
 
 // dispatch は1体のポケモンについて発行されたイベントを取り出し、

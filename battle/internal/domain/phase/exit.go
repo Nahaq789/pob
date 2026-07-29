@@ -4,11 +4,11 @@ import (
 	"errors"
 	"pob/battle/internal/domain/battle"
 	"pob/battle/internal/domain/pokemon"
-	"sort"
 )
 
-// ExitPhaseHandler はポケモンが場から退いた際の一連の処理を担う。
-// 交代による退場（1体、または双方同時交代時は2体）をこのHandleで処理する。
+// ExitPhaseHandler はポケモンが場から退いた際の処理を担う。
+// 複数体の同時退場は呼び出し元（ActionResolvePhaseHandler）が素早さ順にソートして
+// 1体ずつ Handle を呼び出す責務を持つ。
 type ExitPhaseHandler struct {
 	registry *Registry
 }
@@ -25,33 +25,15 @@ type ExitingPokemon struct {
 	Incoming *pokemon.Pokemon
 }
 
-// Handle は exiting を素早さ順（降順）にソートしたうえで、
-// 1体ずつ Exited() を呼び出し、発動した特性・道具のハンドラーを実行する。
-// 戻り値はプレイヤーIDごとの発動メッセージ一覧。
-func (e *ExitPhaseHandler) Handle(exiting []ExitingPokemon, b *battle.Battle) (map[string][]string, error) {
-	ordered := make([]ExitingPokemon, len(exiting))
-	copy(ordered, exiting)
-
-	sort.SliceStable(ordered, func(i, j int) bool {
-		return ordered[i].Pokemon.Speed() > ordered[j].Pokemon.Speed()
-	})
-
-	resultMessages := make(map[string][]string, 0)
-	for _, ep := range ordered {
-		// 同一プレイヤーの重複退場は呼び出し元の実装ミス以外では起こり得ないため異常系とする
-		if _, exists := resultMessages[ep.PlayerId]; exists {
-			return nil, errors.New("同一プレイヤーのポケモンが重複しています")
-		}
-
-		ep.Pokemon.Exited()
-		messages, err := e.dispatch(ep, b)
-		if err != nil {
-			return nil, err
-		}
-
-		resultMessages[ep.PlayerId] = messages
+// Handle は1体のポケモンの退場処理を行い、発動した特性・道具のハンドラーを実行する。
+// 戻り値は発動メッセージ一覧。
+func (e *ExitPhaseHandler) Handle(exiting ExitingPokemon, b *battle.Battle) ([]string, error) {
+	exiting.Pokemon.Exited()
+	messages, err := e.dispatch(exiting, b)
+	if err != nil {
+		return nil, err
 	}
-	return resultMessages, nil
+	return messages, nil
 }
 
 // dispatch は1体のポケモンについて発行されたイベントを取り出し、
