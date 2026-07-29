@@ -1,18 +1,22 @@
-package phase
+package orchestrate
 
 import (
 	"fmt"
 	"pob/battle/internal/domain/battle"
+	"pob/battle/internal/domain/phase"
 	"pob/battle/internal/domain/player"
 	"sort"
 )
 
+// ActionResolvePhaseHandler は各プレイヤーの保留行動を解決するオーケストレーター。
+// 個々のフェーズハンドラー（ExitPhaseHandler・EntryPhaseHandler）を呼び出し、
+// バトル1ターン分の行動解決フローを制御する。
 type ActionResolvePhaseHandler struct {
-	exitHandler  *ExitPhaseHandler
-	entryHandler *EntryPhaseHandler
+	exitHandler  *phase.ExitPhaseHandler
+	entryHandler *phase.EntryPhaseHandler
 }
 
-func NewActionResolvePhaseHandler(exit *ExitPhaseHandler, entry *EntryPhaseHandler) *ActionResolvePhaseHandler {
+func NewActionResolvePhaseHandler(exit *phase.ExitPhaseHandler, entry *phase.EntryPhaseHandler) *ActionResolvePhaseHandler {
 	return &ActionResolvePhaseHandler{exitHandler: exit, entryHandler: entry}
 }
 
@@ -25,7 +29,7 @@ type pendingSwitch struct {
 // switchEntry は素早さ順ソートの対象となる交代エントリ。
 // ExitPhase と commitSwitch それぞれに必要な情報をひとまとめにする。
 type switchEntry struct {
-	exiting ExitingPokemon
+	exiting phase.ExitingPokemon
 	pending pendingSwitch
 }
 
@@ -99,7 +103,7 @@ func (ar *ActionResolvePhaseHandler) collectPendingSwitches(players []*player.Pl
 			continue
 		}
 		entries = append(entries, switchEntry{
-			exiting: ExitingPokemon{PlayerId: pl.Id(), Pokemon: req.Outgoing, Incoming: req.Incoming},
+			exiting: phase.ExitingPokemon{PlayerId: pl.Id(), Pokemon: req.Outgoing, Incoming: req.Incoming},
 			pending: pendingSwitch{player: pl, req: req},
 		})
 	}
@@ -107,9 +111,9 @@ func (ar *ActionResolvePhaseHandler) collectPendingSwitches(players []*player.Pl
 }
 
 // commitSwitch はプレイヤーのアクティブスロットを確定させ、EntryPhase に渡す EnteredPokemon を返す。
-func (ar *ActionResolvePhaseHandler) commitSwitch(pending pendingSwitch) EnteredPokemon {
+func (ar *ActionResolvePhaseHandler) commitSwitch(pending pendingSwitch) phase.EnteredPokemon {
 	pending.player.SetActiveSlot(pending.req.IncomingIndex)
-	return EnteredPokemon{
+	return phase.EnteredPokemon{
 		PlayerId: pending.player.Id(),
 		Pokemon:  pending.req.Incoming,
 	}
