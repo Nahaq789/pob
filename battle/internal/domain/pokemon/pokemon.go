@@ -29,6 +29,7 @@ type RealStats struct {
 type Pokemon struct {
 	// 固定データ
 	id        PokemonId
+	name      string
 	slot      int
 	nickname  string
 	types     [2]ptype.Type
@@ -55,6 +56,7 @@ type Pokemon struct {
 // 部分的な省略を許容しないフルコンストラクタとする。
 func NewPokemon(
 	id PokemonId,
+	name string,
 	slot int,
 	nickname string,
 	types [2]ptype.Type,
@@ -73,6 +75,7 @@ func NewPokemon(
 ) *Pokemon {
 	return &Pokemon{
 		id:               id,
+		name:             name,
 		slot:             slot,
 		nickname:         nickname,
 		types:            types,
@@ -114,6 +117,8 @@ func (p *Pokemon) Speed() int {
 }
 
 func (p *Pokemon) Id() PokemonId { return p.id }
+
+func (p *Pokemon) Name() string { return p.name }
 
 // func (p *Pokemon) Slot() int { return p.slot }
 //
