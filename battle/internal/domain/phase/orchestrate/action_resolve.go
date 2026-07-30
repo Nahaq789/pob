@@ -47,6 +47,7 @@ func (ar *ActionResolveOrchestrator) Handle(b *battle.Battle) (map[string][]stri
 	}
 
 	result := make(map[string][]string)
+	// サレンダー
 	for _, pl := range players {
 		if pl.HasPendingForfeit() {
 			pl.PullPendingForfeit()
