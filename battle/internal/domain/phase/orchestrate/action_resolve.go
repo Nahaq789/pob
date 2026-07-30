@@ -9,15 +9,16 @@ import (
 )
 
 // ActionResolveOrchestrator は各プレイヤーの保留行動を解決するオーケストレーター。
-// 個々のフェーズハンドラー（ExitPhaseHandler・EntryPhaseHandler）を呼び出し、
+// 個々のフェーズハンドラー（ExitPhaseHandler・EntryPhaseHandler・MoveSelectPhaseHandler）を呼び出し、
 // バトル1ターン分の行動解決フローを制御する。
 type ActionResolveOrchestrator struct {
-	exitHandler  *phase.ExitPhaseHandler
-	entryHandler *phase.EntryPhaseHandler
+	exitHandler       *phase.ExitPhaseHandler
+	entryHandler      *phase.EntryPhaseHandler
+	moveSelectHandler *phase.MoveSelectPhaseHandler
 }
 
-func NewActionResolveOrchestrator(exit *phase.ExitPhaseHandler, entry *phase.EntryPhaseHandler) *ActionResolveOrchestrator {
-	return &ActionResolveOrchestrator{exitHandler: exit, entryHandler: entry}
+func NewActionResolveOrchestrator(exit *phase.ExitPhaseHandler, entry *phase.EntryPhaseHandler, move *phase.MoveSelectPhaseHandler) *ActionResolveOrchestrator {
+	return &ActionResolveOrchestrator{exitHandler: exit, entryHandler: entry, moveSelectHandler: move}
 }
 
 // pendingSwitch はプレイヤーと交代リクエストのペア。commitSwitch に渡す内部型。
@@ -85,7 +86,7 @@ func (ar *ActionResolveOrchestrator) Handle(b *battle.Battle) (map[string][]stri
 	// 技
 	for _, pl := range players {
 		if req := pl.PullPendingMove(); req != nil {
-			b.PushPendingMove(*req)
+			ar.moveSelectHandler.Handle(*req, b)
 		}
 	}
 
