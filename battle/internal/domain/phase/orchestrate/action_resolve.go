@@ -15,10 +15,11 @@ type ActionResolveOrchestrator struct {
 	exitHandler       *phase.ExitPhaseHandler
 	entryHandler      *phase.EntryPhaseHandler
 	moveSelectHandler *phase.MoveSelectPhaseHandler
+	forfeitHandler    *phase.ForfeitPhaseHandler
 }
 
-func NewActionResolveOrchestrator(exit *phase.ExitPhaseHandler, entry *phase.EntryPhaseHandler, move *phase.MoveSelectPhaseHandler) *ActionResolveOrchestrator {
-	return &ActionResolveOrchestrator{exitHandler: exit, entryHandler: entry, moveSelectHandler: move}
+func NewActionResolveOrchestrator(exit *phase.ExitPhaseHandler, entry *phase.EntryPhaseHandler, move *phase.MoveSelectPhaseHandler, forfeit *phase.ForfeitPhaseHandler) *ActionResolveOrchestrator {
+	return &ActionResolveOrchestrator{exitHandler: exit, entryHandler: entry, moveSelectHandler: move, forfeitHandler: forfeit}
 }
 
 // pendingSwitch はプレイヤーと交代リクエストのペア。commitSwitch に渡す内部型。
@@ -51,8 +52,8 @@ func (ar *ActionResolveOrchestrator) Handle(b *battle.Battle) (map[string][]stri
 	for _, pl := range players {
 		if pl.HasPendingForfeit() {
 			pl.PullPendingForfeit()
-			b.SetWinner(b.Opponent(pl))
-			result[pl.Id()] = append(result[pl.Id()], fmt.Sprintf("プレイヤー%sが降参しました。", pl.Id()))
+			msg := ar.forfeitHandler.Handle(pl, b)
+			result[pl.Id()] = append(result[pl.Id()], msg)
 			return result, nil
 		}
 	}
