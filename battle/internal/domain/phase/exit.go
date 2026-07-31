@@ -2,6 +2,7 @@ package phase
 
 import (
 	"errors"
+	"fmt"
 	"pob/battle/internal/domain/battle"
 	"pob/battle/internal/domain/pokemon"
 )
@@ -26,14 +27,27 @@ type ExitingPokemon struct {
 }
 
 // Handle は1体のポケモンの退場処理を行い、発動した特性・道具のハンドラーを実行する。
-// 戻り値は発動メッセージ一覧。
-func (e *ExitPhaseHandler) Handle(exiting ExitingPokemon, b *battle.Battle) ([]string, error) {
+// 退場メッセージ（自分視点・相手視点）および特性・道具効果メッセージを
+// プレイヤーIDごとにまとめて返す。
+func (e *ExitPhaseHandler) Handle(exiting ExitingPokemon, b *battle.Battle) (map[string][]string, error) {
+	self := b.PlayerById(exiting.PlayerId)
+	opponent := b.Opponent(self)
+
 	exiting.Pokemon.Exited()
 	messages, err := e.dispatch(exiting, b)
 	if err != nil {
 		return nil, err
 	}
-	return messages, nil
+
+	result := map[string][]string{
+		self.Id():     {fmt.Sprintf("戻れ！%s！", exiting.Pokemon.Name())},
+		opponent.Id(): {fmt.Sprintf("相手は%sを引っ込めた！", exiting.Pokemon.Name())},
+	}
+	for _, msg := range messages {
+		result[self.Id()] = append(result[self.Id()], msg)
+		result[opponent.Id()] = append(result[opponent.Id()], msg)
+	}
+	return result, nil
 }
 
 // dispatch は1体のポケモンについて発行されたイベントを取り出し、

@@ -2,6 +2,7 @@ package phase
 
 import (
 	"errors"
+	"fmt"
 	"pob/battle/internal/domain/battle"
 	"pob/battle/internal/domain/pokemon"
 )
@@ -28,14 +29,27 @@ type EnteredPokemon struct {
 }
 
 // Handle は1体のポケモンの入場処理を行い、発動した特性・道具のハンドラーを実行する。
-// 戻り値は発動メッセージ一覧。
-func (e *EntryPhaseHandler) Handle(entered EnteredPokemon, b *battle.Battle) ([]string, error) {
+// 入場メッセージ（自分視点・相手視点）および特性・道具効果メッセージを
+// プレイヤーIDごとにまとめて返す。
+func (e *EntryPhaseHandler) Handle(entered EnteredPokemon, b *battle.Battle) (map[string][]string, error) {
+	self := b.PlayerById(entered.PlayerId)
+	opponent := b.Opponent(self)
+
 	entered.Pokemon.Entered()
 	messages, err := e.dispatch(entered, b)
 	if err != nil {
 		return nil, err
 	}
-	return messages, nil
+
+	result := map[string][]string{
+		self.Id():     {fmt.Sprintf("行け！%s！", entered.Pokemon.Name())},
+		opponent.Id(): {fmt.Sprintf("相手は%sを繰り出した！", entered.Pokemon.Name())},
+	}
+	for _, msg := range messages {
+		result[self.Id()] = append(result[self.Id()], msg)
+		result[opponent.Id()] = append(result[opponent.Id()], msg)
+	}
+	return result, nil
 }
 
 // dispatch は1体のポケモンについて発行されたイベントを取り出し、

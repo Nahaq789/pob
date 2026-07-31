@@ -1,7 +1,6 @@
 package battle
 
 import (
-	"pob/battle/internal/domain/battle"
 	"pob/battle/internal/domain/field"
 	"pob/battle/internal/domain/player"
 	"pob/battle/internal/domain/room"

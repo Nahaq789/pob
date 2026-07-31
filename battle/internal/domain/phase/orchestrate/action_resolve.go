@@ -80,23 +80,20 @@ func (ar *ActionResolveOrchestrator) Handle(b *battle.Battle) (map[string][]stri
 			return entries[i].exiting.Pokemon.Speed() > entries[j].exiting.Pokemon.Speed()
 		})
 		for _, entry := range entries {
-			ep := entry.exiting
 			// 退場処理
-			result[ep.PlayerId] = append(result[ep.PlayerId], fmt.Sprintf("戻れ！%s！", ep.Pokemon.Name()))
-			exitMsgs, err := ar.exitHandler.Handle(ep, b)
+			exitMsgs, err := ar.exitHandler.Handle(entry.exiting, b)
 			if err != nil {
 				return nil, err
 			}
-			result[ep.PlayerId] = append(result[ep.PlayerId], exitMsgs...)
+			mergeMessages(result, exitMsgs)
 
 			// 入場処理
 			entered := ar.commitSwitch(entry.pending)
-			result[ep.PlayerId] = append(result[ep.PlayerId], fmt.Sprintf("行け！%s！", entered.Pokemon.Name()))
 			entryMsgs, err := ar.entryHandler.Handle(entered, b)
 			if err != nil {
 				return nil, err
 			}
-			result[ep.PlayerId] = append(result[ep.PlayerId], entryMsgs...)
+			mergeMessages(result, entryMsgs)
 		}
 	}
 
@@ -134,6 +131,12 @@ func (ar *ActionResolveOrchestrator) commitSwitch(pending pendingSwitch) phase.E
 	return phase.EnteredPokemon{
 		PlayerId: pending.player.Id(),
 		Pokemon:  pending.req.Incoming,
+	}
+}
+
+func mergeMessages(dst, src map[string][]string) {
+	for id, msgs := range src {
+		dst[id] = append(dst[id], msgs...)
 	}
 }
 
