@@ -9,6 +9,7 @@ import (
 
 type Player struct {
 	id             string
+	name           string
 	party          [6]*pokemon.Pokemon // 手持ちポケモン
 	selected       [3]*pokemon.Pokemon // 選出された3匹
 	activeSlot     int                 // 現在場に出ているポケモンのindex
@@ -18,9 +19,10 @@ type Player struct {
 	pendingForfeit ForfeitRequest
 }
 
-func NewPlayer(id string, party [6]*pokemon.Pokemon, grounds []ground.State) *Player {
+func NewPlayer(id string, name string, party [6]*pokemon.Pokemon, grounds []ground.State) *Player {
 	return &Player{
 		id:            id,
+		name:          name,
 		party:         party,
 		selected:      [3]*pokemon.Pokemon{},
 		activeSlot:    0,
@@ -115,6 +117,10 @@ func (p *Player) validateSlot(index int) error {
 
 func (p *Player) Id() string {
 	return p.id
+}
+
+func (p *Player) Name() string {
+	return p.name
 }
 
 func (p *Player) PullPendingSwitch() *SwitchRequest {

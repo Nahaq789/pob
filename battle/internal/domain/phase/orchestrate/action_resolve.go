@@ -49,13 +49,28 @@ func (ar *ActionResolveOrchestrator) Handle(b *battle.Battle) (map[string][]stri
 
 	result := make(map[string][]string)
 	// サレンダー
+	var forfeits []*player.Player
 	for _, pl := range players {
 		if pl.HasPendingForfeit() {
-			pl.PullPendingForfeit()
-			msg := ar.forfeitHandler.Handle(pl, b)
-			result[pl.Id()] = append(result[pl.Id()], msg)
-			return result, nil
+			forfeits = append(forfeits, pl)
 		}
+	}
+	switch len(forfeits) {
+	case 0:
+	case 1:
+		pl := forfeits[0]
+		pl.PullPendingForfeit()
+		msgs := ar.forfeitHandler.Handle(pl, b)
+		for id, msg := range msgs {
+			result[id] = append(result[id], msg)
+		}
+		return result, nil
+	case 2:
+		msgs := ar.forfeitHandler.HandleDraw(forfeits, b)
+		for id, msg := range msgs {
+			result[id] = append(result[id], msg)
+		}
+		return result, nil
 	}
 
 	// 交代

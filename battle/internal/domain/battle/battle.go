@@ -1,6 +1,7 @@
 package battle
 
 import (
+	"pob/battle/internal/domain/battle"
 	"pob/battle/internal/domain/field"
 	"pob/battle/internal/domain/player"
 	"pob/battle/internal/domain/room"
@@ -16,6 +17,7 @@ type Battle struct {
 	room         *room.State
 	pendingMoves []player.MoveRequest
 	winner       *player.Player
+	draw         bool
 }
 
 func NewBattle(p1, p2 *player.Player) *Battle {
@@ -28,6 +30,7 @@ func NewBattle(p1, p2 *player.Player) *Battle {
 		room:         nil,
 		pendingMoves: nil,
 		winner:       nil,
+		draw:         false,
 	}
 }
 
@@ -54,6 +57,10 @@ func (b *Battle) SetField(f *field.State) {
 
 func (b *Battle) SetRoom(r *room.State) {
 	b.room = r
+}
+
+func (b *Battle) Draw() {
+	b.draw = true
 }
 
 func (b *Battle) PlayerById(id string) *player.Player {
