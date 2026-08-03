@@ -25,7 +25,7 @@ import (
 // abilityId=0 / moveId=1(PP10) を固定で持ち、HP が満タンなので気絶していない。
 func newTestPokemon(name string, speed int) *pokemon.Pokemon {
 	a := ability.NewAbility(0, "")
-	m := move.NewMove(1, pp.NewPP(vo.NewCount(10), 10))
+	m := move.NewMove(1, pp.NewPP(vo.NewCount(10), 10), 0, 0, 0, move.DamageClassStatus, ptype.Normal)
 	return pokemon.NewPokemon(
 		1, name, 0, "",
 		[2]ptype.Type{ptype.Normal, ptype.Normal},

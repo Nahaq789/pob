@@ -34,8 +34,11 @@ func NewBattle(p1, p2 *player.Player) *Battle {
 }
 
 func (b *Battle) SetWinner(p *player.Player) { b.winner = p }
-func (b *Battle) Winner() *player.Player    { return b.winner }
-func (b *Battle) IsDraw() bool              { return b.draw }
+func (b *Battle) Winner() *player.Player     { return b.winner }
+func (b *Battle) IsDraw() bool               { return b.draw }
+func (b *Battle) IsFinished() bool {
+	return b.draw || b.winner != nil
+}
 
 func (b *Battle) Opponent(p *player.Player) *player.Player {
 	if p == b.player1 {
