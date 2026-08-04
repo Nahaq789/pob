@@ -38,3 +38,6 @@ func NewExitContext(actorId string, abilityId, itemId int, incoming *pokemon.Pok
 		Battle:    battle,
 	}
 }
+
+type PreDamageContext struct {
+}

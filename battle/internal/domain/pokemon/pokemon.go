@@ -112,8 +112,14 @@ func (p *Pokemon) IsFainted() bool {
 func (p *Pokemon) ResetOnSwitchOut() {
 }
 
+// 素早さの実数値
 func (p *Pokemon) Speed() int {
-	return p.realStats.Speed
+	s := float64(p.realStats.Speed) * p.ranks.Speed().Value()
+	// 状態異常がまひの場合は素早さが1/4になる
+	if p.mainStatus != nil && p.mainStatus.Condition() == status.Paralysis {
+		s *= 0.25
+	}
+	return int(s)
 }
 
 func (p *Pokemon) Id() PokemonId { return p.id }
