@@ -40,4 +40,15 @@ func NewExitContext(actorId string, abilityId, itemId int, incoming *pokemon.Pok
 }
 
 type PreDamageContext struct {
+	ActorId string
+	MoveId  string
+	Battle  *battle.Battle
+}
+
+func NewPreDamageContext(actorId, moveId string, battle *battle.Battle) PreDamageContext {
+	return PreDamageContext{
+		ActorId: actorId,
+		MoveId:  moveId,
+		Battle:  battle,
+	}
 }
