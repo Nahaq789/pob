@@ -9,6 +9,6 @@ func NewPreDamagePhaseHandler() *PreDamagePhaseHandler {
 	return &PreDamagePhaseHandler{}
 }
 
-func (pre *PreDamagePhaseHandler) Handle(b *battle.Battle) (map[string][]string, error) {
-	return nil, nil
+func (pre *PreDamagePhaseHandler) Handle(b *battle.Battle) Result {
+	return Result{}
 }
