@@ -121,6 +121,9 @@ func (r *ItemRepository) toItems(responses []*itemApiResponse) []Item {
 	for _, res := range responses {
 		var jaName string
 		for _, n := range res.Names {
+			if n.Language.Name == "ja-Hrkt" {
+				jaName = n.Name
+			}
 			if n.Language.Name == "ja" {
 				jaName = n.Name
 				break
@@ -129,11 +132,19 @@ func (r *ItemRepository) toItems(responses []*itemApiResponse) []Item {
 
 		var jaFlavorText string
 		for _, e := range res.FlavorTextEntries {
+			if e.Language.Name == "ja-Hrkt" {
+				jaFlavorText = e.Text
+			}
 			if e.Language.Name == "ja" {
 				jaFlavorText = e.Text
+				break
 			}
 		}
 
+		if jaName == "" {
+			slog.Warn("skipping item with no Japanese name", slog.Int("id", res.Id))
+			continue
+		}
 		items = append(items, Item{
 			Id:         res.Id,
 			Name:       jaName,
