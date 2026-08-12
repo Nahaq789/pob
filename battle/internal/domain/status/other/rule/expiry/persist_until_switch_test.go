@@ -1,14 +1,14 @@
-package rule_test
+package expiry_test
 
 import (
 	"testing"
 
 	"pob/battle/internal/domain/status/other"
-	"pob/battle/internal/domain/status/other/rule"
+	"pob/battle/internal/domain/status/other/rule/expiry"
 )
 
 func TestPersistUntilSwitch_Resolve(t *testing.T) {
-	c := rule.NewPersistUntilSwitch()
+	c := expiry.NewPersistUntilSwitch()
 	for i := 0; i < 5; i++ {
 		cleared, addConfusion := c.Resolve(other.OtherStatusContext{})
 		if cleared {

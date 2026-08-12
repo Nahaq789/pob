@@ -1,14 +1,14 @@
-package rule_test
+package expiry_test
 
 import (
 	"testing"
 
 	"pob/battle/internal/domain/status/other"
-	"pob/battle/internal/domain/status/other/rule"
+	"pob/battle/internal/domain/status/other/rule/expiry"
 )
 
-func TestClearedOnMoveTurnEnd_Resolve(t *testing.T) {
-	c := rule.NewClearedOnMoveTurnEnd()
+func TestClearedOnNextAction_Resolve(t *testing.T) {
+	c := expiry.NewClearedOnNextAction()
 	cleared, addConfusion := c.Resolve(other.OtherStatusContext{})
 	if !cleared {
 		t.Error("expected cleared=true")

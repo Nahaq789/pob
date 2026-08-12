@@ -1,4 +1,4 @@
-package rule
+package expiry
 
 import (
 	"pob/battle/internal/domain/status"

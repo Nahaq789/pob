@@ -1,17 +1,17 @@
-package rule_test
+package expiry_test
 
 import (
 	"testing"
 
 	"pob/battle/internal/domain/status/other"
-	"pob/battle/internal/domain/status/other/rule"
+	"pob/battle/internal/domain/status/other/rule/expiry"
 )
 
 func TestClearedOnOtherCondition_Resolve(t *testing.T) {
 	ctx := other.OtherStatusContext{}
 
 	t.Run("turns=1 clears on first resolve", func(t *testing.T) {
-		c := rule.NewClearedOnOtherCondition(1)
+		c := expiry.NewClearedOnOtherCondition(1)
 		cleared, addConfusion := c.Resolve(ctx)
 		if !cleared {
 			t.Error("expected cleared=true")
@@ -22,7 +22,7 @@ func TestClearedOnOtherCondition_Resolve(t *testing.T) {
 	})
 
 	t.Run("turns=2 does not clear on first resolve", func(t *testing.T) {
-		c := rule.NewClearedOnOtherCondition(2)
+		c := expiry.NewClearedOnOtherCondition(2)
 		cleared, _ := c.Resolve(ctx)
 		if cleared {
 			t.Error("expected cleared=false on first resolve")

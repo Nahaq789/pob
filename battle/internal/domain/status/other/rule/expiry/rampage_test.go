@@ -1,10 +1,10 @@
-package rule_test
+package expiry_test
 
 import (
 	"testing"
 
 	"pob/battle/internal/domain/status/other"
-	"pob/battle/internal/domain/status/other/rule"
+	"pob/battle/internal/domain/status/other/rule/expiry"
 )
 
 func TestRampage_Resolve(t *testing.T) {
@@ -12,7 +12,7 @@ func TestRampage_Resolve(t *testing.T) {
 	failed := other.OtherStatusContext{ActionSucceeded: false}
 
 	t.Run("自然終了: 規定ターン完走でcleared+こんらん", func(t *testing.T) {
-		r := rule.NewRampage(2)
+		r := expiry.NewRampage(2)
 
 		cleared, addConfusion := r.Resolve(succeeded)
 		if cleared || addConfusion {
@@ -26,7 +26,7 @@ func TestRampage_Resolve(t *testing.T) {
 	})
 
 	t.Run("途中失敗: 残りターンが複数あるときの失敗はこんらんなし", func(t *testing.T) {
-		r := rule.NewRampage(3)
+		r := expiry.NewRampage(3)
 
 		cleared, addConfusion := r.Resolve(failed)
 		if !cleared || addConfusion {
@@ -35,7 +35,7 @@ func TestRampage_Resolve(t *testing.T) {
 	})
 
 	t.Run("最終ターン失敗: 残り1ターンで失敗したらこんらん付与", func(t *testing.T) {
-		r := rule.NewRampage(2)
+		r := expiry.NewRampage(2)
 		r.Resolve(succeeded) // 1ターン目成功で残り1へ
 
 		cleared, addConfusion := r.Resolve(failed)
@@ -45,7 +45,7 @@ func TestRampage_Resolve(t *testing.T) {
 	})
 
 	t.Run("継続中: 成功かつ残りターンありはclearedしない", func(t *testing.T) {
-		r := rule.NewRampage(3)
+		r := expiry.NewRampage(3)
 
 		cleared, addConfusion := r.Resolve(succeeded)
 		if cleared || addConfusion {
