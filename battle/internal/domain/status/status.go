@@ -1,12 +1,11 @@
 package status
 
 type Status struct {
-	main  *MainStatus
-	other []OtherStatus
+	main *MainStatus
 }
 
 func NewStatus() Status {
-	return Status{main: nil, other: nil}
+	return Status{main: nil}
 }
 
 func (s *Status) SetMainStatus(m *MainStatus) {

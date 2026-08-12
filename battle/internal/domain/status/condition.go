@@ -14,30 +14,26 @@ const (
 
 type OtherCondition string
 
-const (
-	Confusion OtherCondition = "confusion"
-)
-
 // 技が使用されたターンが終了することで消滅する
-type ClearedOnMoveTurnEnd string
+type ClearedOnMoveTurnEnd OtherCondition
 
 // 次の行動時に消滅する
-type ClearedOnNextAction string
+type ClearedOnNextAction OtherCondition
 
 // ターン経過で消滅する
-type ClearedOverTurns string
+type ClearedOverTurns OtherCondition
 
 // その他の条件で消滅する
-type ClearedOnOtherCondition string
+type ClearedOnOtherCondition OtherCondition
 
 // 交代しない限り永続
-type PersistUntilSwitch string
+type PersistUntilSwitch OtherCondition
 
 // あばれるけい
-type Rampage string
+type Rampage OtherCondition
 
 // 眠り状態から回復したとき
-type ClearedOnWakeUp string
+type ClearedOnWakeUp OtherCondition
 
 // でんき技で行動したとき（Gen9仕様を採用。Gen1には該当技なし）
-type ClearedOnElectricMove string
+type ClearedOnElectricMove OtherCondition

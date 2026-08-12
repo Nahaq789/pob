@@ -1,5 +1,7 @@
 package other
 
+import "pob/battle/internal/domain/status"
+
 // OtherStatus は「わざを使ったポケモンに発生し、行動選択を制約する状態変化」の共通インターフェース。
 type OtherStatus interface {
 	// Resolve はそのポケモンの1ターン分の行動解決後に呼ばれる。
@@ -9,4 +11,5 @@ type OtherStatus interface {
 	//   addConfusion : true の場合、呼び出し側は cleared 除去の直後に status.Confusion を付与する
 	//                  (こんらん付与自体はOrchestrator側の責務。Resolve内でSetStatusは呼ばない)
 	Resolve(ctx OtherStatusContext) (cleared bool, addConfusion bool)
+	Kind() status.OtherCondition
 }

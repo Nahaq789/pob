@@ -1,13 +1,17 @@
 package rule
 
-import "pob/battle/internal/domain/status/other"
+import (
+	"pob/battle/internal/domain/status"
+	"pob/battle/internal/domain/status/other"
+)
 
 type ClearedOverTurns struct {
+	kind      status.ClearedOverTurns
 	remaining int
 }
 
 func NewClearedOverTurns(turns int) *ClearedOverTurns {
-	return &ClearedOverTurns{remaining: turns}
+	return &ClearedOverTurns{kind: "cleared_over_turns", remaining: turns}
 }
 
 func (c *ClearedOverTurns) Resolve(_ other.OtherStatusContext) (bool, bool) {
@@ -16,4 +20,8 @@ func (c *ClearedOverTurns) Resolve(_ other.OtherStatusContext) (bool, bool) {
 		return true, false
 	}
 	return false, false
+}
+
+func (c *ClearedOverTurns) Kind() status.OtherCondition {
+	return status.OtherCondition(c.kind)
 }

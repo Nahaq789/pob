@@ -10,6 +10,7 @@ import (
 	"pob/battle/internal/domain/ptype"
 	"pob/battle/internal/domain/rank"
 	"pob/battle/internal/domain/status"
+	"pob/battle/internal/domain/status/other"
 )
 
 type PokemonId int
@@ -43,7 +44,7 @@ type Pokemon struct {
 	currentHP        hp.HP
 	ranks            rank.Rank
 	mainStatus       *status.MainStatus
-	otherStatuses    []status.OtherStatus
+	otherStatuses    []other.OtherStatus
 	heldItem         *item.Item
 	lastConsumedItem *item.Item
 	// このターンに場に出たばかりかフラグ
@@ -68,7 +69,7 @@ func NewPokemon(
 	currentHP hp.HP,
 	ranks rank.Rank,
 	mainStatus *status.MainStatus,
-	otherStatuses []status.OtherStatus,
+	otherStatuses []other.OtherStatus,
 	heldItem *item.Item,
 	lastConsumedItem *item.Item,
 	justEntered bool,
@@ -158,7 +159,7 @@ func (p *Pokemon) MoveById(moveId int) (*move.Move, error) {
 //
 // func (p *Pokemon) MainStatus() status.MainStatus { return p.mainStatus }
 //
-// func (p *Pokemon) OtherStatuses() []status.OtherStatus { return p.otherStatuses }
+// func (p *Pokemon) OtherStatuses() []statusother.OtherStatus { return p.otherStatuses }
 func (p *Pokemon) HeldItem() *item.Item { return p.heldItem }
 
 //
