@@ -41,12 +41,13 @@ type Pokemon struct {
 	moves     [4]*move.Move
 
 	// 動的データ
-	currentHP        hp.HP
-	ranks            rank.Rank
-	mainStatus       *status.MainStatus
-	otherStatuses    []other.OtherStatus
-	heldItem         *item.Item
-	lastConsumedItem *item.Item
+	currentHP          hp.HP
+	ranks              rank.Rank
+	mainStatus         *status.MainStatus
+	otherStatuses      []other.OtherStatus
+	heldItem           *item.Item
+	lastConsumedItem   *item.Item
+	lastSelectedMoveId int
 	// このターンに場に出たばかりかフラグ
 	justEntered bool
 	events      []DomainEvent
@@ -178,4 +179,10 @@ func (p *Pokemon) ClearJustEntered() {
 // IsJustEntered は場に出たばかりかどうかを返す。
 func (p *Pokemon) IsJustEntered() bool {
 	return p.justEntered
+}
+
+func (p *Pokemon) LastSelectedMoveId() int { return p.lastSelectedMoveId }
+
+func (p *Pokemon) SetLastSelectedMoveId(moveId int) {
+	p.lastSelectedMoveId = moveId
 }
