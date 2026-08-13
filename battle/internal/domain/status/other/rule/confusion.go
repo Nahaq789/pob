@@ -3,7 +3,6 @@ package rule
 import (
 	"math/rand"
 	"pob/battle/internal/domain/status"
-	"pob/battle/internal/domain/status/other"
 	"pob/battle/internal/domain/vo"
 )
 
@@ -20,7 +19,7 @@ func NewConfusion(turns int) *Confusion {
 	return &Confusion{kind: "confusion", remaining: vo.NewCount(turns)}
 }
 
-func (c *Confusion) Resolve(_ other.OtherStatusContext) (bool, bool) {
+func (c *Confusion) Resolve(_ status.OtherStatusContext) (bool, bool) {
 	c.remaining = c.remaining.Decrement()
 	if c.remaining.IsEmpty() {
 		return true, false

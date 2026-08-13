@@ -10,7 +10,6 @@ import (
 	"pob/battle/internal/domain/ptype"
 	"pob/battle/internal/domain/rank"
 	"pob/battle/internal/domain/status"
-	"pob/battle/internal/domain/status/other"
 )
 
 type PokemonId int
@@ -43,8 +42,7 @@ type Pokemon struct {
 	// 動的データ
 	currentHP          hp.HP
 	ranks              rank.Rank
-	mainStatus         *status.MainStatus
-	otherStatuses      []other.OtherStatus
+	status             status.Status
 	heldItem           *item.Item
 	lastConsumedItem   *item.Item
 	lastSelectedMoveId int
@@ -69,8 +67,7 @@ func NewPokemon(
 	moves [4]*move.Move,
 	currentHP hp.HP,
 	ranks rank.Rank,
-	mainStatus *status.MainStatus,
-	otherStatuses []other.OtherStatus,
+	st status.Status,
 	heldItem *item.Item,
 	lastConsumedItem *item.Item,
 	justEntered bool,
@@ -88,8 +85,7 @@ func NewPokemon(
 		moves:            moves,
 		currentHP:        currentHP,
 		ranks:            ranks,
-		mainStatus:       mainStatus,
-		otherStatuses:    otherStatuses,
+		status:           st,
 		heldItem:         heldItem,
 		lastConsumedItem: lastConsumedItem,
 		justEntered:      justEntered,
@@ -118,7 +114,7 @@ func (p *Pokemon) ResetOnSwitchOut() {
 func (p *Pokemon) Speed() int {
 	s := float64(p.realStats.Speed) * p.ranks.Speed().Value()
 	// 状態異常がまひの場合は素早さが1/4になる
-	if p.mainStatus != nil && p.mainStatus.Condition() == status.Paralysis {
+	if m := p.status.Main(); m != nil && m.Condition() == status.Paralysis {
 		s *= 0.25
 	}
 	return int(s)
@@ -161,7 +157,8 @@ func (p *Pokemon) MoveById(moveId int) (*move.Move, error) {
 // func (p *Pokemon) MainStatus() status.MainStatus { return p.mainStatus }
 //
 // func (p *Pokemon) OtherStatuses() []statusother.OtherStatus { return p.otherStatuses }
-func (p *Pokemon) HeldItem() *item.Item { return p.heldItem }
+func (p *Pokemon) Status() status.Status { return p.status }
+func (p *Pokemon) HeldItem() *item.Item  { return p.heldItem }
 
 //
 // func (p *Pokemon) LastConsumedItem() *item.Item { return p.lastConsumedItem }
@@ -185,4 +182,18 @@ func (p *Pokemon) LastSelectedMoveId() int { return p.lastSelectedMoveId }
 
 func (p *Pokemon) SetLastSelectedMoveId(moveId int) {
 	p.lastSelectedMoveId = moveId
+}
+
+// DecrementMainStatusCount はメインの状態異常のカウントを1減らす。
+// ねむりターン経過など、ターン消費を伴う状態異常の更新に使用する。
+func (p *Pokemon) DecrementMainStatusCount() {
+	if p.status.Main() == nil {
+		return
+	}
+	nm := p.status.Main().DecrementCount()
+	if nm.Count().IsEmpty() {
+		p.status.ForceSetMainStatus(nil)
+		return
+	}
+	p.status.ForceSetMainStatus(&nm)
 }

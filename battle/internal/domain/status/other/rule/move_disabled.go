@@ -2,7 +2,6 @@ package rule
 
 import (
 	"pob/battle/internal/domain/status"
-	"pob/battle/internal/domain/status/other"
 	"pob/battle/internal/domain/vo"
 )
 
@@ -18,13 +17,13 @@ type MoveDisabled struct {
 
 func NewMoveDisabled(turns int, moveId int) *MoveDisabled {
 	return &MoveDisabled{
-		kind:      "move_disabled",
+		kind:      status.MoveDisabled,
 		remaining: vo.NewCount(turns),
 		moveId:    moveId,
 	}
 }
 
-func (m *MoveDisabled) Resolve(_ other.OtherStatusContext) (bool, bool) {
+func (m *MoveDisabled) Resolve(_ status.OtherStatusContext) (bool, bool) {
 	m.remaining = m.remaining.Decrement()
 	if m.remaining.IsEmpty() {
 		return true, false

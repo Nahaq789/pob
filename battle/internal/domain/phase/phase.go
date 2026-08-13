@@ -23,5 +23,5 @@ type ExitHandler interface {
 // ダメージ計算前のハンドラー
 // ポケモンの行動チェックや素早さ順の解決等実施する
 type PreDamageHandler interface {
-	Handle(ctx string)
+	Handle(ctx PreDamageContext)
 }

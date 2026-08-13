@@ -41,11 +41,11 @@ func NewExitContext(actorId string, abilityId, itemId int, incoming *pokemon.Pok
 
 type PreDamageContext struct {
 	ActorId string
-	MoveId  string
+	MoveId  int
 	Battle  *battle.Battle
 }
 
-func NewPreDamageContext(actorId, moveId string, battle *battle.Battle) PreDamageContext {
+func NewPreDamageContext(actorId string, moveId int, battle *battle.Battle) PreDamageContext {
 	return PreDamageContext{
 		ActorId: actorId,
 		MoveId:  moveId,

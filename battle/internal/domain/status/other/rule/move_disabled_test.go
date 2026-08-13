@@ -4,14 +4,13 @@ import (
 	"testing"
 
 	"pob/battle/internal/domain/status"
-	"pob/battle/internal/domain/status/other"
 	"pob/battle/internal/domain/status/other/rule"
 )
 
 func TestMoveDisabled_Resolve(t *testing.T) {
 	t.Run("残りターンあり: cleared=false", func(t *testing.T) {
 		m := rule.NewMoveDisabled(2, 33)
-		cleared, addConfusion := m.Resolve(other.OtherStatusContext{})
+		cleared, addConfusion := m.Resolve(status.OtherStatusContext{})
 		if cleared {
 			t.Error("expected cleared=false")
 		}
@@ -22,7 +21,7 @@ func TestMoveDisabled_Resolve(t *testing.T) {
 
 	t.Run("残りターン0: cleared=true", func(t *testing.T) {
 		m := rule.NewMoveDisabled(1, 33)
-		cleared, addConfusion := m.Resolve(other.OtherStatusContext{})
+		cleared, addConfusion := m.Resolve(status.OtherStatusContext{})
 		if !cleared {
 			t.Error("expected cleared=true")
 		}

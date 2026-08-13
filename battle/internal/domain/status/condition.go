@@ -23,6 +23,10 @@ type ClearedOnNextAction OtherCondition
 // ターン経過で消滅する
 type ClearedOverTurns OtherCondition
 
+const (
+	MoveDisabled ClearedOverTurns = "move_disabled"
+)
+
 // その他の条件で消滅する
 type ClearedOnOtherCondition OtherCondition
 

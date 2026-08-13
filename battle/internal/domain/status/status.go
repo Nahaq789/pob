@@ -1,12 +1,24 @@
 package status
 
 type Status struct {
-	main *MainStatus
+	main   *MainStatus
+	others []OtherStatus
 }
 
 func NewStatus() Status {
-	return Status{main: nil}
+	return Status{main: nil, others: []OtherStatus{}}
 }
+
+func NewStatusWith(main *MainStatus, others []OtherStatus) Status {
+	if others == nil {
+		others = []OtherStatus{}
+	}
+	return Status{main: main, others: others}
+}
+
+func (s Status) Main() *MainStatus { return s.main }
+
+func (s Status) Others() []OtherStatus { return s.others }
 
 func (s *Status) SetMainStatus(m *MainStatus) {
 	if s.main != nil {
@@ -19,4 +31,16 @@ func (s *Status) ForceSetMainStatus(m *MainStatus) {
 	s.main = m
 }
 
-// TODO: Main/Other accessor は今後追加
+func (s *Status) AddOtherStatus(o OtherStatus) {
+	s.others = append(s.others, o)
+}
+
+func (s *Status) RemoveOtherStatus(kind OtherCondition) {
+	filtered := s.others[:0]
+	for _, o := range s.others {
+		if o.Kind() != kind {
+			filtered = append(filtered, o)
+		}
+	}
+	s.others = filtered
+}

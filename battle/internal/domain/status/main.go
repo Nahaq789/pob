@@ -64,3 +64,16 @@ func (m MainStatus) Condition() Condition {
 func (m MainStatus) Count() vo.Count {
 	return m.count
 }
+
+// IsNone は状態異常が何も掛かっていないかを返す。
+// nil レシーバーでも安全に呼び出せる。
+func (m *MainStatus) IsNone() bool {
+	return m == nil || m.condition == None
+}
+
+func (m MainStatus) IsSleep(name string) (string, bool) {
+	if m.condition == Sleep && !m.Count().IsEmpty() {
+		return fmt.Sprintf("%sはぐうぐう眠っている", name), true
+	}
+	return "", false
+}

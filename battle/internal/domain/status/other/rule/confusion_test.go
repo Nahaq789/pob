@@ -4,14 +4,13 @@ import (
 	"testing"
 
 	"pob/battle/internal/domain/status"
-	"pob/battle/internal/domain/status/other"
 	"pob/battle/internal/domain/status/other/rule"
 )
 
 func TestConfusion_Resolve(t *testing.T) {
 	t.Run("残りターンあり: cleared=false", func(t *testing.T) {
 		c := rule.NewConfusion(2)
-		cleared, addConfusion := c.Resolve(other.OtherStatusContext{})
+		cleared, addConfusion := c.Resolve(status.OtherStatusContext{})
 		if cleared {
 			t.Error("expected cleared=false")
 		}
@@ -22,7 +21,7 @@ func TestConfusion_Resolve(t *testing.T) {
 
 	t.Run("残りターン0: cleared=true", func(t *testing.T) {
 		c := rule.NewConfusion(1)
-		cleared, addConfusion := c.Resolve(other.OtherStatusContext{})
+		cleared, addConfusion := c.Resolve(status.OtherStatusContext{})
 		if !cleared {
 			t.Error("expected cleared=true")
 		}
@@ -34,12 +33,12 @@ func TestConfusion_Resolve(t *testing.T) {
 	t.Run("複数ターン経過後に解除される", func(t *testing.T) {
 		c := rule.NewConfusion(3)
 		for i := range 2 {
-			cleared, _ := c.Resolve(other.OtherStatusContext{})
+			cleared, _ := c.Resolve(status.OtherStatusContext{})
 			if cleared {
 				t.Errorf("turn %d: expected cleared=false", i+1)
 			}
 		}
-		cleared, _ := c.Resolve(other.OtherStatusContext{})
+		cleared, _ := c.Resolve(status.OtherStatusContext{})
 		if !cleared {
 			t.Error("turn 3: expected cleared=true")
 		}
