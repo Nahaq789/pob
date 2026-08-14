@@ -84,7 +84,7 @@ func (e *EntryPhaseHandler) dispatch(ep EnteredPokemon, b *battle.Battle) ([]str
 			if result.Err != nil {
 				return nil, result.Err
 			}
-			messages = append(messages, result.Message)
+			messages = append(messages, result.Messages...)
 		}
 
 		// どうぐを持っていれば、どうぐのハンドラーも処理
@@ -94,7 +94,7 @@ func (e *EntryPhaseHandler) dispatch(ep EnteredPokemon, b *battle.Battle) ([]str
 				if result.Err != nil {
 					return nil, result.Err
 				}
-				messages = append(messages, result.Message)
+				messages = append(messages, result.Messages...)
 			}
 		}
 	}

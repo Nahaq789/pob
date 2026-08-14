@@ -2,6 +2,7 @@ package status
 
 import (
 	"fmt"
+	"math/rand"
 	"pob/battle/internal/domain/vo"
 )
 
@@ -74,6 +75,22 @@ func (m *MainStatus) IsNone() bool {
 func (m MainStatus) IsSleep(name string) (string, bool) {
 	if m.condition == Sleep && !m.Count().IsEmpty() {
 		return fmt.Sprintf("%sはぐうぐう眠っている", name), true
+	}
+	return fmt.Sprintf("%sは目覚めた", name), false
+}
+
+func (m MainStatus) IsFreeze(name string) (string, bool) {
+	if m.condition == Freeze && !m.Count().IsEmpty() {
+		return fmt.Sprintf("%sはこおって動くことができない", name), true
+	}
+	return fmt.Sprintf("%sのこおりが溶けた", name), false
+}
+
+func (m MainStatus) IsParalysis(name string) (string, bool) {
+	if m.condition == Paralysis {
+		if ok := rand.Intn(8) == 0; ok {
+			return fmt.Sprintf("%sはしびれて動くことができない", name), true
+		}
 	}
 	return "", false
 }

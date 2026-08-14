@@ -16,6 +16,7 @@ import (
 	"pob/battle/internal/domain/pp"
 	"pob/battle/internal/domain/ptype"
 	"pob/battle/internal/domain/rank"
+	"pob/battle/internal/domain/status"
 	"pob/battle/internal/domain/vo"
 )
 
@@ -36,7 +37,8 @@ func newTestPokemon(name string, speed int) *pokemon.Pokemon {
 		[4]*move.Move{&m},
 		hp.NewHP(100),
 		rank.NewRank(),
-		nil, nil, nil, nil,
+		status.NewStatus(),
+		nil, nil,
 		false,
 	)
 }

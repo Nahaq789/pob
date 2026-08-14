@@ -15,15 +15,19 @@ func NewPreDamagePhaseHandler() *PreDamagePhaseHandler {
 func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 	actor := ctx.Battle.PlayerById(ctx.ActorId)
 	activeP := actor.Active()
+	var messages []string
+
+	// ひるみ
+	// アンコール
+	// 判定も追加する必要あり
 
 	// かなしばり判定
 	for _, s := range activeP.Status().Others() {
 		if md, ok := s.(*rule.MoveDisabled); ok {
 			if message, same := md.Handle(ctx.MoveId); same {
 				return Result{
-					Message:   message,
+					Messages:  []string{message},
 					NextPhase: PhaseEnd,
-					Err:       nil,
 				}
 			}
 		}
@@ -34,14 +38,45 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 	switch main.Condition() {
 	case status.Sleep:
 		activeP.DecrementMainStatusCount()
-		if message, ok := main.IsSleep(activeP.Name()); ok {
+		message, ok := main.IsSleep(activeP.Name())
+		if ok {
 			return Result{
-				Message:   message,
+				Messages:  []string{message},
 				NextPhase: PhaseEnd,
-				Err:       nil,
 			}
 		}
+		messages = append(messages, message)
+	case status.Freeze:
+		activeP.DecrementMainStatusCount()
+		message, ok := main.IsFreeze(activeP.Name())
+		if ok {
+			return Result{
+				Messages:  []string{message},
+				NextPhase: PhaseEnd,
+			}
+		}
+		messages = append(messages, message)
 	}
 
-	return Result{}
+	// 混乱判定
+	// todo
+	for _, s := range activeP.Status().Others() {
+		confuse, ok := s.(*rule.Confusion)
+		if !ok {
+			return Result{
+				Messages:  messages,
+				NextPhase: PhaseDamage,
+			}
+		}
+
+		if ok := confuse.CheckSelfHit(); ok {
+
+		}
+
+	}
+
+	return Result{
+		Messages:  messages,
+		NextPhase: PhaseDamage,
+	}
 }

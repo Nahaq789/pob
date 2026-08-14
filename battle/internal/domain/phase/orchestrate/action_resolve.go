@@ -98,6 +98,7 @@ func (ar *ActionResolveOrchestrator) Handle(b *battle.Battle) (map[string][]stri
 	}
 
 	// 技
+	// TODO これってMoveRequestをどこで追加してる?
 	for _, pl := range players {
 		if req := pl.PullPendingMove(); req != nil {
 			ar.moveSelectHandler.Handle(*req, b)
