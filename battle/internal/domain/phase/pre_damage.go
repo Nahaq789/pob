@@ -25,8 +25,9 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 	for _, s := range activeP.Status().Others() {
 		if md, ok := s.(*rule.MoveDisabled); ok {
 			if message, same := md.Handle(ctx.MoveId); same {
+				messages = append(messages, message)
 				return Result{
-					Messages:  []string{message},
+					Messages:  messages,
 					NextPhase: PhaseEnd,
 				}
 			}
@@ -39,23 +40,23 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 	case status.Sleep:
 		activeP.DecrementMainStatusCount()
 		message, ok := main.IsSleep(activeP.Name())
+		messages = append(messages, message)
 		if ok {
 			return Result{
-				Messages:  []string{message},
+				Messages:  messages,
 				NextPhase: PhaseEnd,
 			}
 		}
-		messages = append(messages, message)
 	case status.Freeze:
 		activeP.DecrementMainStatusCount()
 		message, ok := main.IsFreeze(activeP.Name())
+		messages = append(messages, message)
 		if ok {
 			return Result{
-				Messages:  []string{message},
+				Messages:  messages,
 				NextPhase: PhaseEnd,
 			}
 		}
-		messages = append(messages, message)
 	default:
 	}
 
@@ -63,8 +64,9 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 	for _, s := range activeP.Status().Others() {
 		if confuse, ok := s.(*rule.Confusion); ok {
 			if message, h := confuse.CheckSelfHit(activeP.Name()); h {
+				messages = append(messages, message)
 				return Result{
-					Messages:  []string{message},
+					Messages:  messages,
 					NextPhase: PhaseEnd,
 				}
 			}
@@ -75,8 +77,9 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 	// まひ状態であれば、このタイミングで麻痺の判定をおこなう
 	if main.IsParalysis() {
 		if message, p := main.CheckParalysis(activeP.Name()); p {
+			messages = append(messages, message)
 			return Result{
-				Messages:  []string{message},
+				Messages:  messages,
 				NextPhase: PhaseEnd,
 			}
 		}
