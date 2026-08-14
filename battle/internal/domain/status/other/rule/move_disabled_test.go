@@ -10,7 +10,7 @@ import (
 func TestMoveDisabled_Resolve(t *testing.T) {
 	t.Run("残りターンあり: cleared=false", func(t *testing.T) {
 		m := rule.NewMoveDisabled(2, 33)
-		cleared, addConfusion := m.Resolve(status.OtherStatusContext{})
+		cleared, addConfusion, _ := m.Resolve(status.OtherStatusContext{})
 		if cleared {
 			t.Error("expected cleared=false")
 		}
@@ -21,7 +21,7 @@ func TestMoveDisabled_Resolve(t *testing.T) {
 
 	t.Run("残りターン0: cleared=true", func(t *testing.T) {
 		m := rule.NewMoveDisabled(1, 33)
-		cleared, addConfusion := m.Resolve(status.OtherStatusContext{})
+		cleared, addConfusion, _ := m.Resolve(status.OtherStatusContext{})
 		if !cleared {
 			t.Error("expected cleared=true")
 		}

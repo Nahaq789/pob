@@ -10,7 +10,7 @@ import (
 func TestConfusion_Resolve(t *testing.T) {
 	t.Run("残りターンあり: cleared=false", func(t *testing.T) {
 		c := rule.NewConfusion(2)
-		cleared, addConfusion := c.Resolve(status.OtherStatusContext{})
+		cleared, addConfusion, _ := c.Resolve(status.OtherStatusContext{})
 		if cleared {
 			t.Error("expected cleared=false")
 		}
@@ -19,26 +19,37 @@ func TestConfusion_Resolve(t *testing.T) {
 		}
 	})
 
-	t.Run("残りターン0: cleared=true", func(t *testing.T) {
+	t.Run("残りターン0: cleared=true かつ解除メッセージあり", func(t *testing.T) {
 		c := rule.NewConfusion(1)
-		cleared, addConfusion := c.Resolve(status.OtherStatusContext{})
+		cleared, addConfusion, message := c.Resolve(status.OtherStatusContext{ActorName: "ピカチュウ"})
 		if !cleared {
 			t.Error("expected cleared=true")
 		}
 		if addConfusion {
 			t.Error("expected addConfusion=false")
 		}
+		if message == "" {
+			t.Error("expected non-empty message on cleared")
+		}
+	})
+
+	t.Run("残りターンあり: メッセージなし", func(t *testing.T) {
+		c := rule.NewConfusion(2)
+		_, _, message := c.Resolve(status.OtherStatusContext{ActorName: "ピカチュウ"})
+		if message != "" {
+			t.Errorf("expected empty message, got: %v", message)
+		}
 	})
 
 	t.Run("複数ターン経過後に解除される", func(t *testing.T) {
 		c := rule.NewConfusion(3)
 		for i := range 2 {
-			cleared, _ := c.Resolve(status.OtherStatusContext{})
+			cleared, _, _ := c.Resolve(status.OtherStatusContext{ActorName: "ピカチュウ"})
 			if cleared {
 				t.Errorf("turn %d: expected cleared=false", i+1)
 			}
 		}
-		cleared, _ := c.Resolve(status.OtherStatusContext{})
+		cleared, _, _ := c.Resolve(status.OtherStatusContext{ActorName: "ピカチュウ"})
 		if !cleared {
 			t.Error("turn 3: expected cleared=true")
 		}
@@ -57,7 +68,8 @@ func TestConfusion_CheckSelfHit(t *testing.T) {
 		c := rule.NewConfusion(1)
 		gotTrue, gotFalse := false, false
 		for range 300 {
-			if c.CheckSelfHit() {
+			_, hit := c.CheckSelfHit("テスト")
+			if hit {
 				gotTrue = true
 			} else {
 				gotFalse = true
@@ -79,7 +91,7 @@ func TestConfusion_CheckSelfHit(t *testing.T) {
 		const trials = 3000
 		hits := 0
 		for range trials {
-			if c.CheckSelfHit() {
+			if _, hit := c.CheckSelfHit("テスト"); hit {
 				hits++
 			}
 		}

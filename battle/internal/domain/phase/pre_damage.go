@@ -17,23 +17,6 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 	activeP := actor.Active()
 	var messages []string
 
-	// ひるみ
-	// アンコール
-	// 判定も追加する必要あり
-
-	// かなしばり判定
-	for _, s := range activeP.Status().Others() {
-		if md, ok := s.(*rule.MoveDisabled); ok {
-			if message, same := md.Handle(ctx.MoveId); same {
-				messages = append(messages, message)
-				return Result{
-					Messages:  messages,
-					NextPhase: PhaseEnd,
-				}
-			}
-		}
-	}
-
 	// 状態異常判定
 	main := activeP.Status().Main()
 	switch main.Condition() {
@@ -60,6 +43,23 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 	default:
 	}
 
+	// ひるみ
+	// アンコール
+	// 判定も追加する必要あり
+
+	// かなしばり判定
+	for _, s := range activeP.Status().Others() {
+		if md, ok := s.(*rule.MoveDisabled); ok {
+			if message, same := md.Handle(ctx.MoveId); same {
+				messages = append(messages, message)
+				return Result{
+					Messages:  messages,
+					NextPhase: PhaseEnd,
+				}
+			}
+		}
+	}
+
 	// 混乱判定
 	for _, s := range activeP.Status().Others() {
 		if confuse, ok := s.(*rule.Confusion); ok {
@@ -73,7 +73,6 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 		}
 	}
 
-	// こんらんを通り抜けた場合
 	// まひ状態であれば、このタイミングで麻痺の判定をおこなう
 	if main.IsParalysis() {
 		if message, p := main.CheckParalysis(activeP.Name()); p {

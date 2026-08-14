@@ -1,6 +1,7 @@
 package rule
 
 import (
+	"fmt"
 	"pob/battle/internal/domain/status"
 	"pob/battle/internal/domain/vo"
 )
@@ -23,12 +24,12 @@ func NewMoveDisabled(turns int, moveId int) *MoveDisabled {
 	}
 }
 
-func (m *MoveDisabled) Resolve(_ status.OtherStatusContext) (bool, bool) {
+func (m *MoveDisabled) Resolve(ctx status.OtherStatusContext) (bool, bool, string) {
 	m.remaining = m.remaining.Decrement()
 	if m.remaining.IsEmpty() {
-		return true, false
+		return true, false, fmt.Sprintf("%sへのかなしばりが解除された", ctx.ActorName)
 	}
-	return false, false
+	return false, false, ""
 }
 
 func (m *MoveDisabled) Kind() status.OtherCondition {

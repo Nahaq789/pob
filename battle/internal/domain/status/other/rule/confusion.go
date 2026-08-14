@@ -20,12 +20,12 @@ func NewConfusion(turns int) *Confusion {
 	return &Confusion{kind: "confusion", remaining: vo.NewCount(turns)}
 }
 
-func (c *Confusion) Resolve(_ status.OtherStatusContext) (bool, bool) {
+func (c *Confusion) Resolve(ctx status.OtherStatusContext) (bool, bool, string) {
 	c.remaining = c.remaining.Decrement()
 	if c.remaining.IsEmpty() {
-		return true, false
+		return true, false, fmt.Sprintf("%sの混乱が解けた", ctx.ActorName)
 	}
-	return false, false
+	return false, false, ""
 }
 
 func (c *Confusion) Kind() status.OtherCondition { return status.OtherCondition(c.kind) }
