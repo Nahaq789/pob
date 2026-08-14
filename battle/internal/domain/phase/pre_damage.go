@@ -56,23 +56,30 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 			}
 		}
 		messages = append(messages, message)
+	default:
 	}
 
 	// 混乱判定
-	// todo
 	for _, s := range activeP.Status().Others() {
-		confuse, ok := s.(*rule.Confusion)
-		if !ok {
-			return Result{
-				Messages:  messages,
-				NextPhase: PhaseDamage,
+		if confuse, ok := s.(*rule.Confusion); ok {
+			if message, h := confuse.CheckSelfHit(activeP.Name()); h {
+				return Result{
+					Messages:  []string{message},
+					NextPhase: PhaseEnd,
+				}
 			}
 		}
+	}
 
-		if ok := confuse.CheckSelfHit(); ok {
-
+	// こんらんを通り抜けた場合
+	// まひ状態であれば、このタイミングで麻痺の判定をおこなう
+	if main.IsParalysis() {
+		if message, p := main.CheckParalysis(activeP.Name()); p {
+			return Result{
+				Messages:  []string{message},
+				NextPhase: PhaseEnd,
+			}
 		}
-
 	}
 
 	return Result{

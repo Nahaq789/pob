@@ -1,6 +1,7 @@
 package rule
 
 import (
+	"fmt"
 	"math/rand"
 	"pob/battle/internal/domain/status"
 	"pob/battle/internal/domain/vo"
@@ -31,6 +32,9 @@ func (c *Confusion) Kind() status.OtherCondition { return status.OtherCondition(
 
 // CheckSelfHit はこんらんによる自傷が発生するかを判定する。
 // 1/3 の確率で true を返す。技使用前に呼び出し、true の場合は技をキャンセルして自傷ダメージを与える。
-func (c *Confusion) CheckSelfHit() bool {
-	return rand.Intn(3) == 0
+func (c *Confusion) CheckSelfHit(name string) (string, bool) {
+	if ok := rand.Intn(3) == 0; ok {
+		return fmt.Sprintf("%sはわけもわからず、自分を攻撃した", name), true
+	}
+	return "", false
 }

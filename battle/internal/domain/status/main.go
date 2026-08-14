@@ -86,11 +86,13 @@ func (m MainStatus) IsFreeze(name string) (string, bool) {
 	return fmt.Sprintf("%sのこおりが溶けた", name), false
 }
 
-func (m MainStatus) IsParalysis(name string) (string, bool) {
-	if m.condition == Paralysis {
-		if ok := rand.Intn(8) == 0; ok {
-			return fmt.Sprintf("%sはしびれて動くことができない", name), true
-		}
+func (m MainStatus) IsParalysis() bool {
+	return m.condition == Paralysis
+}
+
+func (m MainStatus) CheckParalysis(name string) (string, bool) {
+	if ok := rand.Intn(8) == 0; ok {
+		return fmt.Sprintf("%sはしびれて動くことができない", name), true
 	}
 	return "", false
 }
