@@ -12,12 +12,12 @@ import (
 // 指定ターン数が経過すると Resolve が cleared=true を返し、状態が解除される。
 // 自傷判定は CheckSelfHit で行う。
 type Confusion struct {
-	kind      status.Rampage
+	kind      status.ClearedOnOtherCondition
 	remaining vo.Count
 }
 
 func NewConfusion(turns int) *Confusion {
-	return &Confusion{kind: "confusion", remaining: vo.NewCount(turns)}
+	return &Confusion{kind: status.Confusion, remaining: vo.NewCount(turns)}
 }
 
 func (c *Confusion) Resolve(ctx status.OtherStatusContext) (bool, bool, string) {

@@ -43,7 +43,17 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 	default:
 	}
 
-	// ひるみ
+	// ひるみ判定
+	for _, s := range activeP.Status().Others() {
+		if fl, ok := s.(*rule.Flinch); ok {
+			message := fl.Handle(activeP.Name())
+			messages = append(messages, message)
+			return Result{
+				Messages:  messages,
+				NextPhase: PhaseEnd,
+			}
+		}
+	}
 	// アンコール
 	// 判定も追加する必要あり
 

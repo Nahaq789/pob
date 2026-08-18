@@ -17,6 +17,10 @@ type OtherCondition string
 // 技が使用されたターンが終了することで消滅する
 type ClearedOnMoveTurnEnd OtherCondition
 
+const (
+	Flinch ClearedOnMoveTurnEnd = "flinch"
+)
+
 // 次の行動時に消滅する
 type ClearedOnNextAction OtherCondition
 
@@ -29,6 +33,10 @@ const (
 
 // その他の条件で消滅する
 type ClearedOnOtherCondition OtherCondition
+
+const (
+	Confusion ClearedOnOtherCondition = "confusion"
+)
 
 // 交代しない限り永続
 type PersistUntilSwitch OtherCondition
