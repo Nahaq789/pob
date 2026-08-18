@@ -43,43 +43,29 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 	default:
 	}
 
+	otherMap := activeP.Status().OtherMap()
+
 	// ひるみ判定
-	for _, s := range activeP.Status().Others() {
-		if fl, ok := s.(*rule.Flinch); ok {
-			message := fl.Handle(activeP.Name())
-			messages = append(messages, message)
-			return Result{
-				Messages:  messages,
-				NextPhase: PhaseEnd,
-			}
-		}
+	if fl, ok := otherMap[status.OtherCondition(status.Flinch)].(*rule.Flinch); ok {
+		messages = append(messages, fl.Handle(activeP.Name()))
+		return Result{Messages: messages, NextPhase: PhaseEnd}
 	}
 	// アンコール
 	// 判定も追加する必要あり
 
 	// かなしばり判定
-	for _, s := range activeP.Status().Others() {
-		if md, ok := s.(*rule.MoveDisabled); ok {
-			if message, same := md.Handle(ctx.MoveId); same {
-				messages = append(messages, message)
-				return Result{
-					Messages:  messages,
-					NextPhase: PhaseEnd,
-				}
-			}
+	if md, ok := otherMap[status.OtherCondition(status.MoveDisabled)].(*rule.MoveDisabled); ok {
+		if message, blocked := md.Handle(ctx.MoveId); blocked {
+			messages = append(messages, message)
+			return Result{Messages: messages, NextPhase: PhaseEnd}
 		}
 	}
 
 	// 混乱判定
-	for _, s := range activeP.Status().Others() {
-		if confuse, ok := s.(*rule.Confusion); ok {
-			if message, h := confuse.CheckSelfHit(activeP.Name()); h {
-				messages = append(messages, message)
-				return Result{
-					Messages:  messages,
-					NextPhase: PhaseEnd,
-				}
-			}
+	if confuse, ok := otherMap[status.OtherCondition(status.Confusion)].(*rule.Confusion); ok {
+		if message, hit := confuse.CheckSelfHit(activeP.Name()); hit {
+			messages = append(messages, message)
+			return Result{Messages: messages, NextPhase: PhaseEnd}
 		}
 	}
 
@@ -99,3 +85,4 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 		NextPhase: PhaseDamage,
 	}
 }
+

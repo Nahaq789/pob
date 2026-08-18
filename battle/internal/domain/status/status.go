@@ -20,6 +20,14 @@ func (s Status) Main() *MainStatus { return s.main }
 
 func (s Status) Others() []OtherStatus { return s.others }
 
+func (s Status) OtherMap() map[OtherCondition]OtherStatus {
+	m := make(map[OtherCondition]OtherStatus, len(s.others))
+	for _, o := range s.others {
+		m[o.Kind()] = o
+	}
+	return m
+}
+
 func (s *Status) SetMainStatus(m *MainStatus) {
 	if s.main != nil {
 		return
