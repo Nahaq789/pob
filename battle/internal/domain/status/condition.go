@@ -29,6 +29,7 @@ type ClearedOverTurns OtherCondition
 
 const (
 	MoveDisabled ClearedOverTurns = "move_disabled"
+	Encore       ClearedOverTurns = "encore"
 )
 
 // その他の条件で消滅する
