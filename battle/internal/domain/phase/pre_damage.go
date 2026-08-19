@@ -50,6 +50,7 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 		messages = append(messages, fl.Handle(activeP.Name()))
 		return Result{Messages: messages, NextPhase: PhaseEnd}
 	}
+
 	// アンコール判定
 	if enc, ok := otherMap[status.OtherCondition(status.Encore)].(*rule.Encore); ok {
 		if message, blocked := enc.Handle(ctx.MoveId); blocked {
@@ -99,4 +100,3 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 		NextPhase: PhaseDamage,
 	}
 }
-
