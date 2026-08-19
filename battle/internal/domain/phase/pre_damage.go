@@ -68,9 +68,18 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 
 	// 混乱判定
 	if confuse, ok := otherMap[status.OtherCondition(status.Confusion)].(*rule.Confusion); ok {
-		if message, hit := confuse.CheckSelfHit(activeP.Name()); hit {
-			messages = append(messages, message)
-			return Result{Messages: messages, NextPhase: PhaseEnd}
+		cleared, _, message := confuse.Resolve(status.OtherStatusContext{ActorName: activeP.Name()})
+		if cleared {
+			activeP.RemoveOtherStatus(status.OtherCondition(status.Confusion))
+			if message != "" {
+				messages = append(messages, message)
+			}
+		}
+		if !cleared {
+			if msg, hit := confuse.CheckSelfHit(activeP.Name()); hit {
+				messages = append(messages, msg)
+				return Result{Messages: messages, NextPhase: PhaseEnd}
+			}
 		}
 	}
 

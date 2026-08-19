@@ -184,6 +184,10 @@ func (p *Pokemon) SetLastSelectedMoveId(moveId int) {
 	p.lastSelectedMoveId = moveId
 }
 
+func (p *Pokemon) RemoveOtherStatus(kind status.OtherCondition) {
+	p.status.RemoveOtherStatus(kind)
+}
+
 // DecrementMainStatusCount はメインの状態異常のカウントを1減らす。
 // ねむりターン経過など、ターン消費を伴う状態異常の更新に使用する。
 func (p *Pokemon) DecrementMainStatusCount() {
