@@ -5,6 +5,8 @@ import (
 	"pob/battle/internal/domain/ptype"
 )
 
+const StruggleId = 165
+
 type Move struct {
 	id          int
 	pp          pp.PP

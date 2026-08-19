@@ -2,7 +2,9 @@ package rule
 
 import (
 	"fmt"
+	"pob/battle/internal/domain/move"
 	"pob/battle/internal/domain/status"
+	statusother "pob/battle/internal/domain/status/other"
 	"pob/battle/internal/domain/vo"
 )
 
@@ -38,11 +40,29 @@ func (m *MoveDisabled) Kind() status.OtherCondition {
 
 func (m *MoveDisabled) MoveId() int { return m.moveId }
 
+func (m *MoveDisabled) BlocksMoveId(moveId int) bool { return m.moveId == moveId }
+
 // Handle は技選択時にかなしばりによる使用制限を判定する。
-// selectedMoveId が封じられた技と一致する場合、メッセージと true を返す。
-func (m *MoveDisabled) Handle(selectedMoveId int) (string, bool) {
+// 封じた技がアンコールで強制されている場合はわるあがき以外を弾く。
+// それ以外は封じられた技の選択を弾く。
+func (m *MoveDisabled) Handle(selectedMoveId int, others []status.OtherStatus) (string, bool) {
+	if isDisabledMoveForced(others, m.moveId) {
+		if selectedMoveId != move.StruggleId {
+			return "アンコールされた技がかなしばりで出せない", true
+		}
+		return "", false
+	}
 	if selectedMoveId == m.moveId {
 		return "かなしばりで技が出せない", true
 	}
 	return "", false
+}
+
+func isDisabledMoveForced(others []status.OtherStatus, moveId int) bool {
+	for _, o := range others {
+		if forcer, ok := o.(statusother.MoveForcer); ok && forcer.ForcesMoveId() == moveId {
+			return true
+		}
+	}
+	return false
 }

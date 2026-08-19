@@ -3,6 +3,7 @@ package rule_test
 import (
 	"testing"
 
+	"pob/battle/internal/domain/move"
 	"pob/battle/internal/domain/status"
 	"pob/battle/internal/domain/status/other/rule"
 )
@@ -48,7 +49,7 @@ func TestMoveDisabled_MoveId(t *testing.T) {
 func TestMoveDisabled_Handle(t *testing.T) {
 	t.Run("封じられた技を選択: blocked=true", func(t *testing.T) {
 		m := rule.NewMoveDisabled(3, 33)
-		msg, blocked := m.Handle(33)
+		msg, blocked := m.Handle(33, nil)
 		if !blocked {
 			t.Error("expected blocked=true")
 		}
@@ -59,7 +60,67 @@ func TestMoveDisabled_Handle(t *testing.T) {
 
 	t.Run("別の技を選択: blocked=false", func(t *testing.T) {
 		m := rule.NewMoveDisabled(3, 33)
-		msg, blocked := m.Handle(99)
+		msg, blocked := m.Handle(99, nil)
+		if blocked {
+			t.Error("expected blocked=false")
+		}
+		if msg != "" {
+			t.Errorf("expected empty message, got: %v", msg)
+		}
+	})
+
+	t.Run("アンコールされた技が封じられ、わるあがきを選択: blocked=false", func(t *testing.T) {
+		m := rule.NewMoveDisabled(3, 33)
+		others := []status.OtherStatus{rule.NewEncore(33)}
+		msg, blocked := m.Handle(move.StruggleId, others)
+		if blocked {
+			t.Error("expected blocked=false")
+		}
+		if msg != "" {
+			t.Errorf("expected empty message, got: %v", msg)
+		}
+	})
+
+	t.Run("アンコールされた技が封じられ、別の技を選択: blocked=true", func(t *testing.T) {
+		m := rule.NewMoveDisabled(3, 33)
+		others := []status.OtherStatus{rule.NewEncore(33)}
+		msg, blocked := m.Handle(99, others)
+		if !blocked {
+			t.Error("expected blocked=true")
+		}
+		if msg == "" {
+			t.Error("expected non-empty message")
+		}
+	})
+
+	t.Run("アンコールされた技が封じられ、封じられた技を選択: blocked=true", func(t *testing.T) {
+		m := rule.NewMoveDisabled(3, 33)
+		others := []status.OtherStatus{rule.NewEncore(33)}
+		msg, blocked := m.Handle(33, others)
+		if !blocked {
+			t.Error("expected blocked=true")
+		}
+		if msg == "" {
+			t.Error("expected non-empty message")
+		}
+	})
+
+	t.Run("アンコールで別の技が強制されている: 封じられた技を選択 → blocked=true", func(t *testing.T) {
+		m := rule.NewMoveDisabled(3, 33)
+		others := []status.OtherStatus{rule.NewEncore(99)}
+		msg, blocked := m.Handle(33, others)
+		if !blocked {
+			t.Error("expected blocked=true")
+		}
+		if msg == "" {
+			t.Error("expected non-empty message")
+		}
+	})
+
+	t.Run("アンコールで別の技が強制されている: 別の技を選択 → blocked=false", func(t *testing.T) {
+		m := rule.NewMoveDisabled(3, 33)
+		others := []status.OtherStatus{rule.NewEncore(99)}
+		msg, blocked := m.Handle(55, others)
 		if blocked {
 			t.Error("expected blocked=false")
 		}

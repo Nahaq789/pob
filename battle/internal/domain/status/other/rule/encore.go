@@ -2,7 +2,9 @@ package rule
 
 import (
 	"fmt"
+	"pob/battle/internal/domain/move"
 	"pob/battle/internal/domain/status"
+	statusother "pob/battle/internal/domain/status/other"
 	"pob/battle/internal/domain/vo"
 )
 
@@ -38,11 +40,29 @@ func (e *Encore) Kind() status.OtherCondition {
 
 func (e *Encore) MoveId() int { return e.moveId }
 
+func (e *Encore) ForcesMoveId() int { return e.moveId }
+
 // Handle は技選択時にアンコールによる使用制限を判定する。
-// selectedMoveId がアンコールされた技と一致しない場合、メッセージと true を返す。
-func (e *Encore) Handle(selectedMoveId int) (string, bool) {
+// others にアンコール以外の OtherStatus を渡し、アンコールされた技が封じられているか判定する。
+// 封じられている場合はわるあがき以外を弾く。それ以外はアンコールされた技以外を弾く。
+func (e *Encore) Handle(selectedMoveId int, others []status.OtherStatus) (string, bool) {
+	if isEncoredMoveBlocked(others, e.moveId) {
+		if selectedMoveId != move.StruggleId {
+			return "アンコールされた技が使用できない", true
+		}
+		return "", false
+	}
 	if selectedMoveId != e.moveId {
 		return "アンコールでその技は出せない", true
 	}
 	return "", false
+}
+
+func isEncoredMoveBlocked(others []status.OtherStatus, moveId int) bool {
+	for _, o := range others {
+		if blocker, ok := o.(statusother.MoveBlocker); ok && blocker.BlocksMoveId(moveId) {
+			return true
+		}
+	}
+	return false
 }

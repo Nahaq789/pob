@@ -53,7 +53,7 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 
 	// アンコール判定
 	if enc, ok := otherMap[status.OtherCondition(status.Encore)].(*rule.Encore); ok {
-		if message, blocked := enc.Handle(ctx.MoveId); blocked {
+		if message, blocked := enc.Handle(ctx.MoveId, activeP.Status().Others()); blocked {
 			messages = append(messages, message)
 			return Result{Messages: messages, NextPhase: PhaseEnd}
 		}
@@ -61,7 +61,7 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 
 	// かなしばり判定
 	if md, ok := otherMap[status.OtherCondition(status.MoveDisabled)].(*rule.MoveDisabled); ok {
-		if message, blocked := md.Handle(ctx.MoveId); blocked {
+		if message, blocked := md.Handle(ctx.MoveId, activeP.Status().Others()); blocked {
 			messages = append(messages, message)
 			return Result{Messages: messages, NextPhase: PhaseEnd}
 		}
