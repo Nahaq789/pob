@@ -36,7 +36,3 @@ docker compose build <service>                        # 特定サービスのみ
 - @.claude/rules/coding.md
 - @.claude/rules/testing.md
 
-## Note for agents
-
-Codex など他のAIエージェントはルートの `AGENTS.md` を参照すること。
-内容は `.claude/rules/` と同期している。

@@ -52,3 +52,11 @@ tx := shared.TxFromContext(ctx)
 ## Middleware
 
 リクエストには必ず `TraceMiddleware()` を適用すること（router登録時に `Use`）。
+
+## DI（box サービス）
+
+box サービスは `google/wire` を使用した DI 構成。
+
+```bash
+cd box && go generate ./...   # wire_gen.go の再生成
+```

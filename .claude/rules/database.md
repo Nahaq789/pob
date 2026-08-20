@@ -17,6 +17,7 @@
 | `pokemon_abilities` | slot, is_hidden |
 | `moves` | power/accuracy は NULL許容（必中・固定ダメ技） |
 | `pokemon_moves` | 複合PK |
+| `items` | PK は PokeAPI の INT ID |
 
 - 性格（nature）補正は**静的 Go 定義**で処理（DBテーブルなし）
 

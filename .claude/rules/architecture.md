@@ -12,7 +12,8 @@ pob/
 │   ├── jwt/        # VerifyToken, ExtractBearerToken
 │   ├── tracing/
 │   ├── stats/      # 実数値計算（nature補正済み）
-│   └── redis/
+│   ├── redis/
+│   └── interceptor/hmac/  # HmacClientInterceptor / HmacServerInterceptor
 ├── dex/            # module: pob/dex
 ├── user/           # module: pob/user
 ├── box/            # module: pob/box
