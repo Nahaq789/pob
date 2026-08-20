@@ -34,6 +34,7 @@ docker compose build <service>                        # 特定サービスのみ
 - @.claude/rules/database.md
 - @.claude/rules/battle.md
 - @.claude/rules/coding.md
+- @.claude/rules/testing.md
 
 ## Note for agents
 
