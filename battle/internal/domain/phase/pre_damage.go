@@ -5,8 +5,7 @@ import (
 	"pob/battle/internal/domain/status/other/rule"
 )
 
-type PreDamagePhaseHandler struct {
-}
+type PreDamagePhaseHandler struct{}
 
 func NewPreDamagePhaseHandler() *PreDamagePhaseHandler {
 	return &PreDamagePhaseHandler{}
