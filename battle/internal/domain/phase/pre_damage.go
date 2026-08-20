@@ -18,28 +18,30 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 
 	// 状態異常判定
 	main := activeP.Status().Main()
-	switch main.Condition() {
-	case status.Sleep:
-		activeP.DecrementMainStatusCount()
-		message, ok := main.IsSleep(activeP.Name())
-		messages = append(messages, message)
-		if ok {
-			return Result{
-				Messages:  messages,
-				NextPhase: PhaseEnd,
+	if main != nil {
+		switch main.Condition() {
+		case status.Sleep:
+			activeP.DecrementMainStatusCount()
+			message, ok := main.IsSleep(activeP.Name())
+			messages = append(messages, message)
+			if ok {
+				return Result{
+					Messages:  messages,
+					NextPhase: PhaseEnd,
+				}
 			}
-		}
-	case status.Freeze:
-		activeP.DecrementMainStatusCount()
-		message, ok := main.IsFreeze(activeP.Name())
-		messages = append(messages, message)
-		if ok {
-			return Result{
-				Messages:  messages,
-				NextPhase: PhaseEnd,
+		case status.Freeze:
+			activeP.DecrementMainStatusCount()
+			message, ok := main.IsFreeze(activeP.Name())
+			messages = append(messages, message)
+			if ok {
+				return Result{
+					Messages:  messages,
+					NextPhase: PhaseEnd,
+				}
 			}
+		default:
 		}
-	default:
 	}
 
 	otherMap := activeP.Status().OtherMap()
@@ -84,7 +86,7 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 	}
 
 	// まひ状態であれば、このタイミングで麻痺の判定をおこなう
-	if main.IsParalysis() {
+	if main != nil && main.IsParalysis() {
 		if message, p := main.CheckParalysis(activeP.Name()); p {
 			messages = append(messages, message)
 			return Result{
