@@ -44,8 +44,29 @@ func NewDamageInput(
 }
 
 func (d *DamageInput) CalcDamage() int {
-	base := ((LEVEL*2/5+2)*d.Power*d.Attack)/50 + 2
-	damage := base * int(d.Weather)
+	base := float64(((LEVEL*2/5+2)*d.Power*d.Attack)/50 + 2)
+
+	// 範囲補正
+	// ダブルバトルは想定していないので*1で計算
+	damage := d.roundHalfDown(base * 1.0)
+
+	// おやこあい補正
+	// メガガルーラの専用特性で、メガシンカは実装しない予定なので *1で計算
+	damage = d.roundHalfDown(base * 1.0)
+
+	// 天気補正
+	damage = d.roundHalfDown(base * d.Weather)
+
+	// 急所補正
+	if d.IsCrit {
+		damage = d.roundHalfDown(base * 1.5)
+	} else {
+		damage = d.roundHalfDown(base * 1.0)
+	}
+
+	// 乱数補正
+	damage = damage * d.Random / 100
+
 	return damage
 }
 
