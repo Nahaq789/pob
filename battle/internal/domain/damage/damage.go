@@ -67,6 +67,8 @@ func (d *DamageInput) CalcDamage() int {
 	// 乱数補正
 	damage = damage * d.Random / 100
 
+	// つづき
+
 	return damage
 }
 
