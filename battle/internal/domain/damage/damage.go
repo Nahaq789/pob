@@ -6,24 +6,24 @@ const LEVEL = 50
 const PRECISION = 1e6
 
 type DamageInput struct {
-	Power    int
-	Attack   int
-	Defense  int
-	IsCrit   bool
-	Random   int
-	IsStab   bool
-	TypeEff  float64
-	BurnMod  float64
-	Weather  float64
-	Wall     float64
-	Other    float64
+	Power   int
+	Attack  int
+	Defense int
+	CritMod float64
+	Random  int
+	StabMod float64
+	TypeEff float64
+	BurnMod float64
+	Weather float64
+	Wall    float64
+	Other   float64
 }
 
 func NewDamageInput(
 	power, attack, defense int,
-	isCrit bool,
+	critMod float64,
 	random int,
-	isStab bool,
+	stabMod float64,
 	typeEff float64,
 	burnMod float64,
 	weather, wall, other float64,
@@ -32,14 +32,14 @@ func NewDamageInput(
 		Power:   power,
 		Attack:  attack,
 		Defense: defense,
-		IsCrit:  isCrit,
+		CritMod: critMod,
 		Random:  random,
-		IsStab:  isStab,
+		StabMod: stabMod,
 		TypeEff: typeEff,
 		BurnMod: burnMod,
 		Weather: weather,
-		Wall:     wall,
-		Other:    other,
+		Wall:    wall,
+		Other:   other,
 	}
 }
 
@@ -58,21 +58,13 @@ func (d *DamageInput) CalcDamage() int {
 	damage = d.roundHalfDown(float64(damage) * d.Weather)
 
 	// 急所補正
-	if d.IsCrit {
-		damage = d.roundHalfDown(float64(damage) * 1.5)
-	} else {
-		damage = d.roundHalfDown(float64(damage) * 1.0)
-	}
+	damage = d.roundHalfDown(float64(damage) * d.CritMod)
 
 	// 乱数補正
 	damage = damage * d.Random / 100
 
 	// STAB補正
-	if d.IsStab {
-		damage = d.roundHalfDown(float64(damage) * 1.5)
-	} else {
-		damage = d.roundHalfDown(float64(damage) * 1.0)
-	}
+	damage = d.roundHalfDown(float64(damage) * d.StabMod)
 
 	// 相性補正
 	damage = d.roundHalfDown(float64(damage) * d.TypeEff)
@@ -82,6 +74,8 @@ func (d *DamageInput) CalcDamage() int {
 
 	return damage
 }
+
+// func (d *DamageInput) m()
 
 func (d *DamageInput) roundHalfDown(v float64) int {
 	scaled := math.Round(v * PRECISION)
