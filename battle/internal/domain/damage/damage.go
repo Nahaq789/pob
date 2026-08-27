@@ -13,7 +13,7 @@ type DamageInput struct {
 	Random   int
 	IsStab   bool
 	TypeEff  float64
-	IsBurned bool
+	BurnMod  float64
 	Weather  float64
 	Wall     float64
 	Other    float64
@@ -25,19 +25,19 @@ func NewDamageInput(
 	random int,
 	isStab bool,
 	typeEff float64,
-	isBurned bool,
+	burnMod float64,
 	weather, wall, other float64,
 ) *DamageInput {
 	return &DamageInput{
-		Power:    power,
-		Attack:   attack,
-		Defense:  defense,
-		IsCrit:   isCrit,
-		Random:   random,
-		IsStab:   isStab,
-		TypeEff:  typeEff,
-		IsBurned: isBurned,
-		Weather:  weather,
+		Power:   power,
+		Attack:  attack,
+		Defense: defense,
+		IsCrit:  isCrit,
+		Random:  random,
+		IsStab:  isStab,
+		TypeEff: typeEff,
+		BurnMod: burnMod,
+		Weather: weather,
 		Wall:     wall,
 		Other:    other,
 	}
@@ -52,22 +52,33 @@ func (d *DamageInput) CalcDamage() int {
 
 	// おやこあい補正
 	// メガガルーラの専用特性で、メガシンカは実装しない予定なので *1で計算
-	damage = d.roundHalfDown(base * 1.0)
+	damage = d.roundHalfDown(float64(damage) * 1.0)
 
 	// 天気補正
-	damage = d.roundHalfDown(base * d.Weather)
+	damage = d.roundHalfDown(float64(damage) * d.Weather)
 
 	// 急所補正
 	if d.IsCrit {
-		damage = d.roundHalfDown(base * 1.5)
+		damage = d.roundHalfDown(float64(damage) * 1.5)
 	} else {
-		damage = d.roundHalfDown(base * 1.0)
+		damage = d.roundHalfDown(float64(damage) * 1.0)
 	}
 
 	// 乱数補正
 	damage = damage * d.Random / 100
 
-	// つづき
+	// STAB補正
+	if d.IsStab {
+		damage = d.roundHalfDown(float64(damage) * 1.5)
+	} else {
+		damage = d.roundHalfDown(float64(damage) * 1.0)
+	}
+
+	// 相性補正
+	damage = d.roundHalfDown(float64(damage) * d.TypeEff)
+
+	// やけど補正
+	damage = d.roundHalfDown(float64(damage) * d.BurnMod)
 
 	return damage
 }
