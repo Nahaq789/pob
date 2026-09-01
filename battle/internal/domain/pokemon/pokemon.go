@@ -41,7 +41,7 @@ type Pokemon struct {
 
 	// 動的データ
 	currentHP          hp.HP
-	ranks              rank.Rank
+	rank               rank.Rank
 	status             status.Status
 	heldItem           *item.Item
 	lastConsumedItem   *item.Item
@@ -66,7 +66,7 @@ func NewPokemon(
 	ability *ability.Ability,
 	moves [4]*move.Move,
 	currentHP hp.HP,
-	ranks rank.Rank,
+	rank rank.Rank,
 	st status.Status,
 	heldItem *item.Item,
 	lastConsumedItem *item.Item,
@@ -84,7 +84,7 @@ func NewPokemon(
 		ability:          ability,
 		moves:            moves,
 		currentHP:        currentHP,
-		ranks:            ranks,
+		rank:             rank,
 		status:           st,
 		heldItem:         heldItem,
 		lastConsumedItem: lastConsumedItem,
@@ -112,7 +112,7 @@ func (p *Pokemon) ResetOnSwitchOut() {
 
 // 素早さの実数値
 func (p *Pokemon) Speed() int {
-	s := float64(p.realStats.Speed) * p.ranks.Speed().Value()
+	s := float64(p.realStats.Speed) * p.rank.Speed().Value()
 	// 状態異常がまひの場合は素早さが1/4になる
 	if m := p.status.Main(); m != nil && m.Condition() == status.Paralysis {
 		s *= 0.25
@@ -152,7 +152,7 @@ func (p *Pokemon) MoveById(moveId int) (*move.Move, error) {
 
 // func (p *Pokemon) CurrentHP() vo.Count { return p.currentHP }
 //
-// func (p *Pokemon) Ranks() rank.Rank { return p.ranks }
+// func (p *Pokemon) Rank() rank.Rank { return p.rank }
 //
 // func (p *Pokemon) MainStatus() status.MainStatus { return p.mainStatus }
 //
