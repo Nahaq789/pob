@@ -35,43 +35,98 @@ type DamageInput struct {
 	halfBerry   float64 // 半減の実（効果抜群被弾時: 0.5）
 }
 
-func NewDamageInput(
-	power Power,
-	attack, defense int,
-	critMod float64,
-	random int,
-	stabMod float64,
-	typeEff float64,
-	burnMod float64,
-	weather, wall float64,
-	neuroforce, sniper, tintedLens, fluffy float64,
-	mhalf, mfilter, mtwice float64,
-	expertBelt, metronome, lifeOrb, halfBerry float64,
-) *DamageInput {
-	return &DamageInput{
+type DamageInputOption func(*DamageInput)
+
+// WithCrit は急所補正（通常: 1.0 / 急所: 1.5）を設定する。
+func WithCrit(mod float64) DamageInputOption { return func(d *DamageInput) { d.critMod = mod } }
+
+// WithStab はタイプ一致補正（不一致: 1.0 / 一致: 1.5 / てきおうりょく: 2.0）を設定する。
+func WithStab(mod float64) DamageInputOption { return func(d *DamageInput) { d.stabMod = mod } }
+
+// WithTypeEff はタイプ相性補正（全タイプ倍率の積）を設定する。
+func WithTypeEff(mod float64) DamageInputOption { return func(d *DamageInput) { d.typeEff = mod } }
+
+// WithBurn はやけど補正（物理+やけど: 0.5 / それ以外: 1.0）を設定する。
+func WithBurn(mod float64) DamageInputOption { return func(d *DamageInput) { d.burnMod = mod } }
+
+// WithWeather は天気補正を設定する。
+func WithWeather(mod float64) DamageInputOption { return func(d *DamageInput) { d.weather = mod } }
+
+// WithWall はリフレクター・ひかりのかべ（シングル: 0.5 / 急所時は呼び出し側で 1.0 を渡す）を設定する。
+func WithWall(mod float64) DamageInputOption { return func(d *DamageInput) { d.wall = mod } }
+
+// WithNeuroforce はブレインフォース（効果抜群時: 1.25）を設定する。
+func WithNeuroforce(mod float64) DamageInputOption {
+	return func(d *DamageInput) { d.neuroforce = mod }
+}
+
+// WithSniper はスナイパー（急所時: 1.5）を設定する。
+func WithSniper(mod float64) DamageInputOption { return func(d *DamageInput) { d.sniper = mod } }
+
+// WithTintedLens はいろめがね（効果いまひとつ時: 2.0）を設定する。
+func WithTintedLens(mod float64) DamageInputOption {
+	return func(d *DamageInput) { d.tintedLens = mod }
+}
+
+// WithFluffy はもふもふ（ほのお技被弾時: 2.0）を設定する。
+func WithFluffy(mod float64) DamageInputOption { return func(d *DamageInput) { d.fluffy = mod } }
+
+// WithMHalf はファントムガード・マルチスケイル等（半減: 0.5）を設定する。
+func WithMHalf(mod float64) DamageInputOption { return func(d *DamageInput) { d.mhalf = mod } }
+
+// WithMFilter はフィルター・ハードロック・プリズムアーマー等（効果抜群時: 0.75）を設定する。
+func WithMFilter(mod float64) DamageInputOption { return func(d *DamageInput) { d.mfilter = mod } }
+
+// WithMTwice は状態依存2倍補正（あなをほるへのじしん等）を設定する。
+func WithMTwice(mod float64) DamageInputOption { return func(d *DamageInput) { d.mtwice = mod } }
+
+// WithExpertBelt はたつじんのおび（効果抜群時: 1.2）を設定する。
+func WithExpertBelt(mod float64) DamageInputOption {
+	return func(d *DamageInput) { d.expertBelt = mod }
+}
+
+// WithMetronome はメトロノーム（連続使用回数に応じて増加）を設定する。
+func WithMetronome(mod float64) DamageInputOption {
+	return func(d *DamageInput) { d.metronome = mod }
+}
+
+// WithLifeOrb はいのちのたま（1.3）を設定する。
+func WithLifeOrb(mod float64) DamageInputOption { return func(d *DamageInput) { d.lifeOrb = mod } }
+
+// WithHalfBerry は半減の実（効果抜群被弾時: 0.5）を設定する。
+func WithHalfBerry(mod float64) DamageInputOption {
+	return func(d *DamageInput) { d.halfBerry = mod }
+}
+
+func NewDamageInput(power Power, attack, defense, random int, opts ...DamageInputOption) *DamageInput {
+	d := &DamageInput{
 		power:       power,
 		attack:      attack,
 		defense:     defense,
-		critMod:     critMod,
 		random:      random,
-		stabMod:     stabMod,
-		typeEff:     typeEff,
-		burnMod:     burnMod,
-		weather:     weather,
-		wall:        wall,
-		neuroforce:  neuroforce,
-		sniper:      sniper,
-		tintedLens:  tintedLens,
-		fluffy:      fluffy,
-		mhalf:       mhalf,
-		mfilter:     mfilter,
-		mtwice:      mtwice,
+		critMod:     1.0,
+		stabMod:     1.0,
+		typeEff:     1.0,
+		burnMod:     1.0,
+		weather:     1.0,
+		wall:        1.0,
+		neuroforce:  1.0,
+		sniper:      1.0,
+		tintedLens:  1.0,
+		fluffy:      1.0,
+		mhalf:       1.0,
+		mfilter:     1.0,
+		mtwice:      1.0,
 		friendGuard: 1.0,
-		expertBelt:  expertBelt,
-		metronome:   metronome,
-		lifeOrb:     lifeOrb,
-		halfBerry:   halfBerry,
+		expertBelt:  1.0,
+		metronome:   1.0,
+		lifeOrb:     1.0,
+		halfBerry:   1.0,
 	}
+	for _, opt := range opts {
+		opt(d)
+	}
+	return d
 }
 
 func (d *DamageInput) CalcDamage() int {

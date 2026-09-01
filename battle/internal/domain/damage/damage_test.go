@@ -245,11 +245,14 @@ func TestDamageInput_CalcDamage(t *testing.T) {
 		}
 	})
 
-	t.Run("たつじんのおび(4915/4096): 効果バツグン時 math.Round(46*4915/4096)=55", func(t *testing.T) {
+	t.Run("たつじんのおび(4915/4096): 効果バツグン時 int(46*2.0)=92→math.Round(92*4915/4096)=110", func(t *testing.T) {
+		// typeEff=2.0(効果バツグン): int(46*2.0)=92
+		// expertBelt: math.Round(92*4915/4096)=110
 		d := newBaseDamageInput(100, 100, 100)
+		d.typeEff = 2.0
 		d.expertBelt = float64(4915) / 4096
-		if got := d.CalcDamage(); got != 55 {
-			t.Errorf("CalcDamage() = %v, want 55", got)
+		if got := d.CalcDamage(); got != 110 {
+			t.Errorf("CalcDamage() = %v, want 110", got)
 		}
 	})
 
