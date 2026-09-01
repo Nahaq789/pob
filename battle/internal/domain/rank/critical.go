@@ -3,7 +3,7 @@ package rank
 import "fmt"
 
 var criticalRankMap = map[int]float64{
-	0: 0.417,
+	0: 0.0417,
 	1: 0.125,
 	2: 0.5,
 	3: 1.0,

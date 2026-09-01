@@ -28,6 +28,83 @@ func TestNewRank(t *testing.T) {
 	}
 }
 
+func TestRank_RollCritical(t *testing.T) {
+	t.Run("stage3(必中): 常にtrueを返す", func(t *testing.T) {
+		r := Rank{critical: CriticalRank{stage: 3, value: criticalRankMap[3]}}
+		for range 20 {
+			if !r.RollCritical(0.0) {
+				t.Error("stage3は必ず急所に当たる")
+			}
+		}
+	})
+
+	t.Run("stage0(4.17%): 急所あり・なしの両方が発生する", func(t *testing.T) {
+		r := NewRank()
+		gotTrue, gotFalse := false, false
+		for range 300 {
+			if r.RollCritical(0.0) {
+				gotTrue = true
+			} else {
+				gotFalse = true
+			}
+			if gotTrue && gotFalse {
+				break
+			}
+		}
+		if !gotTrue {
+			t.Error("300試行で急所が一度も発生しなかった")
+		}
+		if !gotFalse {
+			t.Error("300試行で非急所が一度も発生しなかった")
+		}
+	})
+
+	t.Run("stage2(50%): 急所あり・なしの両方が発生する", func(t *testing.T) {
+		r := Rank{critical: CriticalRank{stage: 2, value: criticalRankMap[2]}}
+		gotTrue, gotFalse := false, false
+		for range 300 {
+			if r.RollCritical(0.0) {
+				gotTrue = true
+			} else {
+				gotFalse = true
+			}
+			if gotTrue && gotFalse {
+				break
+			}
+		}
+		if !gotTrue {
+			t.Error("300試行で急所が一度も発生しなかった")
+		}
+		if !gotFalse {
+			t.Error("300試行で非急所が一度も発生しなかった")
+		}
+	})
+
+	t.Run("moveCriticalMod加算: stage0+1.0で必中になる", func(t *testing.T) {
+		r := NewRank()
+		for range 20 {
+			if !r.RollCritical(1.0) {
+				t.Error("moveCriticalMod=1.0加算で必中になる")
+			}
+		}
+	})
+
+	t.Run("stage0の急所率がおよそ4.17%である", func(t *testing.T) {
+		const trials = 3000
+		r := NewRank()
+		hits := 0
+		for range trials {
+			if r.RollCritical(0.0) {
+				hits++
+			}
+		}
+		rate := float64(hits) / trials
+		if rate < 0.02 || rate > 0.07 {
+			t.Errorf("想定外の急所率: %.4f (期待値 ~0.0417)", rate)
+		}
+	})
+}
+
 func TestRankAccuracyRank(t *testing.T) {
 	tests := []struct {
 		name            string

@@ -7,8 +7,8 @@ func TestNewCriticalRank(t *testing.T) {
 	if r.stage != 0 {
 		t.Errorf("stage: got %d, want 0", r.stage)
 	}
-	if r.value != 0.417 {
-		t.Errorf("value: got %v, want 0.417", r.value)
+	if r.value != 0.0417 {
+		t.Errorf("value: got %v, want 0.0417", r.value)
 	}
 }
 
@@ -79,17 +79,17 @@ func TestCriticalDown(t *testing.T) {
 		},
 		{
 			name:         "3段下降",
-			initialStage: 3, down: 3, wantStage: 0, wantValue: 0.417,
+			initialStage: 3, down: 3, wantStage: 0, wantValue: 0.0417,
 		},
 		{
 			// stage=1 + down=2 → -1 → clamp 0
 			name:         "下限クランプ",
-			initialStage: 1, down: 2, wantStage: 0, wantValue: 0.417,
+			initialStage: 1, down: 2, wantStage: 0, wantValue: 0.0417,
 		},
 		{
 			// stage=0 + down=1 → -1 → clamp 0
 			name:         "下限クランプ: stage=0から",
-			initialStage: 0, down: 1, wantStage: 0, wantValue: 0.417,
+			initialStage: 0, down: 1, wantStage: 0, wantValue: 0.0417,
 		},
 	}
 
@@ -116,7 +116,7 @@ func TestCriticalReset(t *testing.T) {
 	if got.stage != 0 {
 		t.Errorf("stage: got %d, want 0", got.stage)
 	}
-	if got.value != 0.417 {
-		t.Errorf("value: got %v, want 0.417", got.value)
+	if got.value != 0.0417 {
+		t.Errorf("value: got %v, want 0.0417", got.value)
 	}
 }
