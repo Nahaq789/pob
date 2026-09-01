@@ -24,7 +24,7 @@ type DamageInput struct {
 	neuroforce  float64 // ブレインフォース（効果抜群時: 1.25）
 	sniper      float64 // スナイパー（急所時: 1.5）
 	tintedLens  float64 // いろめがね（効果いまひとつ時: 2.0）
-	fluffy      float64 // もふもふ（ほのお技被弾時: 2.0 / 直接攻撃被弾時: 0.5）
+	fluffy      float64 // もふもふ（ほのお技被弾時: 2.0）
 	mhalf       float64 // ファントムガード・マルチスケイル等（半減: 0.5）
 	mfilter     float64 // フィルター・ハードロック・プリズムアーマー等（効果抜群時: 0.75）
 	mtwice      float64 // 状態依存2倍補正（あなをほるへのじしん等）
@@ -98,8 +98,8 @@ func (d *DamageInput) CalcDamage() int {
 	// STAB補正
 	damage = roundHalfDown(float64(damage) * d.stabMod)
 
-	// 相性補正
-	damage = roundHalfDown(float64(damage) * d.typeEff)
+	// 相性補正（切り捨て）
+	damage = int(float64(damage) * d.typeEff)
 
 	// やけど補正
 	damage = roundHalfDown(float64(damage) * d.burnMod)

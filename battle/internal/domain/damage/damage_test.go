@@ -120,4 +120,204 @@ func TestDamageInput_CalcDamage(t *testing.T) {
 			t.Errorf("CalcDamage() = %v, want 206", got)
 		}
 	})
+
+	// ── 天気補正 ──
+	t.Run("天気補正(1.5x): あめ水技/にほんばれ炎技 roundHalfDown(46*1.5)=69", func(t *testing.T) {
+		d := newBaseDamageInput(100, 100, 100)
+		d.weather = 1.5
+		if got := d.CalcDamage(); got != 69 {
+			t.Errorf("CalcDamage() = %v, want 69", got)
+		}
+	})
+
+	t.Run("天気補正(0.5x): あめ炎技/にほんばれ水技 roundHalfDown(46*0.5)=23", func(t *testing.T) {
+		d := newBaseDamageInput(100, 100, 100)
+		d.weather = 0.5
+		if got := d.CalcDamage(); got != 23 {
+			t.Errorf("CalcDamage() = %v, want 23", got)
+		}
+	})
+
+	// ── タイプ一致補正（てきおうりょく） ──
+	t.Run("STABてきおうりょく(2.0x): roundHalfDown(46*2.0)=92", func(t *testing.T) {
+		d := newBaseDamageInput(100, 100, 100)
+		d.stabMod = 2.0
+		if got := d.CalcDamage(); got != 92 {
+			t.Errorf("CalcDamage() = %v, want 92", got)
+		}
+	})
+
+	// ── 相性補正（切り捨て） ──
+	t.Run("相性補正(4.0x): ダブル弱点 int(46*4.0)=184", func(t *testing.T) {
+		d := newBaseDamageInput(100, 100, 100)
+		d.typeEff = 4.0
+		if got := d.CalcDamage(); got != 184 {
+			t.Errorf("CalcDamage() = %v, want 184", got)
+		}
+	})
+
+	t.Run("相性補正(0.25x): 4倍耐性 切り捨て int(7*0.25)=1", func(t *testing.T) {
+		// base=7: (22*15*40/50)/50+2 = 264/50+2 = 5+2 = 7
+		d := newBaseDamageInput(15, 40, 50)
+		d.typeEff = 0.25
+		if got := d.CalcDamage(); got != 1 {
+			t.Errorf("CalcDamage() = %v, want 1", got)
+		}
+	})
+
+	// ── M補正（各ステップで math.Round） ──
+	t.Run("壁補正(0.5x): リフレクター/ひかりのかべ シングル math.Round(46*0.5)=23", func(t *testing.T) {
+		d := newBaseDamageInput(100, 100, 100)
+		d.wall = 0.5
+		if got := d.CalcDamage(); got != 23 {
+			t.Errorf("CalcDamage() = %v, want 23", got)
+		}
+	})
+
+	t.Run("ブレインフォース(1.25x): 効果バツグン時 math.Round(46*1.25)=58", func(t *testing.T) {
+		d := newBaseDamageInput(100, 100, 100)
+		d.neuroforce = 1.25
+		if got := d.CalcDamage(); got != 58 {
+			t.Errorf("CalcDamage() = %v, want 58", got)
+		}
+	})
+
+	t.Run("スナイパー急所(×1.5×1.5): math.Round(69*1.5)=104", func(t *testing.T) {
+		// 急所: roundHalfDown(46*1.5)=69, スナイパー: math.Round(69*1.5)=104
+		d := newBaseDamageInput(100, 100, 100)
+		d.critMod = 1.5
+		d.sniper = 1.5
+		if got := d.CalcDamage(); got != 104 {
+			t.Errorf("CalcDamage() = %v, want 104", got)
+		}
+	})
+
+	t.Run("いろめがね(×2.0): いまひとつ 46→23→46", func(t *testing.T) {
+		// typeEff=0.5で切り捨てint(46*0.5)=23, tintedLens=2.0でmath.Round(23*2)=46
+		d := newBaseDamageInput(100, 100, 100)
+		d.typeEff = 0.5
+		d.tintedLens = 2.0
+		if got := d.CalcDamage(); got != 46 {
+			t.Errorf("CalcDamage() = %v, want 46", got)
+		}
+	})
+
+	t.Run("もふもふ ほのおタイプ(×2.0): math.Round(46*2.0)=92", func(t *testing.T) {
+		d := newBaseDamageInput(100, 100, 100)
+		d.fluffy = 2.0
+		if got := d.CalcDamage(); got != 92 {
+			t.Errorf("CalcDamage() = %v, want 92", got)
+		}
+	})
+
+	t.Run("もふもふ 直接攻撃(×0.5): Mhalf位置 math.Round(46*0.5)=23", func(t *testing.T) {
+		d := newBaseDamageInput(100, 100, 100)
+		d.mhalf = 0.5
+		if got := d.CalcDamage(); got != 23 {
+			t.Errorf("CalcDamage() = %v, want 23", got)
+		}
+	})
+
+	t.Run("もふもふ 炎タイプ+直接攻撃(×2.0×0.5): fluffy→math.Round(46*2.0)=92, Mhalf→math.Round(92*0.5)=46", func(t *testing.T) {
+		// 炎: fluffy位置 math.Round(46*2.0)=92
+		// 直接攻撃: Mhalf位置 math.Round(92*0.5)=46
+		d := newBaseDamageInput(100, 100, 100)
+		d.fluffy = 2.0
+		d.mhalf = 0.5
+		if got := d.CalcDamage(); got != 46 {
+			t.Errorf("CalcDamage() = %v, want 46", got)
+		}
+	})
+
+	t.Run("Mhalf(×0.5): こおりのりんぷん/マルチスケイル等 math.Round(46*0.5)=23", func(t *testing.T) {
+		d := newBaseDamageInput(100, 100, 100)
+		d.mhalf = 0.5
+		if got := d.CalcDamage(); got != 23 {
+			t.Errorf("CalcDamage() = %v, want 23", got)
+		}
+	})
+
+	t.Run("Mfilter(×0.75): フィルター/ハードロック等 効果バツグン軽減 math.Round(46*0.75)=35", func(t *testing.T) {
+		d := newBaseDamageInput(100, 100, 100)
+		d.mfilter = 0.75
+		if got := d.CalcDamage(); got != 35 {
+			t.Errorf("CalcDamage() = %v, want 35", got)
+		}
+	})
+
+	t.Run("たつじんのおび(4915/4096): 効果バツグン時 math.Round(46*4915/4096)=55", func(t *testing.T) {
+		d := newBaseDamageInput(100, 100, 100)
+		d.expertBelt = float64(4915) / 4096
+		if got := d.CalcDamage(); got != 55 {
+			t.Errorf("CalcDamage() = %v, want 55", got)
+		}
+	})
+
+	t.Run("メトロノーム2回(4915/4096): math.Round(46*4915/4096)=55", func(t *testing.T) {
+		d := newBaseDamageInput(100, 100, 100)
+		d.metronome = float64(4915) / 4096
+		if got := d.CalcDamage(); got != 55 {
+			t.Errorf("CalcDamage() = %v, want 55", got)
+		}
+	})
+
+	t.Run("メトロノーム3回(5734/4096): math.Round(46*5734/4096)=64", func(t *testing.T) {
+		d := newBaseDamageInput(100, 100, 100)
+		d.metronome = float64(5734) / 4096
+		if got := d.CalcDamage(); got != 64 {
+			t.Errorf("CalcDamage() = %v, want 64", got)
+		}
+	})
+
+	t.Run("メトロノーム6回以上(8192/4096=2.0): math.Round(46*2.0)=92", func(t *testing.T) {
+		d := newBaseDamageInput(100, 100, 100)
+		d.metronome = float64(8192) / 4096
+		if got := d.CalcDamage(); got != 92 {
+			t.Errorf("CalcDamage() = %v, want 92", got)
+		}
+	})
+
+	t.Run("半減の実(2048/4096): 効果バツグン被弾時 math.Round(46*0.5)=23", func(t *testing.T) {
+		d := newBaseDamageInput(100, 100, 100)
+		d.halfBerry = float64(2048) / 4096
+		if got := d.CalcDamage(); got != 23 {
+			t.Errorf("CalcDamage() = %v, want 23", got)
+		}
+	})
+}
+
+func TestDamageInput_random(t *testing.T) {
+	// base=46: (22*100*100/100)/50+2=46
+	// 乱数補正は切り捨て: damage * random / 100
+	tests := []struct {
+		name   string
+		random int
+		want   int
+	}{
+		{"乱数85(最小): 46*85/100=39", 85, 39},
+		{"乱数86: 46*86/100=39", 86, 39},
+		{"乱数87: 46*87/100=40", 87, 40},
+		{"乱数88: 46*88/100=40", 88, 40},
+		{"乱数89: 46*89/100=40", 89, 40},
+		{"乱数90: 46*90/100=41", 90, 41},
+		{"乱数91: 46*91/100=41", 91, 41},
+		{"乱数92: 46*92/100=42", 92, 42},
+		{"乱数93: 46*93/100=42", 93, 42},
+		{"乱数94: 46*94/100=43", 94, 43},
+		{"乱数95: 46*95/100=43", 95, 43},
+		{"乱数96: 46*96/100=44", 96, 44},
+		{"乱数97: 46*97/100=44", 97, 44},
+		{"乱数98: 46*98/100=45", 98, 45},
+		{"乱数99: 46*99/100=45", 99, 45},
+		{"乱数100(最大): 46*100/100=46", 100, 46},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			d := newBaseDamageInput(100, 100, 100)
+			d.random = tt.random
+			if got := d.CalcDamage(); got != tt.want {
+				t.Errorf("CalcDamage() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
