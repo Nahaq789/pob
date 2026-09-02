@@ -1,8 +1,11 @@
 package ptype
 
+// Type はポケモンおよび技のタイプを表す。
 type Type int
 
 const (
+	// None は単タイプのポケモンの第2タイプとして使用するゼロ値。
+	None     Type = 0
 	Normal   Type = 1
 	Fighting Type = 2
 	Flying   Type = 3
@@ -114,4 +117,17 @@ var effectivenessTable = map[Type]map[Type]float64{
 		Fighting: 2, Poison: 0.5, Ground: 1, Flying: 1, Psychic: 1, Bug: 1,
 		Rock: 1, Ghost: 1, Dragon: 2, Dark: 2, Steel: 0.5, Fairy: 1,
 	},
+}
+
+// Effectiveness は攻撃タイプに対する防御側の全タイプ相性倍率の積を返す。
+func Effectiveness(attackType Type, defendTypes [2]Type) float64 {
+	mod := 1.0
+	for _, dt := range defendTypes {
+		// 単タイプの場合はスキップ
+		if dt == None {
+			continue
+		}
+		mod *= effectivenessTable[attackType][dt]
+	}
+	return mod
 }

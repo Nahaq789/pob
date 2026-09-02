@@ -128,7 +128,8 @@ func (p *Pokemon) Name() string { return p.name }
 //
 // func (p *Pokemon) Nickname() string { return p.nickname }
 //
-// func (p *Pokemon) Types() [2]ptype.Type { return p.types }
+// Types はポケモンのタイプを返す。単タイプの場合は [1] が ptype.None になる。
+func (p *Pokemon) Types() [2]ptype.Type { return p.types }
 //
 // func (p *Pokemon) BaseStats() BaseStats { return p.baseStats }
 //
