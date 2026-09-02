@@ -40,8 +40,11 @@ func (r Rank) AccuracyRank(oe BasicRank) (AccuracyRank, error) {
 	return a, nil
 }
 
-func (r Rank) RollCritical(moveCriticalMod float64) bool {
-	finalRate := r.critical.value + moveCriticalMod
-	threshold := int(finalRate * 10000)
-	return rand.IntN(10000) < threshold
+func (r Rank) RollCritical(moveCriticalStage int) (bool, error) {
+	c, err := r.critical.Up(moveCriticalStage)
+	if err != nil {
+		return false, err
+	}
+	threshold := int(c.value * 10000)
+	return rand.IntN(10000) < threshold, nil
 }

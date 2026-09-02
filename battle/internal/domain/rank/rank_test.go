@@ -32,7 +32,11 @@ func TestRank_RollCritical(t *testing.T) {
 	t.Run("stage3(必中): 常にtrueを返す", func(t *testing.T) {
 		r := Rank{critical: CriticalRank{stage: 3, value: criticalRankMap[3]}}
 		for range 20 {
-			if !r.RollCritical(0.0) {
+			got, err := r.RollCritical(0)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if !got {
 				t.Error("stage3は必ず急所に当たる")
 			}
 		}
@@ -42,7 +46,11 @@ func TestRank_RollCritical(t *testing.T) {
 		r := NewRank()
 		gotTrue, gotFalse := false, false
 		for range 300 {
-			if r.RollCritical(0.0) {
+			got, err := r.RollCritical(0)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if got {
 				gotTrue = true
 			} else {
 				gotFalse = true
@@ -63,7 +71,11 @@ func TestRank_RollCritical(t *testing.T) {
 		r := Rank{critical: CriticalRank{stage: 2, value: criticalRankMap[2]}}
 		gotTrue, gotFalse := false, false
 		for range 300 {
-			if r.RollCritical(0.0) {
+			got, err := r.RollCritical(0)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if got {
 				gotTrue = true
 			} else {
 				gotFalse = true
@@ -80,11 +92,15 @@ func TestRank_RollCritical(t *testing.T) {
 		}
 	})
 
-	t.Run("moveCriticalMod加算: stage0+1.0で必中になる", func(t *testing.T) {
+	t.Run("moveCriticalStage加算: stage0+3で必中になる", func(t *testing.T) {
 		r := NewRank()
 		for range 20 {
-			if !r.RollCritical(1.0) {
-				t.Error("moveCriticalMod=1.0加算で必中になる")
+			got, err := r.RollCritical(3)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if !got {
+				t.Error("moveCriticalStage=3加算でstage3(必中)になる")
 			}
 		}
 	})
@@ -94,13 +110,27 @@ func TestRank_RollCritical(t *testing.T) {
 		r := NewRank()
 		hits := 0
 		for range trials {
-			if r.RollCritical(0.0) {
+			got, err := r.RollCritical(0)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if got {
 				hits++
 			}
 		}
 		rate := float64(hits) / trials
 		if rate < 0.02 || rate > 0.07 {
 			t.Errorf("想定外の急所率: %.4f (期待値 ~0.0417)", rate)
+		}
+	})
+
+	t.Run("RollCritical後もstageは変化しない", func(t *testing.T) {
+		r := Rank{critical: CriticalRank{stage: 1, value: criticalRankMap[1]}}
+		if _, err := r.RollCritical(1); err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if r.critical.stage != 1 {
+			t.Errorf("expected stage=1, got %d", r.critical.stage)
 		}
 	})
 }
