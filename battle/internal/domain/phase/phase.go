@@ -1,5 +1,7 @@
 package phase
 
+import "pob/battle/internal/domain/damage"
+
 type Phase string
 
 const (
@@ -24,4 +26,10 @@ type ExitHandler interface {
 // ポケモンの行動チェックや素早さ順の解決等実施する
 type PreDamageHandler interface {
 	Handle(ctx PreDamageContext)
+}
+
+// DamageHandler はダメージ計算フェーズの補正値を返すハンドラーのインターフェース。
+// 基本ハンドラー（急所・タイプ相性・やけど等）と特殊ハンドラー（技・特性・道具）の両方が実装する。
+type DamageHandler interface {
+	Mod(ctx DamageContext) damage.DamageMod
 }
