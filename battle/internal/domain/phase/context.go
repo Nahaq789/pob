@@ -65,4 +65,5 @@ type DamageContext struct {
 	MustHit    bool             // true なら命中判定スキップ
 	CanCrit    bool             // false なら急所判定スキップ
 	TargetSelf bool             // true ならActor自身がTarget
+	IsCrit     bool             // CritHandler が解決後に設定。スナイパー等の後続ハンドラーが参照する
 }
