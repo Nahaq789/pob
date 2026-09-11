@@ -189,6 +189,26 @@ func (p *Pokemon) RemoveOtherStatus(kind status.OtherCondition) {
 	p.status.RemoveOtherStatus(kind)
 }
 
+func (p *Pokemon) AttackStat() int {
+	return int(float64(p.realStats.Attack) * p.rank.Attack().Value())
+}
+
+func (p *Pokemon) SpAttackStat() int {
+	return int(float64(p.realStats.SpAttack) * p.rank.SpAttack().Value())
+}
+
+func (p *Pokemon) DefenseStat() int {
+	return int(float64(p.realStats.Defense) * p.rank.Defence().Value())
+}
+
+func (p *Pokemon) SpDefenseStat() int {
+	return int(float64(p.realStats.SpDefense) * p.rank.SpDefence().Value())
+}
+
+func (p *Pokemon) TakeDamage(amount int) {
+	p.currentHP = p.currentHP.Damage(amount)
+}
+
 // DecrementMainStatusCount はメインの状態異常のカウントを1減らす。
 // ねむりターン経過など、ターン消費を伴う状態異常の更新に使用する。
 func (p *Pokemon) DecrementMainStatusCount() {

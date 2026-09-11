@@ -1,6 +1,8 @@
 package phase
 
 import (
+	"pob/battle/internal/domain/move"
+	"pob/battle/internal/domain/ptype"
 	"pob/battle/internal/domain/status"
 	"pob/battle/internal/domain/status/other/rule"
 )
@@ -80,7 +82,17 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 		if !cleared {
 			if msg, hit := confuse.CheckSelfHit(activeP.Name()); hit {
 				messages = append(messages, msg)
-				return Result{Messages: messages, NextPhase: PhaseEnd}
+				dmgCtx := &DamageContext{
+					Battle:     ctx.Battle,
+					ActorId:    ctx.ActorId,
+					Type:       ptype.Normal,
+					Power:      40,
+					Category:   move.DamageClassPhysical,
+					MustHit:    true,
+					CanCrit:    false,
+					TargetSelf: true,
+				}
+				return Result{Messages: messages, NextPhase: PhaseDamage, DamageContext: dmgCtx}
 			}
 		}
 	}
@@ -96,8 +108,23 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 		}
 	}
 
+	m, err := activeP.MoveById(ctx.MoveId)
+	if err != nil {
+		return Result{Err: err}
+	}
+	dmgCtx := &DamageContext{
+		Battle:   ctx.Battle,
+		ActorId:  ctx.ActorId,
+		MoveId:   ctx.MoveId,
+		Type:     m.Type(),
+		Power:    m.Power(),
+		Category: m.DamageClass(),
+		MustHit:  m.Accuracy() == 0,
+		CanCrit:  true,
+	}
 	return Result{
-		Messages:  messages,
-		NextPhase: PhaseDamage,
+		Messages:      messages,
+		NextPhase:     PhaseDamage,
+		DamageContext: dmgCtx,
 	}
 }
