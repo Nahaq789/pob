@@ -38,6 +38,7 @@ func (d *DamagePhaseHandler) Handle(ctx DamageContext) Result {
 		def = defender.SpDefenseStat()
 	}
 
+	// 乱数
 	random := 85 + rand.IntN(16)
 
 	// 基本ハンドラーを順に実行。CritHandler が先頭に登録されている前提で、

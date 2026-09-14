@@ -4,7 +4,7 @@ import (
 	"pob/battle/internal/domain/move"
 	"pob/battle/internal/domain/ptype"
 	"pob/battle/internal/domain/status"
-	"pob/battle/internal/domain/status/other/rule"
+	statusother "pob/battle/internal/domain/status/other"
 )
 
 type PreDamagePhaseHandler struct{}
@@ -49,13 +49,13 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 	otherMap := activeP.Status().OtherMap()
 
 	// ひるみ判定
-	if fl, ok := otherMap[status.OtherCondition(status.Flinch)].(*rule.Flinch); ok {
+	if fl, ok := otherMap[status.OtherCondition(status.Flinch)].(statusother.Flincher); ok {
 		messages = append(messages, fl.Handle(activeP.Name()))
 		return Result{Messages: messages, NextPhase: PhaseEnd}
 	}
 
 	// アンコール判定
-	if enc, ok := otherMap[status.OtherCondition(status.Encore)].(*rule.Encore); ok {
+	if enc, ok := otherMap[status.OtherCondition(status.Encore)].(statusother.PreMoveChecker); ok {
 		if message, blocked := enc.Handle(ctx.MoveId, activeP.Status().Others()); blocked {
 			messages = append(messages, message)
 			return Result{Messages: messages, NextPhase: PhaseEnd}
@@ -63,7 +63,7 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 	}
 
 	// かなしばり判定
-	if md, ok := otherMap[status.OtherCondition(status.MoveDisabled)].(*rule.MoveDisabled); ok {
+	if md, ok := otherMap[status.OtherCondition(status.MoveDisabled)].(statusother.PreMoveChecker); ok {
 		if message, blocked := md.Handle(ctx.MoveId, activeP.Status().Others()); blocked {
 			messages = append(messages, message)
 			return Result{Messages: messages, NextPhase: PhaseEnd}
@@ -71,8 +71,8 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 	}
 
 	// 混乱判定
-	if confuse, ok := otherMap[status.OtherCondition(status.Confusion)].(*rule.Confusion); ok {
-		cleared, _, message := confuse.Resolve(status.OtherStatusContext{ActorName: activeP.Name()})
+	if confuseStatus, ok := otherMap[status.OtherCondition(status.Confusion)]; ok {
+		cleared, _, message := confuseStatus.Resolve(status.OtherStatusContext{ActorName: activeP.Name()})
 		if cleared {
 			activeP.RemoveOtherStatus(status.OtherCondition(status.Confusion))
 			if message != "" {
@@ -80,19 +80,21 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 			}
 		}
 		if !cleared {
-			if msg, hit := confuse.CheckSelfHit(activeP.Name()); hit {
-				messages = append(messages, msg)
-				dmgCtx := &DamageContext{
-					Battle:     ctx.Battle,
-					ActorId:    ctx.ActorId,
-					Type:       ptype.Normal,
-					Power:      40,
-					Category:   move.DamageClassPhysical,
-					MustHit:    true,
-					CanCrit:    false,
-					TargetSelf: true,
+			if selfHitter, ok := confuseStatus.(statusother.SelfHitter); ok {
+				if msg, hit := selfHitter.CheckSelfHit(activeP.Name()); hit {
+					messages = append(messages, msg)
+					dmgCtx := &DamageContext{
+						Battle:     ctx.Battle,
+						ActorId:    ctx.ActorId,
+						Type:       ptype.Normal,
+						Power:      40,
+						Category:   move.DamageClassPhysical,
+						MustHit:    true,
+						CanCrit:    false,
+						TargetSelf: true,
+					}
+					return Result{Messages: messages, NextPhase: PhaseDamage, DamageContext: dmgCtx}
 				}
-				return Result{Messages: messages, NextPhase: PhaseDamage, DamageContext: dmgCtx}
 			}
 		}
 	}

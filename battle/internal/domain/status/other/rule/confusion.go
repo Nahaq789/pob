@@ -38,3 +38,7 @@ func (c *Confusion) CheckSelfHit(name string) (string, bool) {
 	}
 	return "", false
 }
+
+func ConfusionHandler() error {
+	return nil
+}

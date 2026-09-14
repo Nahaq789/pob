@@ -336,8 +336,8 @@ func TestPreDamageHandle_Confusion(t *testing.T) {
 		}
 	})
 
-	t.Run("継続中: true と false（自傷/非自傷）の両方が返る", func(t *testing.T) {
-		gotEnd, gotDamage := false, false
+	t.Run("継続中: 自傷（TargetSelf=true）と非自傷（TargetSelf=false）の両方が返る", func(t *testing.T) {
+		gotSelfHit, gotNormal := false, false
 		for range 300 {
 			cf := rule.NewConfusion(3)
 			st := status.NewStatusWith(nil, []status.OtherStatus{cf})
@@ -345,21 +345,22 @@ func TestPreDamageHandle_Confusion(t *testing.T) {
 			b, actorId := newPreDamageBattle(actor)
 
 			result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
-			switch result.NextPhase {
-			case phase.PhaseEnd:
-				gotEnd = true
-			case phase.PhaseDamage:
-				gotDamage = true
+			if result.NextPhase == phase.PhaseDamage && result.DamageContext != nil {
+				if result.DamageContext.TargetSelf {
+					gotSelfHit = true
+				} else {
+					gotNormal = true
+				}
 			}
-			if gotEnd && gotDamage {
+			if gotSelfHit && gotNormal {
 				break
 			}
 		}
-		if !gotEnd {
-			t.Error("300試行で自傷（PhaseEnd）が一度も発生しなかった")
+		if !gotSelfHit {
+			t.Error("300試行で自傷（TargetSelf=true）が一度も発生しなかった")
 		}
-		if !gotDamage {
-			t.Error("300試行で非自傷（PhaseDamage）が一度も発生しなかった")
+		if !gotNormal {
+			t.Error("300試行で非自傷（TargetSelf=false）が一度も発生しなかった")
 		}
 	})
 
@@ -372,7 +373,8 @@ func TestPreDamageHandle_Confusion(t *testing.T) {
 			b, actorId := newPreDamageBattle(actor)
 
 			result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
-			if result.NextPhase == phase.PhaseEnd && containsMsg(result.Messages, "自分を攻撃した") {
+			if result.NextPhase == phase.PhaseDamage && result.DamageContext != nil &&
+				result.DamageContext.TargetSelf && containsMsg(result.Messages, "自分を攻撃した") {
 				found = true
 				break
 			}
