@@ -19,8 +19,6 @@ func (d *DamagePhaseHandler) Handle(ctx DamageContext) Result {
 	actor := ctx.Battle.PlayerById(ctx.ActorId)
 	attacker := actor.Active()
 
-	// TODO
-	// ここを混乱判定部分に修正する
 	var defender *pokemon.Pokemon
 	if ctx.TargetSelf {
 		defender = attacker
@@ -38,7 +36,6 @@ func (d *DamagePhaseHandler) Handle(ctx DamageContext) Result {
 		def = defender.SpDefenseStat()
 	}
 
-	// 乱数
 	random := 85 + rand.IntN(16)
 
 	// 基本ハンドラーを順に実行。CritHandler が先頭に登録されている前提で、
@@ -51,20 +48,19 @@ func (d *DamagePhaseHandler) Handle(ctx DamageContext) Result {
 		}
 	}
 
-	// 攻撃側の特性・道具ハンドラー
-	if abilityId := int(attacker.Ability().GetCurrentId()); abilityId != 0 {
-		if h, ok := d.registry.damageAbilityHandlers[abilityId]; ok {
-			mod = damage.Merge(mod, h.Mod(ctx))
+	// こんらん自傷時は攻撃側・防御側とも特性・道具の影響を受けない
+	if !ctx.TargetSelf {
+		if abilityId := int(attacker.Ability().GetCurrentId()); abilityId != 0 {
+			if h, ok := d.registry.damageAbilityHandlers[abilityId]; ok {
+				mod = damage.Merge(mod, h.Mod(ctx))
+			}
 		}
-	}
-	if item := attacker.HeldItem(); item != nil {
-		if h, ok := d.registry.damageItemHandlers[int(item.Id())]; ok {
-			mod = damage.Merge(mod, h.Mod(ctx))
+		if item := attacker.HeldItem(); item != nil {
+			if h, ok := d.registry.damageItemHandlers[int(item.Id())]; ok {
+				mod = damage.Merge(mod, h.Mod(ctx))
+			}
 		}
-	}
 
-	// 防御側の特性・道具ハンドラー（自傷時は重複しないようスキップ）
-	if attacker != defender {
 		if abilityId := int(defender.Ability().GetCurrentId()); abilityId != 0 {
 			if h, ok := d.registry.damageAbilityHandlers[abilityId]; ok {
 				mod = damage.Merge(mod, h.Mod(ctx))

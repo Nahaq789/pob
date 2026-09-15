@@ -3,6 +3,8 @@ package rule
 import (
 	"fmt"
 	"math/rand"
+	"pob/battle/internal/domain/damage"
+	"pob/battle/internal/domain/phase"
 	"pob/battle/internal/domain/status"
 	"pob/battle/internal/domain/vo"
 )
@@ -39,6 +41,21 @@ func (c *Confusion) CheckSelfHit(name string) (string, bool) {
 	return "", false
 }
 
-func ConfusionHandler() error {
-	return nil
+// ConfusionDamageHandler はこんらん自傷時のダメージ補正を返す。
+// 自傷はタイプなし扱いのため STAB・タイプ相性を無効化する。
+// 他の全ハンドラーより後に適用して Override で確定させること。
+type ConfusionDamageHandler struct{}
+
+func NewConfusionDamageHandler() *ConfusionDamageHandler {
+	return &ConfusionDamageHandler{}
+}
+
+func (h *ConfusionDamageHandler) Mod(ctx phase.DamageContext) damage.DamageMod {
+	if !ctx.TargetSelf {
+		return damage.DamageMod{}
+	}
+	return damage.DamageMod{
+		Stab:    damage.Override(1.0),
+		TypeEff: damage.Override(1.0),
+	}
 }
