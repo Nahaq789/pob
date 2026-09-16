@@ -43,7 +43,9 @@ type MoveResolveHandler interface {
 // MoveHandler は技ハンドラーの共通インターフェース。
 // 全ての技はこのインターフェースを実装する。
 // 補正不要な場合は Mod で空の DamageMod を、追加効果なしの場合は AfterEffect で空の Result を返す。
+// 単発技は HitCount で 1 を返す。
 type MoveHandler interface {
 	DamageModHandler
 	MoveResolveHandler
+	HitCount() int
 }
