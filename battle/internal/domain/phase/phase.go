@@ -28,8 +28,22 @@ type PreMoveHandler interface {
 	Handle(ctx PreMoveContext)
 }
 
-// MoveResolveHandler は技解決フェーズの補正値を返すハンドラーのインターフェース。
+// DamageModHandler は技解決フェーズの補正値を返すハンドラーのインターフェース。
 // 基本ハンドラー（急所・タイプ相性・やけど等）と特殊ハンドラー（技・特性・道具）の両方が実装する。
-type MoveResolveHandler interface {
+type DamageModHandler interface {
 	Mod(ctx MoveResolveContext) damage.DamageMod
+}
+
+// MoveResolveHandler は技の追加効果を適用するインターフェース。
+// ダメージ技・変化技・追加効果（状態異常付与・能力ランク変化等）を適用する。
+type MoveResolveHandler interface {
+	AfterEffect(ctx MoveResolveContext) Result
+}
+
+// MoveHandler は技ハンドラーの共通インターフェース。
+// 全ての技はこのインターフェースを実装する。
+// 補正不要な場合は Mod で空の DamageMod を、追加効果なしの場合は AfterEffect で空の Result を返す。
+type MoveHandler interface {
+	DamageModHandler
+	MoveResolveHandler
 }
