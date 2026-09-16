@@ -40,21 +40,21 @@ func NewExitContext(actorId string, abilityId, itemId int, incoming *pokemon.Pok
 	}
 }
 
-type PreDamageContext struct {
+type PreMoveContext struct {
 	ActorId string
 	MoveId  int
 	Battle  *battle.Battle
 }
 
-func NewPreDamageContext(actorId string, moveId int, battle *battle.Battle) PreDamageContext {
-	return PreDamageContext{
+func NewPreMoveContext(actorId string, moveId int, battle *battle.Battle) PreMoveContext {
+	return PreMoveContext{
 		ActorId: actorId,
 		MoveId:  moveId,
 		Battle:  battle,
 	}
 }
 
-type DamageContext struct {
+type MoveResolveContext struct {
 	damage.Spec
 	Battle *battle.Battle
 	IsCrit bool // CritHandler が解決後に設定。スナイパー等の後続ハンドラーが参照する

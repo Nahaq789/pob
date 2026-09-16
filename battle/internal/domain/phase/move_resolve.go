@@ -6,15 +6,15 @@ import (
 	"pob/battle/internal/domain/move"
 )
 
-type DamagePhaseHandler struct {
+type MoveResolvePhaseHandler struct {
 	registry *Registry
 }
 
-func NewDamagePhaseHandler(r *Registry) *DamagePhaseHandler {
-	return &DamagePhaseHandler{registry: r}
+func NewMoveResolvePhaseHandler(r *Registry) *MoveResolvePhaseHandler {
+	return &MoveResolvePhaseHandler{registry: r}
 }
 
-func (d *DamagePhaseHandler) Handle(ctx DamageContext) Result {
+func (d *MoveResolvePhaseHandler) Handle(ctx MoveResolveContext) Result {
 	actor := ctx.Battle.PlayerById(ctx.ActorId)
 	attacker := actor.Active()
 	defender := ctx.Battle.Opponent(actor).Active()
@@ -39,43 +39,44 @@ func (d *DamagePhaseHandler) Handle(ctx DamageContext) Result {
 
 		return Result{
 			Messages:  []string{"わけもわからず自分を攻撃した"},
-			NextPhase: PhasePostDamage,
+			NextPhase: PhasePostMove,
 		}
 	}
 
 	// 基本ハンドラーを順に実行。CritHandler が先頭に登録されている前提で、
 	// mod.Crit が確定した時点で ctx.IsCrit を更新し後続ハンドラーが参照できるようにする。
 	var mod damage.DamageMod
-	for _, h := range d.registry.damageBaseHandlers {
+	for _, h := range d.registry.resolveBaseHandlers {
 		mod = damage.Merge(mod, h.Mod(ctx))
 		if mod.Crit != nil && mod.Crit.Value > 1.0 {
 			ctx.IsCrit = true
 		}
 	}
 
+	// 攻撃側の特性・道具（スナイパー・いのちのたま等）
 	if abilityId := int(attacker.Ability().GetCurrentId()); abilityId != 0 {
-		if h, ok := d.registry.damageAbilityHandlers[abilityId]; ok {
+		if h, ok := d.registry.resolveAbilityHandlers[abilityId]; ok {
 			mod = damage.Merge(mod, h.Mod(ctx))
 		}
 	}
 	if item := attacker.HeldItem(); item != nil {
-		if h, ok := d.registry.damageItemHandlers[int(item.Id())]; ok {
+		if h, ok := d.registry.resolveItemHandlers[int(item.Id())]; ok {
 			mod = damage.Merge(mod, h.Mod(ctx))
 		}
 	}
 
+	// 防御側の特性・道具（マルチスケイル・フィルター・もふもふ等）
 	if abilityId := int(defender.Ability().GetCurrentId()); abilityId != 0 {
-		if h, ok := d.registry.damageAbilityHandlers[abilityId]; ok {
+		if h, ok := d.registry.resolveAbilityHandlers[abilityId]; ok {
 			mod = damage.Merge(mod, h.Mod(ctx))
 		}
 	}
 	if item := defender.HeldItem(); item != nil {
-		if h, ok := d.registry.damageItemHandlers[int(item.Id())]; ok {
+		if h, ok := d.registry.resolveItemHandlers[int(item.Id())]; ok {
 			mod = damage.Merge(mod, h.Mod(ctx))
 		}
 	}
-	// 技ハンドラー
-	if h, ok := d.registry.damageMoveHandlers[ctx.MoveId]; ok {
+	if h, ok := d.registry.resolveMoveHandlers[ctx.MoveId]; ok {
 		mod = damage.Merge(mod, h.Mod(ctx))
 	}
 
@@ -84,6 +85,6 @@ func (d *DamagePhaseHandler) Handle(ctx DamageContext) Result {
 	defender.TakeDamage(dmg)
 
 	return Result{
-		NextPhase: PhasePostDamage,
+		NextPhase: PhasePostMove,
 	}
 }

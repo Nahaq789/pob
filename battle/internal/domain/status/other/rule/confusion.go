@@ -50,7 +50,7 @@ func NewConfusionDamageHandler() *ConfusionDamageHandler {
 	return &ConfusionDamageHandler{}
 }
 
-func (h *ConfusionDamageHandler) Mod(ctx phase.DamageContext) damage.DamageMod {
+func (h *ConfusionDamageHandler) Mod(ctx phase.MoveResolveContext) damage.DamageMod {
 	if !ctx.TargetSelf {
 		return damage.DamageMod{}
 	}

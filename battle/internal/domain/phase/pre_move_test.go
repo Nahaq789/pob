@@ -22,7 +22,7 @@ import (
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
-func newPreDamagePokemon(name string, st status.Status, moveIds ...int) *pokemon.Pokemon {
+func newPreMovePokemon(name string, st status.Status, moveIds ...int) *pokemon.Pokemon {
 	a := ability.NewAbility(0, "")
 	var moves [4]*move.Move
 	for i, id := range moveIds {
@@ -48,14 +48,14 @@ func newPreDamagePokemon(name string, st status.Status, moveIds ...int) *pokemon
 	)
 }
 
-// newPreDamageBattle は actor を p1 のアクティブポケモンとしてバトルを構築する。
-// 返値の actorId は PreDamageContext に渡す p1 のプレイヤー ID。
-func newPreDamageBattle(actor *pokemon.Pokemon) (*battle.Battle, string) {
-	dummy1 := newPreDamagePokemon("ダミー1", status.NewStatus(), 1)
-	dummy2 := newPreDamagePokemon("ダミー2", status.NewStatus(), 1)
-	opp1 := newPreDamagePokemon("あいて1", status.NewStatus(), 1)
-	opp2 := newPreDamagePokemon("あいて2", status.NewStatus(), 1)
-	opp3 := newPreDamagePokemon("あいて3", status.NewStatus(), 1)
+// newPreMoveBattle は actor を p1 のアクティブポケモンとしてバトルを構築する。
+// 返値の actorId は PreMoveContext に渡す p1 のプレイヤー ID。
+func newPreMoveBattle(actor *pokemon.Pokemon) (*battle.Battle, string) {
+	dummy1 := newPreMovePokemon("ダミー1", status.NewStatus(), 1)
+	dummy2 := newPreMovePokemon("ダミー2", status.NewStatus(), 1)
+	opp1 := newPreMovePokemon("あいて1", status.NewStatus(), 1)
+	opp2 := newPreMovePokemon("あいて2", status.NewStatus(), 1)
+	opp3 := newPreMovePokemon("あいて3", status.NewStatus(), 1)
 
 	p1 := player.NewPlayer("actor", "Player1", [6]*pokemon.Pokemon{actor, dummy1, dummy2}, nil)
 	p2 := player.NewPlayer("opp", "Player2", [6]*pokemon.Pokemon{opp1, opp2, opp3}, nil)
@@ -81,23 +81,23 @@ func containsMsg(msgs []string, sub string) bool {
 
 // ── 1. 状態異常なし ────────────────────────────────────────────────────────────
 
-func TestPreDamageHandle_NoStatus(t *testing.T) {
-	t.Run("状態異常なし: PhaseDamage に進む", func(t *testing.T) {
-		actor := newPreDamagePokemon("ピカチュウ", status.NewStatus(), 1)
-		b, actorId := newPreDamageBattle(actor)
+func TestPreMoveHandle_NoStatus(t *testing.T) {
+	t.Run("状態異常なし: PhaseMoveResolve に進む", func(t *testing.T) {
+		actor := newPreMovePokemon("ピカチュウ", status.NewStatus(), 1)
+		b, actorId := newPreMoveBattle(actor)
 
-		result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
+		result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 1, b))
 
-		if result.NextPhase != phase.PhaseDamage {
-			t.Errorf("expected PhaseDamage, got %v", result.NextPhase)
+		if result.NextPhase != phase.PhaseMoveResolve {
+			t.Errorf("expected PhaseMoveResolve, got %v", result.NextPhase)
 		}
 	})
 
 	t.Run("状態異常なし: メッセージなし", func(t *testing.T) {
-		actor := newPreDamagePokemon("ピカチュウ", status.NewStatus(), 1)
-		b, actorId := newPreDamageBattle(actor)
+		actor := newPreMovePokemon("ピカチュウ", status.NewStatus(), 1)
+		b, actorId := newPreMoveBattle(actor)
 
-		result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
+		result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 1, b))
 
 		if len(result.Messages) != 0 {
 			t.Errorf("expected no messages, got %v", result.Messages)
@@ -107,17 +107,17 @@ func TestPreDamageHandle_NoStatus(t *testing.T) {
 
 // ── 2. ねむり ─────────────────────────────────────────────────────────────────
 
-func TestPreDamageHandle_Sleep(t *testing.T) {
+func TestPreMoveHandle_Sleep(t *testing.T) {
 	t.Run("眠り継続中: PhaseEnd", func(t *testing.T) {
 		ms, err := status.NewSleep(vo.NewCount(2))
 		if err != nil {
 			t.Fatal(err)
 		}
 		st := status.NewStatusWith(&ms, nil)
-		actor := newPreDamagePokemon("カビゴン", st, 1)
-		b, actorId := newPreDamageBattle(actor)
+		actor := newPreMovePokemon("カビゴン", st, 1)
+		b, actorId := newPreMoveBattle(actor)
 
-		result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
+		result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 1, b))
 
 		if result.NextPhase != phase.PhaseEnd {
 			t.Errorf("expected PhaseEnd, got %v", result.NextPhase)
@@ -130,10 +130,10 @@ func TestPreDamageHandle_Sleep(t *testing.T) {
 			t.Fatal(err)
 		}
 		st := status.NewStatusWith(&ms, nil)
-		actor := newPreDamagePokemon("カビゴン", st, 1)
-		b, actorId := newPreDamageBattle(actor)
+		actor := newPreMovePokemon("カビゴン", st, 1)
+		b, actorId := newPreMoveBattle(actor)
 
-		result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
+		result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 1, b))
 
 		if !containsMsg(result.Messages, "ぐうぐう眠っている") {
 			t.Errorf("expected sleep message, got %v", result.Messages)
@@ -144,20 +144,20 @@ func TestPreDamageHandle_Sleep(t *testing.T) {
 // ── 3. こおり ─────────────────────────────────────────────────────────────────
 
 // NewMainStatus(Freeze) は count=0 で生成されるため IsFrozen が即時 false を返し、解凍扱いとなる。
-func TestPreDamageHandle_Freeze(t *testing.T) {
-	t.Run("解凍: PhaseDamage に進む", func(t *testing.T) {
+func TestPreMoveHandle_Freeze(t *testing.T) {
+	t.Run("解凍: PhaseMoveResolve に進む", func(t *testing.T) {
 		ms, err := status.NewMainStatus(status.Freeze)
 		if err != nil {
 			t.Fatal(err)
 		}
 		st := status.NewStatusWith(&ms, nil)
-		actor := newPreDamagePokemon("ラプラス", st, 1)
-		b, actorId := newPreDamageBattle(actor)
+		actor := newPreMovePokemon("ラプラス", st, 1)
+		b, actorId := newPreMoveBattle(actor)
 
-		result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
+		result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 1, b))
 
-		if result.NextPhase != phase.PhaseDamage {
-			t.Errorf("expected PhaseDamage, got %v", result.NextPhase)
+		if result.NextPhase != phase.PhaseMoveResolve {
+			t.Errorf("expected PhaseMoveResolve, got %v", result.NextPhase)
 		}
 	})
 
@@ -167,10 +167,10 @@ func TestPreDamageHandle_Freeze(t *testing.T) {
 			t.Fatal(err)
 		}
 		st := status.NewStatusWith(&ms, nil)
-		actor := newPreDamagePokemon("ラプラス", st, 1)
-		b, actorId := newPreDamageBattle(actor)
+		actor := newPreMovePokemon("ラプラス", st, 1)
+		b, actorId := newPreMoveBattle(actor)
 
-		result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
+		result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 1, b))
 
 		if !containsMsg(result.Messages, "こおりが溶けた") {
 			t.Errorf("expected thaw message, got %v", result.Messages)
@@ -180,14 +180,14 @@ func TestPreDamageHandle_Freeze(t *testing.T) {
 
 // ── 4. ひるみ ─────────────────────────────────────────────────────────────────
 
-func TestPreDamageHandle_Flinch(t *testing.T) {
+func TestPreMoveHandle_Flinch(t *testing.T) {
 	t.Run("ひるみあり: PhaseEnd", func(t *testing.T) {
 		fl := rule.NewFlinch()
 		st := status.NewStatusWith(nil, []status.OtherStatus{fl})
-		actor := newPreDamagePokemon("ピカチュウ", st, 1)
-		b, actorId := newPreDamageBattle(actor)
+		actor := newPreMovePokemon("ピカチュウ", st, 1)
+		b, actorId := newPreMoveBattle(actor)
 
-		result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
+		result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 1, b))
 
 		if result.NextPhase != phase.PhaseEnd {
 			t.Errorf("expected PhaseEnd, got %v", result.NextPhase)
@@ -197,10 +197,10 @@ func TestPreDamageHandle_Flinch(t *testing.T) {
 	t.Run("ひるみあり: ひるみメッセージあり", func(t *testing.T) {
 		fl := rule.NewFlinch()
 		st := status.NewStatusWith(nil, []status.OtherStatus{fl})
-		actor := newPreDamagePokemon("ピカチュウ", st, 1)
-		b, actorId := newPreDamageBattle(actor)
+		actor := newPreMovePokemon("ピカチュウ", st, 1)
+		b, actorId := newPreMoveBattle(actor)
 
-		result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
+		result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 1, b))
 
 		if !containsMsg(result.Messages, "ひるんで") {
 			t.Errorf("expected flinch message, got %v", result.Messages)
@@ -210,14 +210,14 @@ func TestPreDamageHandle_Flinch(t *testing.T) {
 
 // ── 5. アンコール ─────────────────────────────────────────────────────────────
 
-func TestPreDamageHandle_Encore(t *testing.T) {
+func TestPreMoveHandle_Encore(t *testing.T) {
 	t.Run("アンコール技以外を選択: PhaseEnd", func(t *testing.T) {
 		enc := rule.NewEncore(1)
 		st := status.NewStatusWith(nil, []status.OtherStatus{enc})
-		actor := newPreDamagePokemon("ピクシー", st, 1, 2)
-		b, actorId := newPreDamageBattle(actor)
+		actor := newPreMovePokemon("ピクシー", st, 1, 2)
+		b, actorId := newPreMoveBattle(actor)
 
-		result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 2, b))
+		result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 2, b))
 
 		if result.NextPhase != phase.PhaseEnd {
 			t.Errorf("expected PhaseEnd, got %v", result.NextPhase)
@@ -227,36 +227,36 @@ func TestPreDamageHandle_Encore(t *testing.T) {
 	t.Run("アンコール技以外を選択: アンコールメッセージあり", func(t *testing.T) {
 		enc := rule.NewEncore(1)
 		st := status.NewStatusWith(nil, []status.OtherStatus{enc})
-		actor := newPreDamagePokemon("ピクシー", st, 1, 2)
-		b, actorId := newPreDamageBattle(actor)
+		actor := newPreMovePokemon("ピクシー", st, 1, 2)
+		b, actorId := newPreMoveBattle(actor)
 
-		result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 2, b))
+		result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 2, b))
 
 		if !containsMsg(result.Messages, "アンコール") {
 			t.Errorf("expected encore message, got %v", result.Messages)
 		}
 	})
 
-	t.Run("アンコール技を選択: PhaseDamage に進む", func(t *testing.T) {
+	t.Run("アンコール技を選択: PhaseMoveResolve に進む", func(t *testing.T) {
 		enc := rule.NewEncore(1)
 		st := status.NewStatusWith(nil, []status.OtherStatus{enc})
-		actor := newPreDamagePokemon("ピクシー", st, 1, 2)
-		b, actorId := newPreDamageBattle(actor)
+		actor := newPreMovePokemon("ピクシー", st, 1, 2)
+		b, actorId := newPreMoveBattle(actor)
 
-		result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
+		result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 1, b))
 
-		if result.NextPhase != phase.PhaseDamage {
-			t.Errorf("expected PhaseDamage, got %v", result.NextPhase)
+		if result.NextPhase != phase.PhaseMoveResolve {
+			t.Errorf("expected PhaseMoveResolve, got %v", result.NextPhase)
 		}
 	})
 
 	t.Run("アンコール技を選択: メッセージなし", func(t *testing.T) {
 		enc := rule.NewEncore(1)
 		st := status.NewStatusWith(nil, []status.OtherStatus{enc})
-		actor := newPreDamagePokemon("ピクシー", st, 1, 2)
-		b, actorId := newPreDamageBattle(actor)
+		actor := newPreMovePokemon("ピクシー", st, 1, 2)
+		b, actorId := newPreMoveBattle(actor)
 
-		result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
+		result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 1, b))
 
 		if len(result.Messages) != 0 {
 			t.Errorf("expected no messages, got %v", result.Messages)
@@ -266,14 +266,14 @@ func TestPreDamageHandle_Encore(t *testing.T) {
 
 // ── 6. かなしばり ─────────────────────────────────────────────────────────────
 
-func TestPreDamageHandle_MoveDisabled(t *testing.T) {
+func TestPreMoveHandle_MoveDisabled(t *testing.T) {
 	t.Run("封じられた技を選択: PhaseEnd", func(t *testing.T) {
 		md := rule.NewMoveDisabled(4, 1)
 		st := status.NewStatusWith(nil, []status.OtherStatus{md})
-		actor := newPreDamagePokemon("ゲンガー", st, 1, 2)
-		b, actorId := newPreDamageBattle(actor)
+		actor := newPreMovePokemon("ゲンガー", st, 1, 2)
+		b, actorId := newPreMoveBattle(actor)
 
-		result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
+		result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 1, b))
 
 		if result.NextPhase != phase.PhaseEnd {
 			t.Errorf("expected PhaseEnd, got %v", result.NextPhase)
@@ -283,53 +283,53 @@ func TestPreDamageHandle_MoveDisabled(t *testing.T) {
 	t.Run("封じられた技を選択: かなしばりメッセージあり", func(t *testing.T) {
 		md := rule.NewMoveDisabled(4, 1)
 		st := status.NewStatusWith(nil, []status.OtherStatus{md})
-		actor := newPreDamagePokemon("ゲンガー", st, 1, 2)
-		b, actorId := newPreDamageBattle(actor)
+		actor := newPreMovePokemon("ゲンガー", st, 1, 2)
+		b, actorId := newPreMoveBattle(actor)
 
-		result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
+		result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 1, b))
 
 		if !containsMsg(result.Messages, "かなしばり") {
 			t.Errorf("expected move-disabled message, got %v", result.Messages)
 		}
 	})
 
-	t.Run("封じられていない技を選択: PhaseDamage に進む", func(t *testing.T) {
+	t.Run("封じられていない技を選択: PhaseMoveResolve に進む", func(t *testing.T) {
 		md := rule.NewMoveDisabled(4, 1)
 		st := status.NewStatusWith(nil, []status.OtherStatus{md})
-		actor := newPreDamagePokemon("ゲンガー", st, 1, 2)
-		b, actorId := newPreDamageBattle(actor)
+		actor := newPreMovePokemon("ゲンガー", st, 1, 2)
+		b, actorId := newPreMoveBattle(actor)
 
-		result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 2, b))
+		result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 2, b))
 
-		if result.NextPhase != phase.PhaseDamage {
-			t.Errorf("expected PhaseDamage, got %v", result.NextPhase)
+		if result.NextPhase != phase.PhaseMoveResolve {
+			t.Errorf("expected PhaseMoveResolve, got %v", result.NextPhase)
 		}
 	})
 }
 
 // ── 7. こんらん ───────────────────────────────────────────────────────────────
 
-func TestPreDamageHandle_Confusion(t *testing.T) {
-	t.Run("残り1ターン: 今ターンで解除 → PhaseDamage", func(t *testing.T) {
+func TestPreMoveHandle_Confusion(t *testing.T) {
+	t.Run("残り1ターン: 今ターンで解除 → PhaseMoveResolve", func(t *testing.T) {
 		cf := rule.NewConfusion(1)
 		st := status.NewStatusWith(nil, []status.OtherStatus{cf})
-		actor := newPreDamagePokemon("フシギダネ", st, 1)
-		b, actorId := newPreDamageBattle(actor)
+		actor := newPreMovePokemon("フシギダネ", st, 1)
+		b, actorId := newPreMoveBattle(actor)
 
-		result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
+		result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 1, b))
 
-		if result.NextPhase != phase.PhaseDamage {
-			t.Errorf("expected PhaseDamage, got %v", result.NextPhase)
+		if result.NextPhase != phase.PhaseMoveResolve {
+			t.Errorf("expected PhaseMoveResolve, got %v", result.NextPhase)
 		}
 	})
 
 	t.Run("残り1ターン: 解除メッセージあり", func(t *testing.T) {
 		cf := rule.NewConfusion(1)
 		st := status.NewStatusWith(nil, []status.OtherStatus{cf})
-		actor := newPreDamagePokemon("フシギダネ", st, 1)
-		b, actorId := newPreDamageBattle(actor)
+		actor := newPreMovePokemon("フシギダネ", st, 1)
+		b, actorId := newPreMoveBattle(actor)
 
-		result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
+		result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 1, b))
 
 		if !containsMsg(result.Messages, "混乱が解けた") {
 			t.Errorf("expected confusion-cleared message, got %v", result.Messages)
@@ -341,12 +341,12 @@ func TestPreDamageHandle_Confusion(t *testing.T) {
 		for range 300 {
 			cf := rule.NewConfusion(3)
 			st := status.NewStatusWith(nil, []status.OtherStatus{cf})
-			actor := newPreDamagePokemon("フシギダネ", st, 1)
-			b, actorId := newPreDamageBattle(actor)
+			actor := newPreMovePokemon("フシギダネ", st, 1)
+			b, actorId := newPreMoveBattle(actor)
 
-			result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
-			if result.NextPhase == phase.PhaseDamage && result.DamageContext != nil {
-				if result.DamageContext.TargetSelf {
+			result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 1, b))
+			if result.NextPhase == phase.PhaseMoveResolve && result.ResolveSpec != nil {
+				if result.ResolveSpec.TargetSelf {
 					gotSelfHit = true
 				} else {
 					gotNormal = true
@@ -369,12 +369,12 @@ func TestPreDamageHandle_Confusion(t *testing.T) {
 		for range 300 {
 			cf := rule.NewConfusion(3)
 			st := status.NewStatusWith(nil, []status.OtherStatus{cf})
-			actor := newPreDamagePokemon("フシギダネ", st, 1)
-			b, actorId := newPreDamageBattle(actor)
+			actor := newPreMovePokemon("フシギダネ", st, 1)
+			b, actorId := newPreMoveBattle(actor)
 
-			result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
-			if result.NextPhase == phase.PhaseDamage && result.DamageContext != nil &&
-				result.DamageContext.TargetSelf && containsMsg(result.Messages, "自分を攻撃した") {
+			result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 1, b))
+			if result.NextPhase == phase.PhaseMoveResolve && result.ResolveSpec != nil &&
+				result.ResolveSpec.TargetSelf && containsMsg(result.Messages, "自分を攻撃した") {
 				found = true
 				break
 			}
@@ -387,7 +387,7 @@ func TestPreDamageHandle_Confusion(t *testing.T) {
 
 // ── 8. まひ ───────────────────────────────────────────────────────────────────
 
-func TestPreDamageHandle_Paralysis(t *testing.T) {
+func TestPreMoveHandle_Paralysis(t *testing.T) {
 	t.Run("true と false（行動不能/行動可）の両方が返る", func(t *testing.T) {
 		ms, err := status.NewMainStatus(status.Paralysis)
 		if err != nil {
@@ -396,14 +396,14 @@ func TestPreDamageHandle_Paralysis(t *testing.T) {
 		gotEnd, gotDamage := false, false
 		for range 300 {
 			st := status.NewStatusWith(&ms, nil)
-			actor := newPreDamagePokemon("デンリュウ", st, 1)
-			b, actorId := newPreDamageBattle(actor)
+			actor := newPreMovePokemon("デンリュウ", st, 1)
+			b, actorId := newPreMoveBattle(actor)
 
-			result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
+			result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 1, b))
 			switch result.NextPhase {
 			case phase.PhaseEnd:
 				gotEnd = true
-			case phase.PhaseDamage:
+			case phase.PhaseMoveResolve:
 				gotDamage = true
 			}
 			if gotEnd && gotDamage {
@@ -414,7 +414,7 @@ func TestPreDamageHandle_Paralysis(t *testing.T) {
 			t.Error("300試行で麻痺行動不能（PhaseEnd）が一度も発生しなかった")
 		}
 		if !gotDamage {
-			t.Error("300試行で行動成功（PhaseDamage）が一度も発生しなかった")
+			t.Error("300試行で行動成功（PhaseMoveResolve）が一度も発生しなかった")
 		}
 	})
 
@@ -426,10 +426,10 @@ func TestPreDamageHandle_Paralysis(t *testing.T) {
 		found := false
 		for range 300 {
 			st := status.NewStatusWith(&ms, nil)
-			actor := newPreDamagePokemon("デンリュウ", st, 1)
-			b, actorId := newPreDamageBattle(actor)
+			actor := newPreMovePokemon("デンリュウ", st, 1)
+			b, actorId := newPreMoveBattle(actor)
 
-			result := phase.NewPreDamagePhaseHandler().Handle(phase.NewPreDamageContext(actorId, 1, b))
+			result := phase.NewPreMovePhaseHandler().Handle(phase.NewPreMoveContext(actorId, 1, b))
 			if result.NextPhase == phase.PhaseEnd && containsMsg(result.Messages, "しびれて") {
 				found = true
 				break

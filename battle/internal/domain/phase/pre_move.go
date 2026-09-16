@@ -8,13 +8,13 @@ import (
 	statusother "pob/battle/internal/domain/status/other"
 )
 
-type PreDamagePhaseHandler struct{}
+type PreMovePhaseHandler struct{}
 
-func NewPreDamagePhaseHandler() *PreDamagePhaseHandler {
-	return &PreDamagePhaseHandler{}
+func NewPreMovePhaseHandler() *PreMovePhaseHandler {
+	return &PreMovePhaseHandler{}
 }
 
-func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
+func (pre *PreMovePhaseHandler) Handle(ctx PreMoveContext) Result {
 	actor := ctx.Battle.PlayerById(ctx.ActorId)
 	activeP := actor.Active()
 	var messages []string
@@ -93,7 +93,7 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 						CanCrit:    false,
 						TargetSelf: true,
 					}
-					return Result{Messages: messages, NextPhase: PhaseDamage, DamageContext: spec}
+					return Result{Messages: messages, NextPhase: PhaseMoveResolve, ResolveSpec: spec}
 				}
 			}
 		}
@@ -125,7 +125,7 @@ func (pre *PreDamagePhaseHandler) Handle(ctx PreDamageContext) Result {
 	}
 	return Result{
 		Messages:      messages,
-		NextPhase:     PhaseDamage,
-		DamageContext: spec,
+		NextPhase:     PhaseMoveResolve,
+		ResolveSpec: spec,
 	}
 }
