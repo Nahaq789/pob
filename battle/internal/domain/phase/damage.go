@@ -4,7 +4,6 @@ import (
 	"math/rand/v2"
 	"pob/battle/internal/domain/damage"
 	"pob/battle/internal/domain/move"
-	"pob/battle/internal/domain/pokemon"
 )
 
 type DamagePhaseHandler struct {
@@ -18,13 +17,7 @@ func NewDamagePhaseHandler(r *Registry) *DamagePhaseHandler {
 func (d *DamagePhaseHandler) Handle(ctx DamageContext) Result {
 	actor := ctx.Battle.PlayerById(ctx.ActorId)
 	attacker := actor.Active()
-
-	var defender *pokemon.Pokemon
-	if ctx.TargetSelf {
-		defender = attacker
-	} else {
-		defender = ctx.Battle.Opponent(actor).Active()
-	}
+	defender := ctx.Battle.Opponent(actor).Active()
 
 	var attack, def int
 	switch ctx.Category {
@@ -38,6 +31,18 @@ func (d *DamagePhaseHandler) Handle(ctx DamageContext) Result {
 
 	random := 85 + rand.IntN(16)
 
+	// 混乱時の処理
+	if ctx.TargetSelf {
+		input := damage.NewDamageInput(damage.NewPower(ctx.Power), attack, def, random)
+		dmg := input.CalcDamage()
+		attacker.TakeDamage(dmg)
+
+		return Result{
+			Messages:  []string{"わけもわからず自分を攻撃した"},
+			NextPhase: PhasePostDamage,
+		}
+	}
+
 	// 基本ハンドラーを順に実行。CritHandler が先頭に登録されている前提で、
 	// mod.Crit が確定した時点で ctx.IsCrit を更新し後続ハンドラーが参照できるようにする。
 	var mod damage.DamageMod
@@ -48,31 +53,27 @@ func (d *DamagePhaseHandler) Handle(ctx DamageContext) Result {
 		}
 	}
 
-	// こんらん自傷時は攻撃側・防御側とも特性・道具の影響を受けない
-	if !ctx.TargetSelf {
-		if abilityId := int(attacker.Ability().GetCurrentId()); abilityId != 0 {
-			if h, ok := d.registry.damageAbilityHandlers[abilityId]; ok {
-				mod = damage.Merge(mod, h.Mod(ctx))
-			}
+	if abilityId := int(attacker.Ability().GetCurrentId()); abilityId != 0 {
+		if h, ok := d.registry.damageAbilityHandlers[abilityId]; ok {
+			mod = damage.Merge(mod, h.Mod(ctx))
 		}
-		if item := attacker.HeldItem(); item != nil {
-			if h, ok := d.registry.damageItemHandlers[int(item.Id())]; ok {
-				mod = damage.Merge(mod, h.Mod(ctx))
-			}
-		}
-
-		if abilityId := int(defender.Ability().GetCurrentId()); abilityId != 0 {
-			if h, ok := d.registry.damageAbilityHandlers[abilityId]; ok {
-				mod = damage.Merge(mod, h.Mod(ctx))
-			}
-		}
-		if item := defender.HeldItem(); item != nil {
-			if h, ok := d.registry.damageItemHandlers[int(item.Id())]; ok {
-				mod = damage.Merge(mod, h.Mod(ctx))
-			}
+	}
+	if item := attacker.HeldItem(); item != nil {
+		if h, ok := d.registry.damageItemHandlers[int(item.Id())]; ok {
+			mod = damage.Merge(mod, h.Mod(ctx))
 		}
 	}
 
+	if abilityId := int(defender.Ability().GetCurrentId()); abilityId != 0 {
+		if h, ok := d.registry.damageAbilityHandlers[abilityId]; ok {
+			mod = damage.Merge(mod, h.Mod(ctx))
+		}
+	}
+	if item := defender.HeldItem(); item != nil {
+		if h, ok := d.registry.damageItemHandlers[int(item.Id())]; ok {
+			mod = damage.Merge(mod, h.Mod(ctx))
+		}
+	}
 	// 技ハンドラー
 	if h, ok := d.registry.damageMoveHandlers[ctx.MoveId]; ok {
 		mod = damage.Merge(mod, h.Mod(ctx))
