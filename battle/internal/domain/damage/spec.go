@@ -6,7 +6,6 @@ import (
 )
 
 // Spec はダメージ計算に必要な immutable なパラメータ。
-// Battle を持たないため damage パッケージ内で完結し、循環参照を避けられる。
 type Spec struct {
 	ActorId    string
 	MoveId     int
