@@ -124,8 +124,8 @@ func (pre *PreMovePhaseHandler) Handle(ctx PreMoveContext) Result {
 		CanCrit:  true,
 	}
 	return Result{
-		Messages:      messages,
-		NextPhase:     PhaseMoveResolve,
+		Messages:    messages,
+		NextPhase:   PhaseMoveResolve,
 		ResolveSpec: spec,
 	}
 }
