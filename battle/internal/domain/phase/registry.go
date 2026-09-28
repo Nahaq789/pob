@@ -9,6 +9,9 @@ type Registry struct {
 	resolveAbilityHandlers map[int]DamageModHandler
 	resolveItemHandlers    map[int]DamageModHandler
 	resolveMoveHandlers    map[int]MoveHandler
+
+	postMoveAbilityHandlers map[int]PostMoveHandler
+	postMoveItemHandlers    map[int]PostMoveHandler
 }
 
 func NewRegistry() *Registry {
@@ -20,7 +23,9 @@ func NewRegistry() *Registry {
 		resolveBaseHandlers:    []DamageModHandler{},
 		resolveAbilityHandlers: map[int]DamageModHandler{},
 		resolveItemHandlers:    map[int]DamageModHandler{},
-		resolveMoveHandlers:    map[int]MoveHandler{},
+		resolveMoveHandlers:     map[int]MoveHandler{},
+		postMoveAbilityHandlers: map[int]PostMoveHandler{},
+		postMoveItemHandlers:    map[int]PostMoveHandler{},
 	}
 
 	return r

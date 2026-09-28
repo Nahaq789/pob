@@ -49,3 +49,7 @@ type MoveHandler interface {
 	MoveResolveHandler
 	HitCount() int
 }
+
+type PostMoveHandler interface {
+	OnHit(ctx PostMoveContext) Result
+}

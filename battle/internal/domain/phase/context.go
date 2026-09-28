@@ -59,3 +59,19 @@ type MoveResolveContext struct {
 	Battle *battle.Battle
 	IsCrit bool // CritHandler が解決後に設定。スナイパー等の後続ハンドラーが参照する
 }
+
+type PostMoveContext struct {
+	Battle      *battle.Battle
+	ActorId     string
+	DefenderId  string
+	DealtDamage int
+}
+
+func NewPostMoveContext(battle *battle.Battle, actorId, defenderId string, dealtDamage int) PostMoveContext {
+	return PostMoveContext{
+		Battle:      battle,
+		ActorId:     actorId,
+		DefenderId:  defenderId,
+		DealtDamage: dealtDamage,
+	}
+}
