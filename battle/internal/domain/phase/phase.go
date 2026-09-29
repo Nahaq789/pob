@@ -50,6 +50,14 @@ type MoveHandler interface {
 	HitCount() int
 }
 
+// PostMoveHandler はターン終了時に発動するハンドラーのインターフェース。
+// 加速等のターン終了時発動特性・道具が実装する。
 type PostMoveHandler interface {
-	OnHit(ctx PostMoveContext) Result
+	TurnEnd(ctx PostMoveContext) Result
+}
+
+// OnHitHandler は被ダメージ時に発動するハンドラーのインターフェース。
+// じきゅうりょく・きのみ等の被弾時発動特性・道具が実装する。
+type OnHitHandler interface {
+	OnHit(ctx MoveResolveContext) Result
 }

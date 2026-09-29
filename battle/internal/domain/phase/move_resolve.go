@@ -102,6 +102,18 @@ func (d *MoveResolvePhaseHandler) Handle(ctx MoveResolveContext) Result {
 		messages = append(messages, effectResult.Messages...)
 	}
 
+	// 被ダメージ時発動（じきゅうりょく・きのみ等）
+	if abilityId := int(defender.Ability().GetCurrentId()); abilityId != 0 {
+		if h, ok := d.registry.onHitAbilityHandlers[abilityId]; ok {
+			messages = append(messages, h.OnHit(ctx).Messages...)
+		}
+	}
+	if item := defender.HeldItem(); item != nil {
+		if h, ok := d.registry.onHitItemHandlers[int(item.Id())]; ok {
+			messages = append(messages, h.OnHit(ctx).Messages...)
+		}
+	}
+
 	return Result{
 		Messages:  messages,
 		NextPhase: PhasePostMove,

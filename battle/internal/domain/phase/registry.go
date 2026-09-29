@@ -10,6 +10,9 @@ type Registry struct {
 	resolveItemHandlers    map[int]DamageModHandler
 	resolveMoveHandlers    map[int]MoveHandler
 
+	onHitAbilityHandlers map[int]OnHitHandler
+	onHitItemHandlers    map[int]OnHitHandler
+
 	postMoveAbilityHandlers map[int]PostMoveHandler
 	postMoveItemHandlers    map[int]PostMoveHandler
 }
@@ -24,6 +27,8 @@ func NewRegistry() *Registry {
 		resolveAbilityHandlers: map[int]DamageModHandler{},
 		resolveItemHandlers:    map[int]DamageModHandler{},
 		resolveMoveHandlers:     map[int]MoveHandler{},
+		onHitAbilityHandlers:    map[int]OnHitHandler{},
+		onHitItemHandlers:       map[int]OnHitHandler{},
 		postMoveAbilityHandlers: map[int]PostMoveHandler{},
 		postMoveItemHandlers:    map[int]PostMoveHandler{},
 	}
