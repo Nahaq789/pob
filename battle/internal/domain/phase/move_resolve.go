@@ -43,6 +43,8 @@ func (d *MoveResolvePhaseHandler) Handle(ctx MoveResolveContext) Result {
 		}
 	}
 
+	var messages []string
+
 	if ctx.Category != move.DamageClassStatus {
 		hitCount := 1
 		if h, ok := d.registry.resolveMoveHandlers[ctx.MoveId]; ok {
@@ -93,25 +95,24 @@ func (d *MoveResolvePhaseHandler) Handle(ctx MoveResolveContext) Result {
 			input := damage.NewDamageInput(damage.NewPower(ctx.Power), attack, def, random, mod.ToOptions()...)
 			dmg := input.CalcDamage()
 			defender.TakeDamage(dmg)
+
+			// 被ダメージ時発動（じきゅうりょく・きのみ等）
+			if abilityId := int(defender.Ability().GetCurrentId()); abilityId != 0 {
+				if h, ok := d.registry.onHitAbilityHandlers[abilityId]; ok {
+					messages = append(messages, h.OnHit(ctx).Messages...)
+				}
+			}
+			if item := defender.HeldItem(); item != nil {
+				if h, ok := d.registry.onHitItemHandlers[int(item.Id())]; ok {
+					messages = append(messages, h.OnHit(ctx).Messages...)
+				}
+			}
 		}
 	}
 
-	var messages []string
+	// 追加効果計算
 	if h, ok := d.registry.resolveMoveHandlers[ctx.MoveId]; ok {
-		effectResult := h.AfterEffect(ctx)
-		messages = append(messages, effectResult.Messages...)
-	}
-
-	// 被ダメージ時発動（じきゅうりょく・きのみ等）
-	if abilityId := int(defender.Ability().GetCurrentId()); abilityId != 0 {
-		if h, ok := d.registry.onHitAbilityHandlers[abilityId]; ok {
-			messages = append(messages, h.OnHit(ctx).Messages...)
-		}
-	}
-	if item := defender.HeldItem(); item != nil {
-		if h, ok := d.registry.onHitItemHandlers[int(item.Id())]; ok {
-			messages = append(messages, h.OnHit(ctx).Messages...)
-		}
+		messages = append(messages, h.AfterEffect(ctx).Messages...)
 	}
 
 	return Result{
