@@ -120,3 +120,46 @@ func TestCriticalReset(t *testing.T) {
 		t.Errorf("value: got %v, want 0.0417", got.value)
 	}
 }
+
+func TestCriticalRank_Stage(t *testing.T) {
+	tests := []struct {
+		name      string
+		op        func(r CriticalRank) (CriticalRank, error)
+		wantStage int
+	}{
+		{"初期状態: stage=0", func(r CriticalRank) (CriticalRank, error) { return r, nil }, 0},
+		{"1段上昇: stage=1", func(r CriticalRank) (CriticalRank, error) { return r.Up(1) }, 1},
+		{"2段上昇: stage=2", func(r CriticalRank) (CriticalRank, error) { return r.Up(2) }, 2},
+		{"3段上昇: stage=3", func(r CriticalRank) (CriticalRank, error) { return r.Up(3) }, 3},
+		// stage=0 + up=5 → 5 → clamp 3
+		{"上限クランプ: stage=3", func(r CriticalRank) (CriticalRank, error) { return r.Up(5) }, 3},
+		{"上昇後に下降: stage=2", func(r CriticalRank) (CriticalRank, error) {
+			u, err := r.Up(3)
+			if err != nil {
+				return CriticalRank{}, err
+			}
+			return u.Down(1)
+		}, 2},
+		// stage=0 - down=1 → -1 → clamp 0
+		{"下限クランプ: stage=0", func(r CriticalRank) (CriticalRank, error) { return r.Down(1) }, 0},
+		{"上昇後にリセット: stage=0", func(r CriticalRank) (CriticalRank, error) {
+			u, err := r.Up(2)
+			if err != nil {
+				return CriticalRank{}, err
+			}
+			return u.Reset(), nil
+		}, 0},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.op(NewCriticalRank())
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if got.Stage() != tt.wantStage {
+				t.Errorf("stage: got %d, want %d", got.Stage(), tt.wantStage)
+			}
+		})
+	}
+}

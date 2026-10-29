@@ -19,6 +19,9 @@ func NewCriticalRank() CriticalRank {
 	return CriticalRank{stage: ResetStage, value: f}
 }
 
+// Stage は現在の急所ランクを返す。
+func (r CriticalRank) Stage() int { return r.stage }
+
 func (r CriticalRank) get(n int) (float64, error) {
 	f, ok := criticalRankMap[n]
 	if !ok {

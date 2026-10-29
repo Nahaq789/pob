@@ -14,5 +14,6 @@ type Spec struct {
 	Category   move.DamageClass
 	MustHit    bool
 	CanCrit    bool
+	CritBonus  int
 	TargetSelf bool
 }

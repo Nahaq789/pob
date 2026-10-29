@@ -130,7 +130,7 @@ func (p *Pokemon) Name() string { return p.name }
 //
 // Types はポケモンのタイプを返す。単タイプの場合は [1] が ptype.None になる。
 func (p *Pokemon) Types() [2]ptype.Type { return p.types }
-//
+
 // func (p *Pokemon) BaseStats() BaseStats { return p.baseStats }
 //
 // func (p *Pokemon) RealStats() RealStats { return p.realStats }
@@ -203,6 +203,14 @@ func (p *Pokemon) DefenseStat() int {
 
 func (p *Pokemon) SpDefenseStat() int {
 	return int(float64(p.realStats.SpDefense) * p.rank.SpDefence().Value())
+}
+
+// CritStage は現在の急所ランクを返す。
+func (p *Pokemon) CritStage() int { return p.rank.Critical().Stage() }
+
+// RollCritical は急所ランクに技の急所補正 bonus を加算して急所判定を行う。
+func (p *Pokemon) RollCritical(bonus int) (bool, error) {
+	return p.rank.RollCritical(bonus)
 }
 
 func (p *Pokemon) TakeDamage(amount int) {

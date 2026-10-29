@@ -122,6 +122,8 @@ func (pre *PreMovePhaseHandler) Handle(ctx PreMoveContext) Result {
 		Category: m.DamageClass(),
 		MustHit:  m.Accuracy() == 0,
 		CanCrit:  true,
+		// TODO: Move に急所ランク補正(PokeAPI meta.crit_rate)を追加後に設定
+		CritBonus: 0,
 	}
 	return Result{
 		Messages:    messages,
