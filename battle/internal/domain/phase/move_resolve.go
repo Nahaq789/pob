@@ -4,6 +4,7 @@ import (
 	"math/rand/v2"
 	"pob/battle/internal/domain/damage"
 	"pob/battle/internal/domain/move"
+	"pob/battle/internal/domain/pokemon"
 )
 
 type MoveResolvePhaseHandler struct {
@@ -45,55 +46,24 @@ func (d *MoveResolvePhaseHandler) Handle(ctx MoveResolveContext) Result {
 
 	var messages []string
 
+	moveHandler, hasMoveHandler := d.registry.resolveMoveHandlers[ctx.MoveId]
+
 	if ctx.Category != move.DamageClassStatus {
 		hitCount := 1
-		if h, ok := d.registry.resolveMoveHandlers[ctx.MoveId]; ok {
-			hitCount = h.HitCount()
+		if hasMoveHandler {
+			hitCount = moveHandler.HitCount()
 		}
 
 		for range hitCount {
-			random := 85 + rand.IntN(16)
+			// 固定ダメージ技は急所判定を行わないため、分岐前にリセットして前の発の結果を持ち越さない。
 			ctx.IsCrit = false
 
-			// 基本ハンドラーを順に実行。CritHandler が先頭に登録されている前提で、
-			// mod.Crit が確定した時点で ctx.IsCrit を更新し後続ハンドラーが参照できるようにする。
-			var mod damage.DamageMod
-			for _, h := range d.registry.resolveBaseHandlers {
-				mod = damage.Merge(mod, h.Mod(ctx))
-				if mod.Crit != nil && mod.Crit.Value > 1.0 {
-					ctx.IsCrit = true
-				}
+			var dmg int
+			if f, ok := moveHandler.(FixedDamager); ok {
+				dmg = f.FixedDamage(ctx)
+			} else {
+				dmg = d.calcDamage(&ctx, attacker, defender, attack, def, moveHandler)
 			}
-
-			// 攻撃側の特性・道具（スナイパー・いのちのたま等）
-			if abilityId := int(attacker.Ability().GetCurrentId()); abilityId != 0 {
-				if h, ok := d.registry.resolveAbilityHandlers[abilityId]; ok {
-					mod = damage.Merge(mod, h.Mod(ctx))
-				}
-			}
-			if item := attacker.HeldItem(); item != nil {
-				if h, ok := d.registry.resolveItemHandlers[int(item.Id())]; ok {
-					mod = damage.Merge(mod, h.Mod(ctx))
-				}
-			}
-
-			// 防御側の特性・道具（マルチスケイル・フィルター・もふもふ等）
-			if abilityId := int(defender.Ability().GetCurrentId()); abilityId != 0 {
-				if h, ok := d.registry.resolveAbilityHandlers[abilityId]; ok {
-					mod = damage.Merge(mod, h.Mod(ctx))
-				}
-			}
-			if item := defender.HeldItem(); item != nil {
-				if h, ok := d.registry.resolveItemHandlers[int(item.Id())]; ok {
-					mod = damage.Merge(mod, h.Mod(ctx))
-				}
-			}
-			if h, ok := d.registry.resolveMoveHandlers[ctx.MoveId]; ok {
-				mod = damage.Merge(mod, h.Mod(ctx))
-			}
-
-			input := damage.NewDamageInput(damage.NewPower(ctx.Power), attack, def, random, mod.ToOptions()...)
-			dmg := input.CalcDamage()
 			defender.TakeDamage(dmg)
 
 			// 被ダメージ時発動（じきゅうりょく・きのみ等）
@@ -111,12 +81,58 @@ func (d *MoveResolvePhaseHandler) Handle(ctx MoveResolveContext) Result {
 	}
 
 	// 追加効果計算
-	if h, ok := d.registry.resolveMoveHandlers[ctx.MoveId]; ok {
-		messages = append(messages, h.AfterEffect(ctx).Messages...)
+	if hasMoveHandler {
+		messages = append(messages, moveHandler.AfterEffect(ctx).Messages...)
 	}
 
 	return Result{
 		Messages:  messages,
 		NextPhase: PhasePostMove,
 	}
+}
+
+// calcDamage は各ハンドラーの補正値を Merge し、ダメージ計算式で 1 発分のダメージを返す。
+// ctx.IsCrit は後続の被弾時ハンドラーも参照するため、ポインタで受け取り更新する。
+func (d *MoveResolvePhaseHandler) calcDamage(ctx *MoveResolveContext, attacker, defender *pokemon.Pokemon, attack, def int, moveHandler MoveHandler) int {
+	random := 85 + rand.IntN(16)
+
+	// 基本ハンドラーを順に実行。CritHandler が先頭に登録されている前提で、
+	// mod.Crit が確定した時点で ctx.IsCrit を更新し後続ハンドラーが参照できるようにする。
+	var mod damage.DamageMod
+	for _, h := range d.registry.resolveBaseHandlers {
+		mod = damage.Merge(mod, h.Mod(*ctx))
+		if mod.Crit != nil && mod.Crit.Value > 1.0 {
+			ctx.IsCrit = true
+		}
+	}
+
+	// 攻撃側の特性・道具（スナイパー・いのちのたま等）
+	if abilityId := int(attacker.Ability().GetCurrentId()); abilityId != 0 {
+		if h, ok := d.registry.resolveAbilityHandlers[abilityId]; ok {
+			mod = damage.Merge(mod, h.Mod(*ctx))
+		}
+	}
+	if item := attacker.HeldItem(); item != nil {
+		if h, ok := d.registry.resolveItemHandlers[int(item.Id())]; ok {
+			mod = damage.Merge(mod, h.Mod(*ctx))
+		}
+	}
+
+	// 防御側の特性・道具（マルチスケイル・フィルター・もふもふ等）
+	if abilityId := int(defender.Ability().GetCurrentId()); abilityId != 0 {
+		if h, ok := d.registry.resolveAbilityHandlers[abilityId]; ok {
+			mod = damage.Merge(mod, h.Mod(*ctx))
+		}
+	}
+	if item := defender.HeldItem(); item != nil {
+		if h, ok := d.registry.resolveItemHandlers[int(item.Id())]; ok {
+			mod = damage.Merge(mod, h.Mod(*ctx))
+		}
+	}
+	if moveHandler != nil {
+		mod = damage.Merge(mod, moveHandler.Mod(*ctx))
+	}
+
+	input := damage.NewDamageInput(damage.NewPower(ctx.Power), attack, def, random, mod.ToOptions()...)
+	return input.CalcDamage()
 }

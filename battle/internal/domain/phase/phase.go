@@ -50,6 +50,11 @@ type MoveHandler interface {
 	HitCount() int
 }
 
+// 固定ダメージ技やカウンターなど、補正値が乗らない技
+type FixedDamager interface {
+	FixedDamage(ctx MoveResolveContext) int
+}
+
 // PostMoveHandler はターン終了時に発動するハンドラーのインターフェース。
 // 加速等のターン終了時発動特性・道具が実装する。
 type PostMoveHandler interface {

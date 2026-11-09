@@ -230,3 +230,9 @@ func (p *Pokemon) DecrementMainStatusCount() {
 	}
 	p.status.ForceSetMainStatus(&nm)
 }
+
+// HasType はポケモンが指定タイプを持つかを返す。
+// ptype.None は常に false を返す（タイプなしの技はタイプ一致にならず、単タイプの [1] とも一致させないため）。
+func (p *Pokemon) HasType(t ptype.Type) bool {
+	return t != ptype.None && (p.types[0] == t || p.types[1] == t)
+}
