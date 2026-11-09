@@ -311,6 +311,28 @@ func TestMainStatus_IsParalysis(t *testing.T) {
 	}
 }
 
+func TestMainStatus_IsBurn(t *testing.T) {
+	tests := []struct {
+		name string
+		cond status.Condition
+		want bool
+	}{
+		{"やけど: true", status.Burn, true},
+		{"まひ: false", status.Paralysis, false},
+		{"どく: false", status.Poison, false},
+		{"こおり: false", status.Freeze, false},
+		{"なし: false", status.None, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := newMainTestStatus(t, tt.cond)
+			if got := m.IsBurn(); got != tt.want {
+				t.Errorf("expected %v, got %v", tt.want, got)
+			}
+		})
+	}
+}
+
 func TestMainStatus_CheckParalysis(t *testing.T) {
 	t.Run("true と false（行動不能/行動可）の両方が返る", func(t *testing.T) {
 		m := newMainTestStatus(t, status.Paralysis)

@@ -80,3 +80,46 @@ func TestPokemon_RollCritical(t *testing.T) {
 		}
 	})
 }
+
+func newHasTypeTestPokemon(types [2]ptype.Type) *pokemon.Pokemon {
+	a := ability.NewAbility(0, "")
+	return pokemon.NewPokemon(
+		1, "テスト", 0, "",
+		types,
+		pokemon.BaseStats{},
+		pokemon.RealStats{Speed: 100},
+		nature.Nature{},
+		&a,
+		[4]*move.Move{},
+		hp.NewHP(100),
+		rank.NewRank(),
+		status.NewStatus(),
+		nil, nil,
+		false,
+	)
+}
+
+func TestPokemon_HasType(t *testing.T) {
+	tests := []struct {
+		name  string
+		types [2]ptype.Type
+		arg   ptype.Type
+		want  bool
+	}{
+		{"単タイプで一致: true", [2]ptype.Type{ptype.Fire, ptype.None}, ptype.Fire, true},
+		{"複合タイプの第1タイプと一致: true", [2]ptype.Type{ptype.Water, ptype.Ground}, ptype.Water, true},
+		{"複合タイプの第2タイプと一致: true", [2]ptype.Type{ptype.Water, ptype.Ground}, ptype.Ground, true},
+		{"不一致: false", [2]ptype.Type{ptype.Water, ptype.Ground}, ptype.Fire, false},
+		// 単タイプの [1] は ptype.None だが、None は常に false を返す。
+		{"単タイプに None を指定: false", [2]ptype.Type{ptype.Fire, ptype.None}, ptype.None, false},
+		{"複合タイプに None を指定: false", [2]ptype.Type{ptype.Water, ptype.Ground}, ptype.None, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := newHasTypeTestPokemon(tt.types)
+			if got := p.HasType(tt.arg); got != tt.want {
+				t.Errorf("expected %v, got %v", tt.want, got)
+			}
+		})
+	}
+}
