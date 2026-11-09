@@ -90,6 +90,8 @@ func (m MainStatus) IsParalysis() bool {
 	return m.condition == Paralysis
 }
 
+func (m MainStatus) IsBurn() bool { return m.condition == Burn }
+
 func (m MainStatus) CheckParalysis(name string) (string, bool) {
 	if ok := rand.Intn(8) == 0; ok {
 		return fmt.Sprintf("%sはしびれて動くことができない", name), true
