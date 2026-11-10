@@ -85,3 +85,19 @@ func (b *Battle) PushPendingMove(req player.MoveRequest) {
 }
 func (b *Battle) PendingMoves() []player.MoveRequest { return b.pendingMoves }
 func (b *Battle) ClearPendingMoves()                 { b.pendingMoves = nil }
+
+// Weather は場の天気をそのまま返す。天気がない場合は nil。
+// 特性による打ち消しは考慮しないため、ターン数の管理や天気の上書き判定に使う。
+// ダメージ補正等の天気の効果を判定する場合は EffectiveWeather を使うこと。
+func (b *Battle) Weather() *weather.State { return b.weather }
+
+// EffectiveWeather は特性による打ち消しを考慮した天気を返す。
+// 場のいずれかのポケモンが天気の効果を打ち消す特性を持つ場合や、天気がない場合は nil。
+func (b *Battle) EffectiveWeather() *weather.State {
+	pa := b.player1.Active().Ability().SuppressesWeather()
+	pb := b.player2.Active().Ability().SuppressesWeather()
+	if pa || pb {
+		return nil
+	}
+	return b.weather
+}

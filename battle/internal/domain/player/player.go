@@ -48,6 +48,9 @@ func (p *Player) Select(indices [3]int) error {
 		if seen[i] {
 			return fmt.Errorf("duplicate party index: %d", i)
 		}
+		if p.party[i] == nil {
+			return fmt.Errorf("no pokemon at party index: %d", i)
+		}
 		seen[i] = true
 	}
 
