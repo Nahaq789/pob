@@ -18,6 +18,18 @@ func Override(v float64) *ModValue { return &ModValue{Value: v, Op: ModOpOverrid
 // Multiply は乗算補正値を生成するヘルパー。
 func Multiply(v float64) *ModValue { return &ModValue{Value: v, Op: ModOpMultiply} }
 
+// mergeValue は incoming を base に適用した補正値を返す。
+// incoming が nil なら base、base が nil または incoming が Override なら incoming、それ以外は乗算した値を返す。
+func mergeValue(base, incoming *ModValue) *ModValue {
+	if incoming == nil {
+		return base
+	}
+	if base == nil || incoming.Op == ModOpOverride {
+		return incoming
+	}
+	return Multiply(base.Value * incoming.Value)
+}
+
 // DamageMod はダメージ計算ハンドラーが返す補正値の集合。
 // nil フィールドはそのハンドラーが関与しないことを示す。
 type DamageMod struct {
@@ -43,33 +55,24 @@ type DamageMod struct {
 // Merge は incoming の非 nil フィールドを base に適用して返す。
 // Override は上書き、Multiply は乗算（base が nil なら incoming をそのまま使用）。
 func Merge(base, incoming DamageMod) DamageMod {
-	apply := func(b, n *ModValue) *ModValue {
-		if n == nil {
-			return b
-		}
-		if b == nil || n.Op == ModOpOverride {
-			return n
-		}
-		return Multiply(b.Value * n.Value)
-	}
 	return DamageMod{
-		Crit:       apply(base.Crit, incoming.Crit),
-		Stab:       apply(base.Stab, incoming.Stab),
-		TypeEff:    apply(base.TypeEff, incoming.TypeEff),
-		Burn:       apply(base.Burn, incoming.Burn),
-		Weather:    apply(base.Weather, incoming.Weather),
-		Wall:       apply(base.Wall, incoming.Wall),
-		Neuroforce: apply(base.Neuroforce, incoming.Neuroforce),
-		Sniper:     apply(base.Sniper, incoming.Sniper),
-		TintedLens: apply(base.TintedLens, incoming.TintedLens),
-		Fluffy:     apply(base.Fluffy, incoming.Fluffy),
-		MHalf:      apply(base.MHalf, incoming.MHalf),
-		MFilter:    apply(base.MFilter, incoming.MFilter),
-		MTwice:     apply(base.MTwice, incoming.MTwice),
-		ExpertBelt: apply(base.ExpertBelt, incoming.ExpertBelt),
-		Metronome:  apply(base.Metronome, incoming.Metronome),
-		LifeOrb:    apply(base.LifeOrb, incoming.LifeOrb),
-		HalfBerry:  apply(base.HalfBerry, incoming.HalfBerry),
+		Crit:       mergeValue(base.Crit, incoming.Crit),
+		Stab:       mergeValue(base.Stab, incoming.Stab),
+		TypeEff:    mergeValue(base.TypeEff, incoming.TypeEff),
+		Burn:       mergeValue(base.Burn, incoming.Burn),
+		Weather:    mergeValue(base.Weather, incoming.Weather),
+		Wall:       mergeValue(base.Wall, incoming.Wall),
+		Neuroforce: mergeValue(base.Neuroforce, incoming.Neuroforce),
+		Sniper:     mergeValue(base.Sniper, incoming.Sniper),
+		TintedLens: mergeValue(base.TintedLens, incoming.TintedLens),
+		Fluffy:     mergeValue(base.Fluffy, incoming.Fluffy),
+		MHalf:      mergeValue(base.MHalf, incoming.MHalf),
+		MFilter:    mergeValue(base.MFilter, incoming.MFilter),
+		MTwice:     mergeValue(base.MTwice, incoming.MTwice),
+		ExpertBelt: mergeValue(base.ExpertBelt, incoming.ExpertBelt),
+		Metronome:  mergeValue(base.Metronome, incoming.Metronome),
+		LifeOrb:    mergeValue(base.LifeOrb, incoming.LifeOrb),
+		HalfBerry:  mergeValue(base.HalfBerry, incoming.HalfBerry),
 	}
 }
 

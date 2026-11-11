@@ -10,6 +10,10 @@ type Registry struct {
 	resolveItemHandlers    map[int]DamageModHandler
 	resolveMoveHandlers    map[int]MoveHandler
 
+	statModBaseHandlers    []StatModHandler
+	statModAbilityHandlers map[int]StatModHandler
+	statModItemHandlers    map[int]StatModHandler
+
 	onHitAbilityHandlers map[int]OnHitHandler
 	onHitItemHandlers    map[int]OnHitHandler
 
@@ -27,6 +31,9 @@ func NewRegistry() *Registry {
 		resolveAbilityHandlers:  map[int]DamageModHandler{},
 		resolveItemHandlers:     map[int]DamageModHandler{},
 		resolveMoveHandlers:     map[int]MoveHandler{},
+		statModBaseHandlers:     []StatModHandler{},
+		statModAbilityHandlers:  map[int]StatModHandler{},
+		statModItemHandlers:     map[int]StatModHandler{},
 		onHitAbilityHandlers:    map[int]OnHitHandler{},
 		onHitItemHandlers:       map[int]OnHitHandler{},
 		postMoveAbilityHandlers: map[int]PostMoveHandler{},
@@ -66,6 +73,18 @@ func (r *Registry) RegisterResolveItem(itemId int, h DamageModHandler) {
 
 func (r *Registry) RegisterResolveMove(moveId int, h MoveHandler) {
 	r.resolveMoveHandlers[moveId] = h
+}
+
+func (r *Registry) AddStatModBase(h StatModHandler) {
+	r.statModBaseHandlers = append(r.statModBaseHandlers, h)
+}
+
+func (r *Registry) RegisterStatModAbility(abilityId int, h StatModHandler) {
+	r.statModAbilityHandlers[abilityId] = h
+}
+
+func (r *Registry) RegisterStatModItem(itemId int, h StatModHandler) {
+	r.statModItemHandlers[itemId] = h
 }
 
 func (r *Registry) RegisterOnHitAbility(abilityId int, h OnHitHandler) {

@@ -66,3 +66,7 @@ type PostMoveHandler interface {
 type OnHitHandler interface {
 	OnHit(ctx MoveResolveContext) Result
 }
+
+type StatModHandler interface {
+	StatMod(ctx MoveResolveContext) damage.StatMod
+}
