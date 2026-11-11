@@ -52,32 +52,42 @@ func TestRegistry_RegisterById(t *testing.T) {
 		{
 			"RegisterEntryAbility",
 			func(r *Registry, id, tag int) { r.RegisterEntryAbility(id, &registryTestEntry{tag}) },
-			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.entryAbilityHandlers, id) },
+			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.entry.ability, id) },
 		},
 		{
 			"RegisterEntryItem",
 			func(r *Registry, id, tag int) { r.RegisterEntryItem(id, &registryTestEntry{tag}) },
-			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.entryItemHandlers, id) },
+			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.entry.item, id) },
 		},
 		{
 			"RegisterExitAbility",
 			func(r *Registry, id, tag int) { r.RegisterExitAbility(id, &registryTestExit{tag}) },
-			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.exitAbilityHandlers, id) },
+			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.exit.ability, id) },
 		},
 		{
 			"RegisterExitItem",
 			func(r *Registry, id, tag int) { r.RegisterExitItem(id, &registryTestExit{tag}) },
-			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.exitItemHandlers, id) },
+			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.exit.item, id) },
 		},
 		{
-			"RegisterResolveAbility",
-			func(r *Registry, id, tag int) { r.RegisterResolveAbility(id, &registryTestHandler{tag}) },
-			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.resolveAbilityHandlers, id) },
+			"RegisterResolveAttackerAbility",
+			func(r *Registry, id, tag int) { r.RegisterResolveAttackerAbility(id, &registryTestHandler{tag}) },
+			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.resolve.attacker.ability, id) },
 		},
 		{
-			"RegisterResolveItem",
-			func(r *Registry, id, tag int) { r.RegisterResolveItem(id, &registryTestHandler{tag}) },
-			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.resolveItemHandlers, id) },
+			"RegisterResolveAttackerItem",
+			func(r *Registry, id, tag int) { r.RegisterResolveAttackerItem(id, &registryTestHandler{tag}) },
+			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.resolve.attacker.item, id) },
+		},
+		{
+			"RegisterResolveDefenderAbility",
+			func(r *Registry, id, tag int) { r.RegisterResolveDefenderAbility(id, &registryTestHandler{tag}) },
+			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.resolve.defender.ability, id) },
+		},
+		{
+			"RegisterResolveDefenderItem",
+			func(r *Registry, id, tag int) { r.RegisterResolveDefenderItem(id, &registryTestHandler{tag}) },
+			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.resolve.defender.item, id) },
 		},
 		{
 			"RegisterResolveMove",
@@ -87,22 +97,22 @@ func TestRegistry_RegisterById(t *testing.T) {
 		{
 			"RegisterOnHitAbility",
 			func(r *Registry, id, tag int) { r.RegisterOnHitAbility(id, &registryTestHandler{tag}) },
-			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.onHitAbilityHandlers, id) },
+			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.onHit.ability, id) },
 		},
 		{
 			"RegisterOnHitItem",
 			func(r *Registry, id, tag int) { r.RegisterOnHitItem(id, &registryTestHandler{tag}) },
-			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.onHitItemHandlers, id) },
+			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.onHit.item, id) },
 		},
 		{
 			"RegisterPostMoveAbility",
 			func(r *Registry, id, tag int) { r.RegisterPostMoveAbility(id, &registryTestHandler{tag}) },
-			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.postMoveAbilityHandlers, id) },
+			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.postMove.ability, id) },
 		},
 		{
 			"RegisterPostMoveItem",
 			func(r *Registry, id, tag int) { r.RegisterPostMoveItem(id, &registryTestHandler{tag}) },
-			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.postMoveItemHandlers, id) },
+			func(r *Registry, id int) (int, bool) { return registryTestLookup(r.postMove.item, id) },
 		},
 	}
 

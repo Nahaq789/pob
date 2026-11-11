@@ -78,7 +78,7 @@ func (e *ExitPhaseHandler) dispatch(ep ExitingPokemon, b *battle.Battle) ([]stri
 		ctx := NewExitContext(ep.PlayerId, int(abilityId), itemId, ep.Incoming, b)
 
 		// 先に特性ハンドラーを処理
-		if handler, ok := e.registry.exitAbilityHandlers[int(abilityId)]; ok {
+		if handler, ok := e.registry.exit.ability[int(abilityId)]; ok {
 			result := handler.Handle(ctx)
 			if result.Err != nil {
 				return nil, result.Err
@@ -88,7 +88,7 @@ func (e *ExitPhaseHandler) dispatch(ep ExitingPokemon, b *battle.Battle) ([]stri
 
 		// どうぐを持っていれば、どうぐのハンドラーも処理
 		if item != nil {
-			if handler, ok := e.registry.exitItemHandlers[itemId]; ok {
+			if handler, ok := e.registry.exit.item[itemId]; ok {
 				result := handler.Handle(ctx)
 				if result.Err != nil {
 					return nil, result.Err

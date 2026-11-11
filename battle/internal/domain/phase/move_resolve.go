@@ -68,12 +68,12 @@ func (d *MoveResolvePhaseHandler) Handle(ctx MoveResolveContext) Result {
 
 			// 被ダメージ時発動（じきゅうりょく・きのみ等）
 			if abilityId := int(defender.Ability().GetCurrentId()); abilityId != 0 {
-				if h, ok := d.registry.onHitAbilityHandlers[abilityId]; ok {
+				if h, ok := d.registry.onHit.ability[abilityId]; ok {
 					messages = append(messages, h.OnHit(ctx).Messages...)
 				}
 			}
 			if item := defender.HeldItem(); item != nil {
-				if h, ok := d.registry.onHitItemHandlers[int(item.Id())]; ok {
+				if h, ok := d.registry.onHit.item[int(item.Id())]; ok {
 					messages = append(messages, h.OnHit(ctx).Messages...)
 				}
 			}
@@ -114,36 +114,36 @@ func (d *MoveResolvePhaseHandler) calcDamage(ctx *MoveResolveContext, attacker, 
 
 	// 攻撃側の特性・道具（スナイパー・いのちのたま・ちからもち・こだわりハチマキ等）
 	if abilityId := int(attacker.Ability().GetCurrentId()); abilityId != 0 {
-		if h, ok := d.registry.resolveAbilityHandlers[abilityId]; ok {
+		if h, ok := d.registry.resolve.attacker.ability[abilityId]; ok {
 			mod = damage.Merge(mod, h.Mod(*ctx))
 		}
-		if h, ok := d.registry.statModAbilityHandlers[abilityId]; ok {
+		if h, ok := d.registry.statMod.attacker.ability[abilityId]; ok {
 			statMod = damage.MergeStat(statMod, h.StatMod(*ctx))
 		}
 	}
 	if item := attacker.HeldItem(); item != nil {
-		if h, ok := d.registry.resolveItemHandlers[int(item.Id())]; ok {
+		if h, ok := d.registry.resolve.attacker.item[int(item.Id())]; ok {
 			mod = damage.Merge(mod, h.Mod(*ctx))
 		}
-		if h, ok := d.registry.statModItemHandlers[int(item.Id())]; ok {
+		if h, ok := d.registry.statMod.attacker.item[int(item.Id())]; ok {
 			statMod = damage.MergeStat(statMod, h.StatMod(*ctx))
 		}
 	}
 
 	// 防御側の特性・道具（マルチスケイル・フィルター・もふもふ・ふしぎなうろこ・とつげきチョッキ等）
 	if abilityId := int(defender.Ability().GetCurrentId()); abilityId != 0 {
-		if h, ok := d.registry.resolveAbilityHandlers[abilityId]; ok {
+		if h, ok := d.registry.resolve.defender.ability[abilityId]; ok {
 			mod = damage.Merge(mod, h.Mod(*ctx))
 		}
-		if h, ok := d.registry.statModAbilityHandlers[abilityId]; ok {
+		if h, ok := d.registry.statMod.defender.ability[abilityId]; ok {
 			statMod = damage.MergeStat(statMod, h.StatMod(*ctx))
 		}
 	}
 	if item := defender.HeldItem(); item != nil {
-		if h, ok := d.registry.resolveItemHandlers[int(item.Id())]; ok {
+		if h, ok := d.registry.resolve.defender.item[int(item.Id())]; ok {
 			mod = damage.Merge(mod, h.Mod(*ctx))
 		}
-		if h, ok := d.registry.statModItemHandlers[int(item.Id())]; ok {
+		if h, ok := d.registry.statMod.defender.item[int(item.Id())]; ok {
 			statMod = damage.MergeStat(statMod, h.StatMod(*ctx))
 		}
 	}

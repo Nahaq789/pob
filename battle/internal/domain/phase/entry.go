@@ -79,7 +79,7 @@ func (e *EntryPhaseHandler) dispatch(ep EnteredPokemon, b *battle.Battle) ([]str
 		ctx := NewEntryContext(ep.PlayerId, int(abilityId), itemId, b)
 
 		// 先に特性ハンドラーを処理
-		if handler, ok := e.registry.entryAbilityHandlers[int(abilityId)]; ok {
+		if handler, ok := e.registry.entry.ability[int(abilityId)]; ok {
 			result := handler.Handle(ctx)
 			if result.Err != nil {
 				return nil, result.Err
@@ -89,7 +89,7 @@ func (e *EntryPhaseHandler) dispatch(ep EnteredPokemon, b *battle.Battle) ([]str
 
 		// どうぐを持っていれば、どうぐのハンドラーも処理
 		if item != nil {
-			if handler, ok := e.registry.entryItemHandlers[itemId]; ok {
+			if handler, ok := e.registry.entry.item[itemId]; ok {
 				result := handler.Handle(ctx)
 				if result.Err != nil {
 					return nil, result.Err
