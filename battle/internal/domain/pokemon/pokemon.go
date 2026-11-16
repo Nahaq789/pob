@@ -193,7 +193,25 @@ func (p *Pokemon) AttackStat() int {
 	return int(float64(p.realStats.Attack) * p.rank.Attack().Value())
 }
 
+// CritAttackStat は急所時の攻撃の実数値を返す。下がったランクは無視し、上がったランクは反映する。
+func (p *Pokemon) CritAttackStat() int {
+	r := p.rank.Attack().Stage()
+	if r < 0 {
+		return p.realStats.Attack
+	}
+	return int(float64(p.realStats.Attack) * p.rank.Attack().Value())
+}
+
 func (p *Pokemon) SpAttackStat() int {
+	return int(float64(p.realStats.SpAttack) * p.rank.SpAttack().Value())
+}
+
+// CritSpAttackStat は急所時の特攻の実数値を返す。下がったランクは無視し、上がったランクは反映する。
+func (p *Pokemon) CritSpAttackStat() int {
+	r := p.rank.SpAttack().Stage()
+	if r < 0 {
+		return p.realStats.SpAttack
+	}
 	return int(float64(p.realStats.SpAttack) * p.rank.SpAttack().Value())
 }
 
@@ -201,7 +219,25 @@ func (p *Pokemon) DefenseStat() int {
 	return int(float64(p.realStats.Defense) * p.rank.Defence().Value())
 }
 
+// CritDefenseStat は急所時の防御の実数値を返す。上がったランクは無視し、下がったランクは反映する。
+func (p *Pokemon) CritDefenseStat() int {
+	r := p.rank.Defence().Stage()
+	if r > 0 {
+		return p.realStats.Defense
+	}
+	return int(float64(p.realStats.Defense) * p.rank.Defence().Value())
+}
+
 func (p *Pokemon) SpDefenseStat() int {
+	return int(float64(p.realStats.SpDefense) * p.rank.SpDefence().Value())
+}
+
+// CritSpDefenseStat は急所時の特防の実数値を返す。上がったランクは無視し、下がったランクは反映する。
+func (p *Pokemon) CritSpDefenseStat() int {
+	r := p.rank.SpDefence().Stage()
+	if r > 0 {
+		return p.realStats.SpDefense
+	}
 	return int(float64(p.realStats.SpDefense) * p.rank.SpDefence().Value())
 }
 
